@@ -147,19 +147,6 @@
   const loginSubmitBtn  = document.getElementById('loginSubmitBtn');
   
 
-  // Real-time validation
-  // if (loginMobileInput) {
-  //   loginMobileInput.addEventListener('input', () => {
-  //     // Allow digits only
-  //     loginMobileInput.value = loginMobileInput.value.replace(/\D/g, '');
-  //     clearError(loginMobileInput, loginMobileError);
-  //     if (loginMobileInput.value.length === 10) {
-  //       if (isValidMobile(loginMobileInput.value)) markSuccess(loginMobileInput);
-  //       else showError(loginMobileInput, loginMobileError, 'Enter a valid 10-digit mobile number');
-  //     }
-  //   });
-  // }
-
   if (loginPasswordInput) {
     loginPasswordInput.addEventListener('input', () => {
       clearError(loginPasswordInput, loginPasswordError);
