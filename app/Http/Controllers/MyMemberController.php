@@ -1,0 +1,460 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\Member;
+use Illuminate\Http\Request;
+use Auth;
+use Carbon\Carbon;
+use App\Models\MembershipPlan;
+use App\Models\Shortlist;
+use App\Models\ProfileViewed;
+use App\Models\SentInterest;
+use App\Models\User;
+use App\Models\Religion;
+use App\Models\Cast;
+use App\Models\MaritalStatus;
+use App\Models\State;
+use App\Models\AnnualIncome;
+use App\Models\MotherTongue;
+use App\Models\Education;
+use App\Models\Employer;
+use App\Models\Height;
+use App\Models\ProfileCreatedFor;
+use App\Models\Countrie;
+use App\Models\City;
+use App\Models\FamilyStatus;
+
+class MyMemberController extends Controller
+{
+    public function search_home_member(Request $request)
+    {
+        $data['member'] = Auth::guard('member')->user();
+        $id = $data['member']->id;
+        $data['plan'] = MembershipPlan::where('id', $data['member']->plan_id)->first();
+        $data['shortlisted'] = Shortlist::where('member_id', $id)->count();
+        $data['viewed'] = ProfileViewed::where('viewed_profile_id', $id)->count();
+        $data['iviewed'] = ProfileViewed::where('member_id', $id)->count();
+        $data['interestSent'] = SentInterest::where('member_id', $id)->count();
+        $data['interestReceived'] = SentInterest::where('profile_id', $id)->count();
+        
+        $lookingFor = $request->input('marital_status');
+        $partnerAgeFrom = $request->input('partner_age_from');
+        $partnerAgeTo = $request->input('partner_age_to');
+        $partnerGender = $request->input('partner_gender');
+        $today = Carbon::now();
+        $members = Member::where('gender', $partnerGender)
+            ->where('marital_status', $lookingFor)
+            ->where('id', '!=', $id)
+            ->where('profile_completed', '>', 70)
+            ->where('active','yes')
+            ->get()
+            ->filter(function ($member) use ($partnerAgeFrom, $partnerAgeTo, $today) {
+
+                // Check if birth_date_time is valid
+                if (empty($member->birth_date_time) || $member->birth_date_time === false) {
+                    return false; // skip invalid dates
+                }
+    
+                try {
+                    $age = Carbon::parse($member->birth_date_time)->age;
+                } catch (\Exception $e) {
+                    return false; // skip if parsing fails
+                }
+    
+                return $age >= $partnerAgeFrom && $age <= $partnerAgeTo;
+            });
+        $data['members'] = $members->map(function ($member) {
+            return [
+                'id' => $member->id,
+                'birthdatetime' => Carbon::parse($member->birth_date_time)->format('d-m-Y h:i A'),
+                'gender' => $member->gender,
+                'age' => Carbon::parse($member->birth_date_time)->age,
+                'height' => $member->height,
+                'religion' => $member->religion,
+                'mother_tongue' => $member->mother_tongue,
+                'cast' => $member->cast,
+                'education' => $member->education,
+                'occupation' => $member->occupation,
+                'location' => $member->city_living_in . "<br>" . $member->state_living_in . " " . $member->country_living_in,
+                'photo' => $member->photo,
+                'profile_completed' => $member->profile_completed,
+                'profile_id' => $member->profile_id,
+                'mother_tongue' => $member->mother_tongue
+            ];
+        });
+        return view('dashboard.search_member',compact('data'));
+    }
+
+    public function myProfile()
+    {
+        $today = Carbon::now();
+        $user = Auth::guard('member')->user();
+        $id = $user->plan_id;
+        $rm = $user->relationship_manager;
+        $plan = MembershipPlan::where('id',$id)->first();
+        $rm = User::where('username',$rm)->first();
+        $data['profile_created_for'] = ProfileCreatedFor::all();
+        $data['heights'] = Height::all();
+        $data['religions'] = Religion::all();
+        $data['casts'] = Cast::all();
+        $data['marital_statuses'] = MaritalStatus::all();
+        $data['countries'] = Countrie::all();
+        $country_id = Countrie::where('name', $user->country_living_in)->first();
+        $state_id = State::where('name', $user->state_living_in)->first();
+       // $data['states'] = State::where('country_id',$country_id->id)->get();
+      //  $data['cities'] = City::where('state_id',$state_id->id)->get();
+        $data['educations'] = Education::all();
+        $data['familyStatuses'] = FamilyStatus::all();
+        $data['employers'] = Employer::all();
+        $data['annualIncomes'] = AnnualIncome::all();
+        $data['motherTongues'] = MotherTongue::all();
+
+        $profile_created_for = $user->profile_created_for;
+        if($profile_created_for == 'Self'){
+            $data['profile_created_by'] = 'Self';
+        }elseif($profile_created_for == 'Friend'){
+            $data['profile_created_by'] = 'Friend';
+        }elseif($profile_created_for == 'Relative'){
+            $data['profile_created_by'] = 'Relative';
+        }elseif($profile_created_for == 'Son' || $profile_created_for == 'Daughter')    {
+            $data['profile_created_by'] = "Parents";
+        }elseif($profile_created_for == 'Brother' || $profile_created_for == 'Sister')    {
+            $data['profile_created_by'] = "Siblings";
+        }else{
+            $data['profile_created_by'] = 'Client';
+        }
+
+        $birthDate = Carbon::parse($user->birth_date_time);
+        $diff = $birthDate->diff($today);
+        $user['age_years']  = $diff->y;
+        $user['age_months'] = $diff->m;
+        
+        return view('dashboard.profile',compact(['user','plan','rm','data']));
+    }
+
+    Public function advance_search(Request $request){
+        $member = Auth::guard('member')->user();
+        $id = $member->id;
+        $data['religions'] = Religion::all();
+        $data['casts'] = Cast::all();
+        $data['mstatus'] = MaritalStatus::all();
+        $data['states'] = State::where('country_id',1)->get();
+        $data['incomes'] = AnnualIncome::all();
+        $data['mother_tongues'] = MotherTongue::all();
+        $data['educations'] = Education::all();
+        $data['employers'] = Employer::all();
+        $data['heights'] = Height::all();
+        
+        $memberGender = $member->gender;
+        $today        = Carbon::now();
+        $partnerAgeFrom     = $request->input('partner_age_from');
+        $partnerAgeTo       = $request->input('partner_age_to');
+        $partnerCasts       = $request->input('partner_cast',[]);
+        $partnerReligions   = $request->input('partner_religion', []);
+        $maritalStatus      = $request->input('marital_status');
+        if (!is_array($partnerReligions)) {
+            $partnerReligions = [$partnerReligions];
+        }
+        if (!is_array($partnerCasts)) {
+            $partnerCasts = [$partnerCasts];
+        }
+        $data['searchedMembers'] = [];
+        $partnerAgeFrom  = $partnerAgeTo  = $partnerCasts   =  $partnerReligions = $maritalStatus = $partnerStates = $partnerEmployers = $partnerIncomeFrom = $partnerIncomeTo = null;
+        $profile_id = $partnerManglik = $partnerMotherTongue = $partnerHeightFrom = $partnerHeightTo = null;
+        if ($request->query()) {
+            $partnerAgeFrom     = $request->input('partner_age_from');
+            $partnerAgeTo       = $request->input('partner_age_to');
+            $partnerCasts       = (array) $request->input('partner_cast', []);
+            $partnerReligions   = (array) $request->input('partner_religion', []);
+            $maritalStatus      = $request->input('marital_status');
+            $profile_id         = $request->input('profile_id');
+            $partnerManglik     = $request->input('partner_manglik');
+            $partnerMotherTongue= (array) $request->input('partner_mother_tongue', []);
+            $partnerStates      = (array) $request->input('partner_state', []);
+            $partnerEmployers   = (array) $request->input('partner_employers', []);
+            $partnerIncomeFrom  =  $request->input('partner_annual_income_from');
+            $partnerIncomeTo    =  $request->input('partner_annual_income_to');
+            $partnerHeightFrom  =  $request->input('partner_height_from');
+            $partnerHeightTo    =  $request->input('partner_height_to');
+            $partnerEducation   =  (array) $request->input('partner_education', []);
+
+            $data['members'] = Member::where('gender', '!=', $memberGender)
+                ->where('id', '!=', $id)
+                ->where('active', 'yes')
+                ->when(!empty($maritalStatus), function ($q) use ($maritalStatus) {
+                    $q->where('marital_status', $maritalStatus);
+                })
+                ->when(!empty($partnerReligions), function ($q) use ($partnerReligions) {
+                    $q->whereIn('religion', $partnerReligions);
+                })
+                ->when(!empty($partnerCasts), function ($q) use ($partnerCasts) {
+                    $q->whereIn('cast', $partnerCasts);
+                })
+                ->when(!empty($partnerStates), function ($q) use ($partnerStates) {
+                    $q->whereIn('state_living_in', $partnerStates);
+                })
+                ->when(!empty($partnerEmployers), function ($q) use ($partnerEmployers) {
+                    $q->whereIn('employer', $partnerEmployers);
+                })
+                ->when(!empty($partnerIncomeFrom), function ($q) use ($partnerIncomeFrom) {
+                    $q->where('annual_income', '>=', $partnerIncomeFrom);
+                })
+                ->when(!empty($partnerIncomeTo), function ($q) use ($partnerIncomeTo) {
+                    $q->where('annual_income', '<=', $partnerIncomeTo);
+                })
+                ->when(!empty($partnerHeightFrom), function ($q) use ($partnerHeightFrom) {
+                    $q->where('height', '>=', $partnerHeightFrom);
+                })
+                ->when(!empty($partnerHeightTo), function ($q) use ($partnerHeightTo) {
+                    $q->where('height', '<=', $partnerHeightTo);
+                })
+                ->when(!empty($partnerEducation), function ($q) use ($partnerEducation) {
+                    $q->whereIn('education', $partnerEducation);
+                })
+                ->when(!empty($partnerManglik), function ($q) use ($partnerManglik) {
+                    $q->where('manglik', $partnerManglik);
+                })
+                ->when(!empty($partnerMotherTongue), function ($q) use ($partnerMotherTongue) {
+                    $q->whereIn('mother_tongue', $partnerMotherTongue);
+                })
+                ->when(!empty($profile_id), function ($q) use ($profile_id) {
+                    $q->where('profile_id', $profile_id);
+                })
+                ->get()
+                ->filter(function ($m) use ($partnerAgeFrom, $partnerAgeTo) {
+                    if ($partnerAgeFrom && $partnerAgeTo) {
+                        return $m->age >= $partnerAgeFrom && $m->age <= $partnerAgeTo;
+                    } elseif ($partnerAgeFrom) {
+                        return $m->age >= $partnerAgeFrom;
+                    } elseif ($partnerAgeTo) {
+                        return $m->age <= $partnerAgeTo;
+                    }
+                    return true; // no age filter applied
+                });
+
+            foreach ($data['members'] as $key => $recent) {
+                $birthDate = Carbon::parse($recent->birth_date_time);
+                $diff = $birthDate->diff($today);
+
+                $data['searchedMembers'][$key]['age_years']  = $diff->y;
+                $data['searchedMembers'][$key]['age_months'] = $diff->m;
+
+                if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
+                    $data['searchedMembers'][$key]['photo'] = "https://himrishtey.com/photos/photo/".$recent->photo;
+                } elseif ($recent->gender === "Male") {
+                    $data['searchedMembers'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
+                } elseif ($recent->gender === "Female") {
+                    $data['searchedMembers'][$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
+                }
+
+                if ($recent->member_type === 'Verified') {
+                    $data['searchedMembers'][$key]['member_type'] = "https://himrishtey.com/img/verified.png";
+                    $data['searchedMembers'][$key]['mem_type']    = "Yes";
+                } else {
+                    $data['searchedMembers'][$key]['member_type'] = "normal";
+                }
+
+                if ($recent->is_trusted === 'Trusted') {
+                    $data['searchedMembers'][$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
+                } else {
+                    $data['searchedMembers'][$key]['is_trusted'] = "No";
+                }
+
+                $data['searchedMembers'][$key] = array_merge($recent->toArray(), $data['searchedMembers'][$key]);
+            }
+        }
+        if ($request->ajax()) {
+            return view('dashboard.search-result', [
+                'searchedMembers' => $data['searchedMembers'] ?? []
+            ])->render();
+        }
+        return view('dashboard.advance_search',compact('data','partnerAgeFrom','partnerAgeTo','partnerReligions','partnerCasts','maritalStatus'));
+    }
+
+    public function update_profile(Request $request){
+        $member = Auth::guard('member')->user();
+        $user = Member::where('id', $member->id)->first();
+        if ($request->has('about_me')) {
+            $user->about_me = $request->about_me;
+        }
+        if ($request->has('profile_created_for')) {
+            $user->profile_created_for = $request->profile_created_for;
+        }
+        if ($request->has('date_of_birth') || $request->has('time_of_birth')) {
+            $user->birth_date_time = $request->date_of_birth . ' ' . $request->time_of_birth;
+        }
+        if ($request->has('height')) {
+            $user->height = $request->height;
+        }
+        if ($request->has('cast')) {
+            $user->cast = $request->cast;
+        }
+        if ($request->has('religion')) {
+            $user->religion = $request->religion;
+        }
+        if ($request->has('marital_status')) {
+            $user->marital_status = $request->marital_status;
+        }
+        if ($request->has('no_of_child')) {
+            $user->no_of_child = $request->no_of_child;
+        }
+        if ($request->has('city_living_in')) {
+            $user->city_living_in = $request->city_living_in;
+        }
+        if ($request->has('state_living_in')) {
+            $user->state_living_in = $request->state_living_in;
+        }
+        if ($request->has('country_living_in')) {
+            $user->country_living_in = $request->country_living_in;
+        }
+        if ($request->has('birth_place')) {
+            $user->birth_place = $request->birth_place;
+        }
+        if ($request->has('manglik')) {
+            $user->manglik = $request->manglik;
+        }
+        if($request->has('alternate_number')){
+            $user->alternate_number = $request->alternate_number;
+        }
+        if($request->has('whatsapp_number')){
+            $user->whatsapp_number = $request->whatsapp_number;
+        }
+        if($request->has('cast')){
+            $user->cast = $request->cast;
+        }
+        if($request->has('sub_cast')){
+            $user->sub_cast = $request->sub_cast;
+        }
+        if($request->has('gotra')){
+            $user->gotra = $request->gotra;
+        }
+        if($request->has('diet')){
+            $user->diet = $request->diet;
+        }
+        if($request->has('is_smoking')){
+            $user->is_smoking = $request->is_smoking;
+        }
+        if($request->has('is_drinking')){
+            $user->is_drinking = $request->is_drinking;
+        }
+        if($request->has('any_disability')){
+            $user->any_disability = $request->any_disability;
+        }
+        if($request->has('about_my_family')){
+            $user->about_family = $request->about_my_family;
+        }
+        if($request->has('family_type')){
+            $user->family_status = $request->family_type;
+        }
+        if($request->has('native_place')){
+            $user->native_place = $request->native_place;
+        }
+        if($request->has('no_of_brothers')){
+            $user->no_of_brothers = $request->no_of_brothers;
+        }
+        if($request->has('no_of_sisters')){
+            $user->no_of_sisters = $request->no_of_sisters;
+        }
+        if($request->has('married_brothers')){
+            $user->married_brothers = $request->married_brothers;
+        }
+        if($request->has('married_sisters')){
+            $user->married_sisters = $request->married_sisters;
+        }
+        if($request->has('father_name')){
+            $user->father_name = $request->father_name;
+        }
+        if($request->has('father_occupation')){
+            $user->father_occupation = $request->father_occupation;
+        }
+        if($request->has('mother_name')){
+            $user->mother_name = $request->mother_name;
+        }
+        if($request->has('mother_occupation')){
+            $user->mother_occupation = $request->mother_occupation;
+        }
+        if($request->has('about_my_education')){
+            $user->about_my_education = $request->about_my_education;
+        }
+        if($request->has('education')){
+            $user->education = $request->education;
+        }
+        if($request->has('any_other_qualifications')){
+            $user->any_other_qualifications = $request->any_other_qualifications;
+        }
+        if($request->has('employed_in')){
+            $user->employed_in = $request->employed_in;
+        }
+        if($request->has('employed_in')){
+            $user->employed_in = $request->employed_in;
+        }
+        if($request->has('organization_name')){
+            $user->organization_name = $request->organization_name;
+        }
+        if($request->has('job_location')){
+            $user->job_location = $request->job_location;
+        }
+        if($request->has('occupation')){
+            $user->occupation = $request->occupation;
+        }
+        if($request->has('annual_income')){
+            $user->annual_income = $request->annual_income;
+        }
+        if($request->has('is_partner_smoking')){
+            $user->is_partner_smoking = $request->is_partner_smoking;
+        }
+        if($request->has('is_partner_drinking')){
+            $user->is_partner_drinking = $request->is_partner_drinking;
+        }
+        if($request->has('partner_diet')){
+            $user->partner_diet = $request->partner_diet;
+        }
+        if($request->has('partner_employed_in')){
+            $user->partner_occupation = implode(',', $request->partner_employed_in);
+        }
+        if($request->has('partner_education')){
+            $user->partner_education = implode(',', $request->partner_education);
+        }
+        if($request->has('is_partner_manglik')){
+            $user->is_partner_manglik = $request->is_partner_manglik;
+        }
+        if($request->has('partner_cast')){
+            $user->partner_cast = implode(',', $request->partner_cast);
+        }
+        if($request->has('partner_religion')){
+            $user->partner_religion = implode(',', $request->partner_religion);
+        }
+        if($request->has('looking_for')){
+            $user->looking_for = implode(',', $request->looking_for);
+        }
+        if($request->has('about_my_partner')){
+            $user->about_my_partner = $request->about_my_partner;
+        }
+        if($request->has('partner_height_from')){
+            $user->partner_height_from = $request->partner_height_from;
+        }
+        if($request->has('partner_height_to')){
+            $user->partner_height_to = $request->partner_height_to;
+        }
+        if($request->has('partner_mother_tongue')){
+            $user->partner_mother_tongue = implode(',', $request->partner_mother_tongue);
+        }
+        if($request->has('partner_age_from')){
+            $user->partner_age_from = $request->partner_age_from;
+        }
+        if($request->has('partner_age_to')){
+            $user->partner_age_to = $request->partner_age_to;
+        }
+        if($request->has('partner_annual_income_from')){
+            $user->partner_annual_income_from = $request->partner_annual_income_from;
+        }
+        if($request->has('partner_annual_income_to')){
+            $user->partner_annual_income_to = $request->partner_annual_income_to;
+        }
+        $user->save();
+        return redirect()->back()->with('success','Profile Updated Successfully');
+    }
+
+}
