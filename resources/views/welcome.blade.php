@@ -1,4 +1,4 @@
-@extends('master.layout')
+@extends('layouts.app')
 @section('content')
 <section class="hero-section">
     <div class="hero-bg-pattern" aria-hidden="true"></div>

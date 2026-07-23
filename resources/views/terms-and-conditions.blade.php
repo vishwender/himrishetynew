@@ -1,4 +1,4 @@
-@extends('master/layout')
+@extends('layouts.app')
 
 @section('content')
 <main class="pp-main" id="main-content">

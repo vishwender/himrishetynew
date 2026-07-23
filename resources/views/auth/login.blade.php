@@ -1,4 +1,4 @@
-@extends('master/layout')
+@extends('layouts.app')
 @section('content')
   <!-- MAIN -->
   <main class="login-main">

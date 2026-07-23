@@ -1,4 +1,4 @@
-@extends('master/layout')
+@extends('layouts.app')
 @section('title', 'Success Stories')
 @section('content')
   <main class="ss-main" id="main-content">
