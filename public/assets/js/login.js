@@ -126,28 +126,39 @@
   function isValidPassword(val) { return val.length >= 6; }
   function isValidName(val) { return val.trim().length >= 2; }
   function isValidEmail(val) {return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());}
+  function isValidLoginField(value) {
+    value = value.trim();
+    const mobile = /^[6-9]\d{9}$/;
+    const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+    const profile = /^HIM\d+$/i;
+    return mobile.test(value) ||
+           email.test(value) ||
+           profile.test(value);}
+
 
 
   /* ---- LOGIN FORM ---- */
   const loginForm       = document.getElementById('loginForm');
-  const loginMobileInput  = document.getElementById('loginMobile');
+  const loginField      =  document.getElementById('loginField');
+  //const loginMobileInput  = document.getElementById('loginMobile');
   const loginPasswordInput = document.getElementById('loginPassword');
   const loginMobileError  = document.getElementById('loginMobileError');
   const loginPasswordError = document.getElementById('loginPasswordError');
   const loginSubmitBtn  = document.getElementById('loginSubmitBtn');
+  
 
   // Real-time validation
-  if (loginMobileInput) {
-    loginMobileInput.addEventListener('input', () => {
-      // Allow digits only
-      loginMobileInput.value = loginMobileInput.value.replace(/\D/g, '');
-      clearError(loginMobileInput, loginMobileError);
-      if (loginMobileInput.value.length === 10) {
-        if (isValidMobile(loginMobileInput.value)) markSuccess(loginMobileInput);
-        else showError(loginMobileInput, loginMobileError, 'Enter a valid 10-digit mobile number');
-      }
-    });
-  }
+  // if (loginMobileInput) {
+  //   loginMobileInput.addEventListener('input', () => {
+  //     // Allow digits only
+  //     loginMobileInput.value = loginMobileInput.value.replace(/\D/g, '');
+  //     clearError(loginMobileInput, loginMobileError);
+  //     if (loginMobileInput.value.length === 10) {
+  //       if (isValidMobile(loginMobileInput.value)) markSuccess(loginMobileInput);
+  //       else showError(loginMobileInput, loginMobileError, 'Enter a valid 10-digit mobile number');
+  //     }
+  //   });
+  // }
 
   if (loginPasswordInput) {
     loginPasswordInput.addEventListener('input', () => {
@@ -157,16 +168,29 @@
 
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
+      alert('form submitted');
       e.preventDefault();
       let valid = true;
 
       // Validate mobile
-      if (!loginMobileInput.value || !isValidMobile(loginMobileInput.value)) {
-        showError(loginMobileInput, loginMobileError, 'Enter a valid 10-digit mobile number');
+      // if (!loginMobileInput.value || !isValidMobile(loginMobileInput.value)) {
+      //   showError(loginMobileInput, loginMobileError, 'Enter a valid 10-digit mobile number');
+      //   valid = false;
+      // } else {
+      //   clearError(loginMobileInput, loginMobileError);
+      //   markSuccess(loginMobileInput);
+      // }
+
+      if (!isValidLoginField(loginField.value)) {
+        showError(
+            loginField,
+            loginFieldError,
+            'Enter a valid Profile ID, Email or Mobile Number'
+        );
         valid = false;
       } else {
-        clearError(loginMobileInput, loginMobileError);
-        markSuccess(loginMobileInput);
+        clearError(loginField, loginFieldError);
+        markSuccess(loginField);
       }
 
       // Validate password
@@ -185,12 +209,38 @@
       loginSubmitBtn.disabled = true;
 
       // Simulate API call — replace with real fetch
-      setTimeout(() => {
-        loginSubmitBtn.classList.remove('loading');
-        loginSubmitBtn.disabled = false;
-        // On success redirect:
-        //window.location.href = 'index.html';
-      }, 1500);
+      const csrf = document.querySelector('meta[name="csrf-token"]').content;
+
+      fetch('/member-login', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-CSRF-TOKEN': csrf
+          },
+          body: JSON.stringify({
+              username: loginField.value.trim(),
+              password: loginPasswordInput.value
+          })
+      })
+      .then(async response => {
+          const data = await response.json();
+
+          loginSubmitBtn.classList.remove('loading');
+          loginSubmitBtn.disabled = false;
+
+          if (response.ok) {
+              window.location.href = data.redirect || '/';
+          } else {
+              alert(data.message || 'Invalid mobile number or password.');
+          }
+      })
+      .catch(error => {
+          loginSubmitBtn.classList.remove('loading');
+          loginSubmitBtn.disabled = false;
+          console.error(error);
+          alert('Something went wrong.');
+      });
     });
   }
 
