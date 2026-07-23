@@ -41,6 +41,7 @@ class MemberController extends Controller
         ];
 
         $data = array_filter($data, fn($value) => !is_null($value));
+        //dd($data);
         $member = Member::create($data);
       //  dd($member->toArray());
         $profile_id = 10000 + $member->id;

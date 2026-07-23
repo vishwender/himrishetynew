@@ -125,6 +125,7 @@
   function isValidMobile(val) { return /^[6-9]\d{9}$/.test(val.trim()); }
   function isValidPassword(val) { return val.length >= 6; }
   function isValidName(val) { return val.trim().length >= 2; }
+  function isValidEmail(val) {return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());}
 
 
   /* ---- LOGIN FORM ---- */
@@ -188,7 +189,7 @@
         loginSubmitBtn.classList.remove('loading');
         loginSubmitBtn.disabled = false;
         // On success redirect:
-        window.location.href = 'index.html';
+        //window.location.href = 'index.html';
       }, 1500);
     });
   }
@@ -197,12 +198,15 @@
   /* ---- REGISTER FORM ---- */
   const registerForm    = document.getElementById('registerForm');
   const regNameInput    = document.getElementById('regName');
+  const regEmailInput =   document.getElementById('regEmail');
   const regMobileInput  = document.getElementById('regMobile');
   const regGenderInput  = document.getElementById('regGender');
   const regDOBInput     = document.getElementById('regDOB');
   const regPasswordInput2 = document.getElementById('regPassword');
   const regTermsInput   = document.getElementById('regTerms');
+
   const regNameError    = document.getElementById('regNameError');
+  const regEmailError   = document.getElementById('regEmailError');
   const regMobileError  = document.getElementById('regMobileError');
   const regGenderError  = document.getElementById('regGenderError');
   const regDOBError     = document.getElementById('regDOBError');
@@ -223,6 +227,7 @@
 
   if (registerForm) {
     registerForm.addEventListener('submit', (e) => {
+       alert('register');
       e.preventDefault();
       let valid = true;
 
@@ -230,6 +235,11 @@
         showError(regNameInput, regNameError, 'Please enter your full name');
         valid = false;
       } else { clearError(regNameInput, regNameError); markSuccess(regNameInput); }
+
+      if (!regEmailInput.value || !isValidEmail(regEmailInput.value)) {
+        showError(regEmailInput, regEmailError, 'Please enter valid e-mail');
+        valid = false;
+      } else { clearError(regEmailInput, regEmailError); markSuccess(regEmailInput); }
 
       if (!regMobileInput.value || !isValidMobile(regMobileInput.value)) {
         showError(regMobileInput, regMobileError, 'Enter a valid 10-digit mobile number');
@@ -269,13 +279,52 @@
       registerSubmitBtn.classList.add('loading');
       registerSubmitBtn.disabled = true;
 
+      const profileCreatedFor = document.querySelector(
+        'input[name="profileFor"]:checked'
+    ).value;
+
+    console.log(profileCreatedFor);
+
       // Simulate API call — replace with real fetch
-      setTimeout(() => {
-        registerSubmitBtn.classList.remove('loading');
-        registerSubmitBtn.disabled = false;
-        // On success redirect:
-        window.location.href = 'index.html';
-      }, 1800);
+      const csrf = document.querySelector('meta[name="csrf-token"]').content;
+
+      fetch('/initial-register', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrf,
+              'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+              profile_created_for:profileCreatedFor, 
+              full_name: regNameInput.value,
+              email: regEmailInput.value,
+              mobile_number: regMobileInput.value,
+              gender: regGenderInput.value,
+              birth_date: regDOBInput.value,
+              password: regPasswordInput2.value
+          })
+      })
+      .then(async response => {
+          const data = await response.json();
+
+          registerSubmitBtn.classList.remove('loading');
+          registerSubmitBtn.disabled = false;
+
+          if (response.ok) {
+              // Registration successful
+              window.location.href = "/dashboard";
+          } else {
+              alert(data.message || "Registration failed.");
+          }
+      })
+      .catch(error => {
+          registerSubmitBtn.classList.remove('loading');
+          registerSubmitBtn.disabled = false;
+
+          console.error(error);
+          alert("Something went wrong.");
+      });
     });
   }
 
