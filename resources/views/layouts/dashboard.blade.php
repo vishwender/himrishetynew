@@ -40,7 +40,7 @@
           </span>
         </div>
         <div class="sidebar-user-info">
-          <h2 class="sidebar-user-name">{{ Auth::user()->name ?? 'User' }}</h2>
+          <h2 class="sidebar-user-name">{{ Auth::user()->full_name ?? 'User' }}</h2>
           <span class="sidebar-label">Profile ID</span>
           <span class="sidebar-value">{{ Auth::user()->profile_id ?? 'N/A' }}</span>
           <span class="sidebar-label">Membership</span>
@@ -97,7 +97,7 @@
         <div class="navbar-brand">
           <img src="{{ asset('assets/images/logo.png') }}" alt="Himrishtey Logo" class="navbar-logo">
         </div>
-        <span class="navbar-greeting">Hi, <strong>{{ Auth::user()->name ?? 'User' }}</strong> 👋</span>
+        <span class="navbar-greeting">Hi, <strong>{{ Auth::user()->full_name ?? 'User' }}</strong> 👋</span>
       </div>
       <div class="navbar-right">
         <div class="navbar-wallet">
@@ -130,11 +130,11 @@
         </div>
         <div class="pqv-user-text">
           <div class="pqv-name-row">
-            <strong class="pqv-name">{{ Auth::user()->name ?? 'User' }}</strong>
+            <strong class="pqv-name">{{ Auth::user()->full_name ?? 'User' }}</strong>
             <span class="pqv-profile-id">{{ Auth::user()->profile_id ?? 'N/A' }}</span>
           </div>
           <span class="pqv-email">{{ Auth::user()->email ?? 'email@example.com' }}</span>
-          <a href="#" class="pqv-link-btn">View Your Profile</a>
+          <a href="{{route('view-my-profile')}}" class="pqv-link-btn">View Your Profile</a>
         </div>
       </div>
 

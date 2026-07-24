@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\File;
 use App\Services\EmailService;
 use App\Services\NimbusSmsService;
 use App\Services\PushNotificationService;
+
 class HomeController extends Controller
 {
     /**
@@ -77,7 +78,7 @@ class HomeController extends Controller
             $users[$key]['age_years']  = $diff->y;
             $users[$key]['age_months'] = $diff->m;
             if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $users[$key]['photo'] = "https://himrishtey.com/photos/photo/".$recent->photo;
+                $users[$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
             } elseif ($recent->gender === "Male") {
                 $users[$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
             } elseif ($recent->gender === "Female") {
@@ -115,7 +116,7 @@ class HomeController extends Controller
             $data['verifiedUsers'][$key]['age_years']  = $diff->y;
             $data['verifiedUsers'][$key]['age_months'] = $diff->m;
             if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/photos/photo/".$recent->photo;
+                $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
             } elseif ($recent->gender === "Male") {
                 $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
             } elseif ($recent->gender === "Female") {
@@ -136,7 +137,7 @@ class HomeController extends Controller
         }
 
         /********** Who viewewd *********/
-         $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
+        $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
             ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
             ->where('profile_viewed.viewed_profile_id', $id)
             ->where('members.active', 'Yes')
@@ -164,7 +165,7 @@ class HomeController extends Controller
             $data['viewed'][$key]['gender']            = $recent->gender;
             $data['viewed'][$key]['activation_number'] = $recent->activation_number;
             if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $data['viewed'][$key]['photo'] ="https://himrishtey.com/photos/photo/".$recent->photo;
+                $data['viewed'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
             } elseif ($recent->gender === "Male") {
                 $data['viewed'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
             } elseif ($recent->gender === "Female") {
@@ -187,9 +188,9 @@ class HomeController extends Controller
         /****** shortlisted profiles **************/
         $results = Member::whereIn('id', function ($query) use ($id) {
             $query->select('profile_id')
-                  ->from('short_listed')
-                  ->where('member_id', $id);
-            })
+                ->from('short_listed')
+                ->where('member_id', $id);
+        })
             ->where('active', 'Yes')
             ->where('profile_hide', '!=', 'yes')
             ->orderBy('activation_number', 'desc')
@@ -204,7 +205,7 @@ class HomeController extends Controller
             $data['shortlist'][$key]['age_years']  = $diff->y;
             $data['shortlist'][$key]['age_months'] = $diff->m;
             if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $data['shortlist'][$key]['photo'] = "https://himrishtey.com/photos/photo/".$recent->photo;
+                $data['shortlist'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
             } elseif ($recent->gender === "Male") {
                 $data['shortlist'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
             } elseif ($recent->gender === "Female") {
@@ -243,8 +244,13 @@ class HomeController extends Controller
             ->where('birth_date_time', 'not like', '%00:30:00%')
             ->get()
             ->filter(function ($profile) use (
-                $member, $today,
-                $partner_country, $partner_religion, $partner_cast, $partner_education, $partner_mothertongue
+                $member,
+                $today,
+                $partner_country,
+                $partner_religion,
+                $partner_cast,
+                $partner_education,
+                $partner_mothertongue
             ) {
 
                 $age = Carbon::parse($profile->birth_date_time)->diffInYears($today);
@@ -256,11 +262,10 @@ class HomeController extends Controller
                     in_array($profile->country_living_in, $partner_country) &&
                     in_array($profile->cast, $partner_cast) &&
                     in_array($profile->education, $partner_education) &&
-                    in_array($profile->mother_tongue, $partner_mothertongue)
-                    ;
+                    in_array($profile->mother_tongue, $partner_mothertongue);
             });
-            // dd($data['matching_profiles']);
-        return view('home', compact(['member', 'data']));
+        //dd($data);
+        return view('dashboard/home', compact(['member', 'data']));
     }
 
     public function quick_search(Request $request)
@@ -297,7 +302,7 @@ class HomeController extends Controller
                 ->when(!empty($partnerCasts), function ($q) use ($partnerCasts) {
                     $q->whereIn('cast', $partnerCasts);
                 })
-                ->orderBy('activation_number','desc')
+                ->orderBy('activation_number', 'desc')
                 ->get()
                 ->filter(function ($m) use ($partnerAgeFrom, $partnerAgeTo) {
                     if ($partnerAgeFrom && $partnerAgeTo) {
@@ -318,7 +323,7 @@ class HomeController extends Controller
                 $data['searchedMembers'][$key]['age_months'] = $diff->m;
 
                 if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                    $data['searchedMembers'][$key]['photo'] = "https://himrishtey.com/photos/photo/".$recent->photo;
+                    $data['searchedMembers'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
                 } elseif ($recent->gender === "Male") {
                     $data['searchedMembers'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
                 } elseif ($recent->gender === "Female") {
@@ -404,17 +409,18 @@ class HomeController extends Controller
             }
         }
 
-        return view('dashboard.search_profile', compact(['profile','profile_id']));
+        return view('dashboard.search_profile', compact(['profile', 'profile_id']));
     }
 
-    public function interest_box(){
+    public function interest_box()
+    {
         $data['received_pending_interests'] = $this->received_pending_interest();
         $data['received_accepted_interests'] = $this->received_accepted_interest();
         $data['received_rejected_interests'] = $this->received_rejected_interest();
         $data['sent_pending_interests'] = $this->sent_pending_interest();
         $data['sent_accepted_interests'] = $this->sent_accepted_interest();
         $data['sent_rejected_interests'] = $this->sent_rejected_interest();
-        return view('dashboard.interest_box',compact('data'));
+        return view('dashboard.interest_box', compact('data'));
     }
 
     public function received_pending_interest()
@@ -436,7 +442,7 @@ class HomeController extends Controller
 
         foreach ($results as $key => $result) {
             if (!empty($result->photo) && $result->photo_approved === "Yes") {
-                $results[$key]->photo = 'https://himrishtey.com/photos/photo/'.$result->photo;
+                $results[$key]->photo = 'https://himrishtey.com/photos/photo/' . $result->photo;
             } elseif ($result->gender === "Male") {
                 $results[$key]->photo = "https://himrishtey.com/img/boy.jpg";
             } elseif ($result->gender === "Female") {
@@ -479,13 +485,13 @@ class HomeController extends Controller
             ->where('sent_interests.profile_id', $user_id)
             ->where('members.profile_hide', '!=', 'yes')
             ->where('members.active', 'Yes')
-            ->where('sent_interests.status', 1) 
+            ->where('sent_interests.status', 1)
             ->orderBy('sent_interests.id', 'desc')
             ->get();
 
         foreach ($results as $key => $result) {
             if (!empty($result->photo) && $result->photo_approved === "Yes") {
-                $results[$key]->photo = 'https://himrishtey.com/photos/photo/'.$result->photo;
+                $results[$key]->photo = 'https://himrishtey.com/photos/photo/' . $result->photo;
             } elseif ($result->gender === "Male") {
                 $results[$key]->photo = "https://himrishtey.com/img/boy.jpg";
             } elseif ($result->gender === "Female") {
@@ -534,7 +540,7 @@ class HomeController extends Controller
 
         foreach ($results as $key => $result) {
             if (!empty($result->photo) && $result->photo_approved === "Yes") {
-                $results[$key]->photo = 'https://himrishtey.com/photos/photo/'.$result->photo;
+                $results[$key]->photo = 'https://himrishtey.com/photos/photo/' . $result->photo;
             } elseif ($result->gender === "Male") {
                 $results[$key]->photo = "https://himrishtey.com/img/boy.jpg";
             } elseif ($result->gender === "Female") {
@@ -583,7 +589,7 @@ class HomeController extends Controller
 
         foreach ($results as $key => $result) {
             if (!empty($result->photo) && $result->photo_approved === "Yes") {
-                $results[$key]->photo = 'https://himrishtey.com/photos/photo/'.$result->photo;
+                $results[$key]->photo = 'https://himrishtey.com/photos/photo/' . $result->photo;
             } elseif ($result->gender === "Male") {
                 $results[$key]->photo = "https://himrishtey.com/img/boy.jpg";
             } elseif ($result->gender === "Female") {
@@ -613,7 +619,7 @@ class HomeController extends Controller
         return $results;
     }
 
-   public function sent_accepted_interest()
+    public function sent_accepted_interest()
     {
         $user_id = Auth::guard('member')->user()->id;
         $results = DB::table('members')
@@ -632,7 +638,7 @@ class HomeController extends Controller
 
         foreach ($results as $key => $result) {
             if (!empty($result->photo) && $result->photo_approved === "Yes") {
-                $results[$key]->photo = 'https://himrishtey.com/photos/photo/'.$result->photo;
+                $results[$key]->photo = 'https://himrishtey.com/photos/photo/' . $result->photo;
             } elseif ($result->gender === "Male") {
                 $results[$key]->photo = "https://himrishtey.com/img/boy.jpg";
             } elseif ($result->gender === "Female") {
@@ -681,7 +687,7 @@ class HomeController extends Controller
 
         foreach ($results as $key => $result) {
             if (!empty($result->photo) && $result->photo_approved === "Yes") {
-                $results[$key]->photo = 'https://himrishtey.com/photos/photo/'.$result->photo;
+                $results[$key]->photo = 'https://himrishtey.com/photos/photo/' . $result->photo;
             } elseif ($result->gender === "Male") {
                 $results[$key]->photo = "https://himrishtey.com/img/boy.jpg";
             } elseif ($result->gender === "Female") {
@@ -714,19 +720,34 @@ class HomeController extends Controller
     public function view_my_profile()
     {
         $profile = Auth::guard('member')->user();
+        //dd($profile);
         $profilegallery = $profile->photos()->get();
         if (!empty($profile->photo)) {
-            $profile->photo = 'https://himrishtey.com/photos/photo/'.$profile->photo;
+            $profile->photo = 'https://himrishtey.com/photos/photo/' . $profile->photo;
         } elseif ($profile->gender === "Male") {
             $profile->photo = "https://himrishtey.com/img/boy.jpg";
         } elseif ($profile->gender === "Female") {
             $profile->photo = "https://himrishtey.com/img/girl.jpg";
         }
+        if (!empty($profile->height)) {
+            $height = (string) $profile->height;
+
+            if (str_contains($height, '.')) {
+                [$feet, $inches] = explode('.', $height);
+            } else {
+                $feet = $height;
+                $inches = 0;
+            }
+
+            $profile->formatted_height = $feet . "'" . $inches . '" ft';
+        } else {
+            $profile->formatted_height = 'N/A';
+        }
         $birthDate = Carbon::parse($profile->birth_date_time);
         $ageDiff   = $birthDate->diff(Carbon::today());
         $profile->age_years  = $ageDiff->y;
         $profile->age_months = $ageDiff->m;
-        return view('dashboard.view_my_profile',compact('profile','profilegallery'));
+        return view('dashboard.view-my-profile', compact('profile', 'profilegallery'));
     }
 
     public function viewed_contacts()
@@ -885,7 +906,7 @@ class HomeController extends Controller
         $usr->interest = $profile ? '1' : '0';
         $usr->shortlisted = $short ? 'Yes' : 'No';
         if (!empty($usr->photo) && $usr->photo_approved === "Yes") {
-            $usr->photo = 'https://himrishtey.com/photos/photo/'.$usr->photo;
+            $usr->photo = 'https://himrishtey.com/photos/photo/' . $usr->photo;
         } elseif ($usr->gender === "Male") {
             $usr->photo = "https://himrishtey.com/img/boy.jpg";
         } elseif ($usr->gender === "Female") {
@@ -910,8 +931,8 @@ class HomeController extends Controller
 
         $usr->viewed_profile = (string) $cnt;
 
-        $profile_viewed_check =  ProfileViewed::where('member_id',$data['user_id'])->where('viewed_profile_id',$data['profile_id'])->first();
-        if(empty($profile_viewed_check)){
+        $profile_viewed_check =  ProfileViewed::where('member_id', $data['user_id'])->where('viewed_profile_id', $data['profile_id'])->first();
+        if (empty($profile_viewed_check)) {
             $profile_viewed_by_me = new ProfileViewed();
             $profile_viewed_by_me->member_id = $data['user_id'];
             $profile_viewed_by_me->viewed_profile_id = $data['profile_id'];
@@ -919,18 +940,18 @@ class HomeController extends Controller
             $emailService->viewProfile($profilemain, $usr);
         }
         $wallet = MemberWallet::where('member_id', $data['user_id'])
-        ->latest('created_at')
-        ->first();
+            ->latest('created_at')
+            ->first();
 
-        $interest_action = SentInterest::where('member_id',$data['profile_id'])->where('profile_id',$data['user_id'])->where('status',0)->first();
+        $interest_action = SentInterest::where('member_id', $data['profile_id'])->where('profile_id', $data['user_id'])->where('status', 0)->first();
 
-        if(!empty($interest_action)){
+        if (!empty($interest_action)) {
             $usr->interest_action = '1';
-        }else{
-            $interest_action_2 = SentInterest::where('member_id',$data['profile_id'])->where('profile_id',$data['user_id'])->whereIn('status',[1,2])->first();
-            if(!empty($interest_action_2)){
+        } else {
+            $interest_action_2 = SentInterest::where('member_id', $data['profile_id'])->where('profile_id', $data['user_id'])->whereIn('status', [1, 2])->first();
+            if (!empty($interest_action_2)) {
                 $usr->interest_action = '2';
-            }else{
+            } else {
                 $usr->interest_action = '0';
             }
         }
@@ -939,9 +960,9 @@ class HomeController extends Controller
 
         $usr->age_years  = $diff->y;
         $usr->age_months = $diff->m;
-        
+
         // dd($usr);
-        return view('dashboard.view_profile',compact('usr','data','wallet'));
+        return view('dashboard.view_profile', compact('usr', 'data', 'wallet'));
     }
 
     public function send_interest(Request $request, EmailService $emailservice, NimbusSmsService $messageService, $id)
@@ -961,9 +982,9 @@ class HomeController extends Controller
         ];
         $plan_id = $member->plan_id;
         $user_id = $member->id;
-       
+
         $profile_id = $id;
-        if($plan_id == 0 || empty($plan_id)){
+        if ($plan_id == 0 || empty($plan_id)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Please upgrade your membership plan'
@@ -977,16 +998,16 @@ class HomeController extends Controller
             ->where('profile_id', $user_id)
             ->first();
         if (empty($checkInterest)) {
-            if(!empty($checkedInterest)){
+            if (!empty($checkedInterest)) {
                 $checkedInterest->status = $status;
                 $emailservice->interestEmail($email);
-                if($checkedInterest->save()){
+                if ($checkedInterest->save()) {
                     return response()->json([
                         'status' => 'success',
                         'message' => 'Interest status changed successfully'
                     ]);
                 }
-            }else{
+            } else {
                 $newInterest = new SentInterest();
                 $newInterest->member_id = $user_id;
                 $newInterest->profile_id = $profile_id;
@@ -1005,8 +1026,8 @@ class HomeController extends Controller
                         'message' => 'Failed to send interest'
                     ], 500);
                 }
-            } 
-        }else {
+            }
+        } else {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Interest already sent'
@@ -1014,7 +1035,8 @@ class HomeController extends Controller
         }
     }
 
-    public function referral(){
+    public function referral()
+    {
 
         return view('dashboard.referral');
     }
@@ -1028,7 +1050,7 @@ class HomeController extends Controller
         return view('dashboard.success_stories', compact('success_stories'));
     }
 
- 
+
     public function stories_store(Request $request)
     {
         $request->validate([
@@ -1038,13 +1060,13 @@ class HomeController extends Controller
             'detail'     => 'required|string',
         ]);
 
-           if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
             $image = $request->file('photo');
-            $imageName = 'story-image-'.time() . '.' . $image->getClientOriginalExtension();
+            $imageName = 'story-image-' . time() . '.' . $image->getClientOriginalExtension();
             $originalImagePath = public_path('../../photos/ss/');
             $image->move($originalImagePath, $imageName);
-           }
-            
+        }
+
         SuccessStory::create([
             'groom_name' => $request->groom_name,
             'bride_name' => $request->bride_name,
@@ -1067,8 +1089,8 @@ class HomeController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            if (File::exists(public_path('../../photos/ss/'.$story->photo))) {
-                File::delete(public_path('../../photos/ss/'.$story->photo));
+            if (File::exists(public_path('../../photos/ss/' . $story->photo))) {
+                File::delete(public_path('../../photos/ss/' . $story->photo));
             }
             $photoName = time() . '_' . $request->photo->getClientOriginalName();
             $request->photo->move(public_path('../../photos/ss'), $photoName);
@@ -1087,8 +1109,8 @@ class HomeController extends Controller
     {
         $story = SuccessStory::findOrFail($id);
 
-        if (File::exists(public_path('../../photos/ss/'.$story->photo))) {
-            File::delete(public_path('../../photos/ss/'.$story->photo));
+        if (File::exists(public_path('../../photos/ss/' . $story->photo))) {
+            File::delete(public_path('../../photos/ss/' . $story->photo));
         }
 
         $story->delete();
@@ -1108,7 +1130,8 @@ class HomeController extends Controller
     {
         return view('dashboard.refund');
     }
-    public function rating(){
+    public function rating()
+    {
 
         return view('dashboard.rateus');
     }
@@ -1158,7 +1181,7 @@ class HomeController extends Controller
 
         $wallet->wallet_balance -= $unlockPrice;
         $wallet->save();
-        
+
         DB::table('viewed_contacts')->insert([
             'member_id'  => $userId,
             'profile_id' => $profileId,
@@ -1183,20 +1206,20 @@ class HomeController extends Controller
         $user_id = $member->id;
         $plan_id = $member->plan_id;
         $profile_id = $id;
-        if($plan_id == 0 || empty($plan_id)){
+        if ($plan_id == 0 || empty($plan_id)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Please upgrade your membership plan'
             ], 403);
         }
-        
+
         $newInterest = new ProfileLike();
         $newInterest->user_id = $user_id;
         $newInterest->like_profile_id = $profile_id;
         $newInterest->status = $status;
-        if($status == 1){
+        if ($status == 1) {
             $msg = 'Profile liked successfully';
-        }else{
+        } else {
             $msg = 'Profile unliked successfully';
         }
         if ($newInterest->save()) {
@@ -1221,7 +1244,7 @@ class HomeController extends Controller
         $plan_id = $member->plan_id;
         $profile_id = $id;
         $profile = Member::find($id);
-        if($plan_id == 0 || empty($plan_id)){
+        if ($plan_id == 0 || empty($plan_id)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Please upgrade your membership plan'
@@ -1238,8 +1261,8 @@ class HomeController extends Controller
             ], 200);
         } else {
             return response()->json([
-               'status' => 'error',
-               'message' => 'Failed to Shortlist Profile'
+                'status' => 'error',
+                'message' => 'Failed to Shortlist Profile'
             ], 500);
         }
     }

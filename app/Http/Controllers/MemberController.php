@@ -21,14 +21,14 @@ class MemberController extends Controller
             echo 1; // email exists
         } elseif (Member::where('mobile_number', $request->mobile_number)->exists()) {
             echo 2; // mobile number exists
-        }else{
+        } else {
             echo 0;
         }
     }
 
     public function initial_registor(Request $request, EmailService $emailService)
     {
-        $data =[
+        $data = [
             'full_name' => $request->full_name,
             'email' => $request->email,
             'mobile_number' => $request->mobile_number,
@@ -43,7 +43,7 @@ class MemberController extends Controller
         $data = array_filter($data, fn($value) => !is_null($value));
         //dd($data);
         $member = Member::create($data);
-      //  dd($member->toArray());
+        //  dd($member->toArray());
         $profile_id = 10000 + $member->id;
         $member->update(['profile_id' => 'HIM' . $profile_id]);
         Auth::guard('member')->login($member);
@@ -65,7 +65,7 @@ class MemberController extends Controller
             $request->session()->regenerate();
             // $test = session()->regenerate();
             // dd($test);
-            return response()->json(['success'=>true,'message' => 'Logged In successfully','redirect'=>route('profile')]);
+            return response()->json(['success' => true, 'message' => 'Logged In successfully', 'redirect' => route('home')]);
         }
 
         return response()->json([
@@ -109,5 +109,4 @@ class MemberController extends Controller
             'message' => 'Password updated successfully!'
         ]);
     }
-
 }
