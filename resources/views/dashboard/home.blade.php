@@ -166,7 +166,7 @@
 ])
 
 @include('dashboard.shortlisted.shortlisted-profiles', [
-'shortlist' => $data['shortlisted']
+'shortlisted' => $data['shortlist']
 ])
 
 <!-- UPGRADE BANNER -->

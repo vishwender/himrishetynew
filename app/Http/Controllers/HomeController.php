@@ -264,7 +264,7 @@ class HomeController extends Controller
                     in_array($profile->education, $partner_education) &&
                     in_array($profile->mother_tongue, $partner_mothertongue);
             });
-        //dd($data);
+        dd($data['matching_profiles']);
         return view('dashboard/home', compact(['member', 'data']));
     }
 
