@@ -5,7 +5,7 @@
 
 (function () {
   'use strict';
-
+  console.log('SCRIPT LOADED')
   // ---- Reinitialise Lucide after DOM ready ----
   document.addEventListener('DOMContentLoaded', () => {
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -95,44 +95,92 @@
   // =============================================
   // FORMS — Submit + Validation
   // =============================================
-  function initForms() {
-    const forms = document.querySelectorAll('.ep-form[data-section]');
+// Set this to match your actual route, e.g. {{ route('member.profile.update') }}
+//const PROFILE_UPDATE_URL = window.EP_PROFILE_UPDATE_URL || 'update_profile';
 
-    forms.forEach(form => {
-      const section = form.dataset.section;
+function initForms() {
+  const forms = document.querySelectorAll('.ep-form[data-section]');
 
-      // Mark dirty on input
-      form.addEventListener('input', () => markDirty(section));
-      form.addEventListener('change', () => markDirty(section));
+  forms.forEach(form => {
+    const section = form.dataset.section;
 
-      form.addEventListener('submit', e => {
-        e.preventDefault();
+    // Mark dirty on input
+    form.addEventListener('input', () => markDirty(section));
+    form.addEventListener('change', () => markDirty(section));
 
-        if (!validateForm(form)) return;
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
 
-        const saveBtn = form.querySelector('.ep-save-btn');
-        saveBtn.classList.add('saving');
-        saveBtn.innerHTML = '<i data-lucide="loader-circle" width="16" height="16"></i> Saving...';
+      if (!validateForm(form)) return;
+
+      const saveBtn = form.querySelector('.ep-save-btn');
+      const originalLabel = saveBtn.innerHTML;
+
+      saveBtn.classList.add('saving');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i data-lucide="loader-circle" width="16" height="16"></i> Saving...';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+
+      try {
+        // Use this form's own endpoint if it has one, otherwise the shared route
+        const endpoint = '/update-profile';
+
+        const formData = new FormData(form);
+
+        const csrfToken = document
+          .querySelector('meta[name="csrf-token"]')
+          ?.getAttribute('content');
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+          },
+          body: formData,
+        });
+
+        if (response.status === 422) {
+          // Laravel validation errors
+          const errData = await response.json();
+          showToast(Object.values(errData.errors || {}).flat()[0] || 'Please check the highlighted fields.', 'error');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        saveBtn.classList.remove('saving');
+        saveBtn.innerHTML = '<i data-lucide="save" width="16" height="16"></i> Saved!';
         if (typeof lucide !== 'undefined') lucide.createIcons();
 
-        // Simulate API call — replace with real fetch
+        clearDirty(section);
+        updateTabStatus(section, 'complete');
+        showToast(data.message || 'Profile Updated Successfully! Changes will be visible after approval.');
+
+      } catch (err) {
+        console.error('Save failed:', err);
+
+        saveBtn.classList.remove('saving');
+        saveBtn.innerHTML = '<i data-lucide="triangle-alert" width="16" height="16"></i> Save Failed';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        showToast('Something went wrong. Please try again.', 'error');
+
+      } finally {
+        saveBtn.disabled = false;
         setTimeout(() => {
-          saveBtn.classList.remove('saving');
-          saveBtn.innerHTML = '<i data-lucide="save" width="16" height="16"></i> Saved!';
+          saveBtn.innerHTML = originalLabel;
           if (typeof lucide !== 'undefined') lucide.createIcons();
-
-          clearDirty(section);
-          updateTabStatus(section, 'complete');
-          showToast('Profile Updated Successfully! Changes will be visible after approval.');
-
-          setTimeout(() => {
-            saveBtn.innerHTML = `<i data-lucide="save" width="16" height="16"></i> Save ${capitalize(section)} Info`;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-          }, 2500);
-        }, 1200);
-      });
+        }, 2500);
+      }
     });
-  }
+  });
+}
 
   function validateForm(form) {
     let valid = true;

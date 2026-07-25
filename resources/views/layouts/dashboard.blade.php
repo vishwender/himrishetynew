@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,9 +19,10 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
-  
+
   @yield('styles')
 </head>
+
 <body>
 
   <!-- Skip link -->
@@ -57,9 +59,9 @@
     <nav class="sidebar-nav" aria-label="Main navigation">
       <span class="sidebar-nav-section-label">Menu</span>
       <ul role="list">
-        <li><a href="{{ route('profile') }}" class="sidebar-nav-item @if(Route::currentRouteName() === 'dashboard') active @endif" @if(Route::currentRouteName() === 'dashboard') aria-current="page" @endif><i data-lucide="home" width="18" height="18"></i><span>Home</span></a></li>
+        <li><a href="{{ route('profile') }}" class="sidebar-nav-item @if(Route::currentRouteName() === 'dashboard') active @endif" @if(Route::currentRouteName()==='dashboard' ) aria-current="page" @endif><i data-lucide="home" width="18" height="18"></i><span>Home</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="shield" width="18" height="18"></i><span>Membership</span></a></li>
-        <li><a href="#" class="sidebar-nav-item"><i data-lucide="edit-3" width="18" height="18"></i><span>Edit Profile</span></a></li>
+        <li><a href="{{ route('edit-profile') }}" class="sidebar-nav-item"><i data-lucide="edit-3" width="18" height="18"></i><span>Edit Profile</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="search" width="18" height="18"></i><span>Quick Search</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="sliders" width="18" height="18"></i><span>Advanced Search</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="user-search" width="18" height="18"></i><span>Search by Profile ID</span></a></li>
@@ -205,7 +207,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Custom JS -->
   <script src="{{ asset('assets/js/script.js') }}"></script>
-  
+
   @yield('scripts')
 </body>
+
 </html>

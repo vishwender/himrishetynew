@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Artisan;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::get('/clear-cache', function () {
     Artisan::call('optimize:clear');   // clears config, route, view, and cache
     Artisan::call('config:clear');
@@ -46,7 +47,7 @@ Route::post('/verify-login-otp', [App\Http\Controllers\OtpController::class, 've
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home') ->middleware('auth:member');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('auth:member');
 
 Route::middleware('auth:member')->group(function () {
     Route::get('search-home-member', [App\Http\Controllers\MyMemberController::class, 'search_home_member'])->name('search-home-member');
@@ -58,20 +59,21 @@ Route::middleware('auth:member')->group(function () {
     Route::get('user-rating', [App\Http\Controllers\HomeController::class, 'rating'])->name('user-rating');
     Route::post('user-rate', [App\Http\Controllers\HomeController::class, 'rating_store'])->name('user-rate');
     Route::get('success_stories', [App\Http\Controllers\HomeController::class, 'success_stories'])->name('success_stories');
-    Route::post('stories_store',[App\Http\Controllers\HomeController::class, 'stories_store'])->name('stories_store');
+    Route::post('stories_store', [App\Http\Controllers\HomeController::class, 'stories_store'])->name('stories_store');
     Route::put('/success-stories/{id}', [App\Http\Controllers\HomeController::class, 'update'])->name('stories_update');
     Route::delete('/success-stories/{id}', [App\Http\Controllers\HomeController::class, 'destroy'])->name('stories_delete');
-    Route::post('callback', [App\Http\Controllers\MembershipController::class ,'sendSms'])->name('callback');
+    Route::post('callback', [App\Http\Controllers\MembershipController::class, 'sendSms'])->name('callback');
     Route::get('plans/{id}', [App\Http\Controllers\MembershipController::class, 'plans'])->name('plans');
-    Route::get('profile',[App\Http\Controllers\MyMemberController::class, 'myProfile'])->name('profile');
+    Route::get('profile', [App\Http\Controllers\MyMemberController::class, 'myProfile'])->name('profile');
     Route::get('search-by-profile-id', [App\Http\Controllers\HomeController::class, 'search_by_profile_id'])->name('search-by-profile-id');
     Route::get('interest-box', [App\Http\Controllers\HomeController::class, 'interest_box'])->name('interest-box');
-    Route::get('view-my-profile',[App\Http\Controllers\HomeController::class, 'view_my_profile'])->name('view-my-profile');
+    Route::get('view-my-profile', [App\Http\Controllers\HomeController::class, 'view_my_profile'])->name('view-my-profile');
     Route::get('viewed-contacts', [App\Http\Controllers\HomeController::class, 'viewed_contacts'])->name('viewed-contacts');
     Route::get('view-profile/{id}', [App\Http\Controllers\HomeController::class, 'view_profile'])->name('view-profile');
+    Route::get('edit-profile', [App\Http\Controllers\MyMemberController::class, 'edit_profile'])->name('edit-profile');
     Route::post('update-password', [App\Http\Controllers\MemberController::class, 'updatePassword'])->name('update-password');
     Route::get('advance-search', [App\Http\Controllers\MyMemberController::class, 'advance_search'])->name('advance-search');
-    Route::get('send-interest/{id}' ,[App\Http\Controllers\HomeController::class, 'send_interest'])->name('send-interest');
+    Route::get('send-interest/{id}', [App\Http\Controllers\HomeController::class, 'send_interest'])->name('send-interest');
     Route::post('like-profile', [App\Http\Controllers\HomeController::class, 'like_profile'])->name('like-profile');
     Route::get('/membership/checkout/{planId}', [App\Http\Controllers\MembershipController::class, 'buyPlan'])->name('membership.checkout');
     Route::post('/membership/verify', [App\Http\Controllers\MembershipController::class, 'verifyPayment'])->name('membership.verify');
@@ -85,7 +87,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('/all-stats-profiles', [App\Http\Controllers\ProfileController::class, 'all_stats_profiles'])->name('all-stats-profiles');
     Route::post('short-profile', [App\Http\Controllers\HomeController::class, 'shortlist_profile'])->name('short-profile');
     Route::get('user-privacy-policy', [App\Http\Controllers\HomeController::class, 'privacy_policy'])->name('user-privacy-policy');
-     Route::get('user-refund', [App\Http\Controllers\HomeController::class, 'refund'])->name('user-refund');
+    Route::get('user-refund', [App\Http\Controllers\HomeController::class, 'refund'])->name('user-refund');
     Route::get('/membership/success', function () {
         return view('dashboard.success');
     })->name('membership.success');

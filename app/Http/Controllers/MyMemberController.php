@@ -347,6 +347,13 @@ class MyMemberController extends Controller
         return view('dashboard.advance_search', compact('data', 'partnerAgeFrom', 'partnerAgeTo', 'partnerReligions', 'partnerCasts', 'maritalStatus'));
     }
 
+    public function edit_profile()
+    {
+        $member = Auth::guard('member')->user();
+        //dd($member);
+        return view('dashboard.profile.edit', compact('member'));
+    }
+
     public function update_profile(Request $request)
     {
         $member = Auth::guard('member')->user();
@@ -475,7 +482,7 @@ class MyMemberController extends Controller
             $user->occupation = $request->occupation;
         }
         if ($request->has('annual_income')) {
-            $user->annual_income = $request->annual_income;
+            echo $user->annual_income = $request->annual_income;
         }
         if ($request->has('is_partner_smoking')) {
             $user->is_partner_smoking = $request->is_partner_smoking;
@@ -529,6 +536,6 @@ class MyMemberController extends Controller
             $user->partner_annual_income_to = $request->partner_annual_income_to;
         }
         $user->save();
-        return redirect()->back()->with('success', 'Profile Updated Successfully');
+        return response()->json(['success' => true, 'message' => 'Profile Updated Successfully']);
     }
 }
