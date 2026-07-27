@@ -96,7 +96,7 @@
           <i data-lucide="menu" width="22" height="22"></i>
         </button>
         <div class="navbar-brand">
-          <img src="{{ asset('assets/images/logo.png') }}" alt="Himrishtey Logo" class="navbar-logo">
+          <a href="{{route('home')}}"><img src="{{ asset('assets/images/logo.png') }}" alt="Himrishtey Logo" class="navbar-logo"></a>
         </div>
         <span class="navbar-greeting">Hi, <strong>{{ Auth::user()->full_name ?? 'User' }}</strong> 👋</span>
       </div>

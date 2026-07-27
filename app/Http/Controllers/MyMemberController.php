@@ -350,8 +350,40 @@ class MyMemberController extends Controller
     public function edit_profile()
     {
         $member = Auth::guard('member')->user();
-        //dd($member);
-        return view('dashboard.profile.edit', compact('member'));
+        $completionFields = [
+            'full_name',
+            'email',
+            'mobile_number',
+            'birth_date_time',
+            'gender',
+            'religion',
+            'cast',
+            'marital_status',
+            'mother_tongue',
+            'education',
+            'employer',
+            'annual_income',
+            'height',
+            'state_living_in',
+            'photo',
+            'about_me',
+        ];
+
+        $totalFields = count($completionFields);
+
+        $completedFields = 0;
+
+        foreach ($completionFields as $field) {
+            if (!empty($member->{$field})) {
+                $completedFields++;
+            }
+        }
+
+        $profilePercent = $totalFields > 0
+            ? round(($completedFields / $totalFields) * 100)
+            : 0;
+        //dd($profileCompletion);
+        return view('dashboard.profile.edit', compact('member', 'profilePercent'));
     }
 
     public function update_profile(Request $request)
@@ -427,8 +459,8 @@ class MyMemberController extends Controller
         if ($request->has('about_my_family')) {
             $user->about_family = $request->about_my_family;
         }
-        if ($request->has('family_type')) {
-            $user->family_status = $request->family_type;
+        if ($request->has('family_status')) {
+            $user->family_status = $request->family_status;
         }
         if ($request->has('native_place')) {
             $user->native_place = $request->native_place;
