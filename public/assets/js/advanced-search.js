@@ -200,8 +200,8 @@
       if (selected.employed.length) params.employed_in = selected.employed.join(',');
 
       console.log('Search params:', params);
-      // Navigate: window.location.href = 'search-results.html?' + new URLSearchParams(params).toString();
-      alert('Search triggered! Check console for params. Wire to: search-results.html?' + new URLSearchParams(params).toString());
+      window.location.href = '/search-results?' + new URLSearchParams(params).toString();
+      //alert('Search triggered! Check console for params. Wire to: search-results.html?' + new URLSearchParams(params).toString());
     }
 
     // ===== RESET =====

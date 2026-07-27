@@ -340,7 +340,7 @@ class MyMemberController extends Controller
             }
         }
         if ($request->ajax()) {
-            return view('dashboard.search-result', [
+            return view('dashboard.search.search-results', [
                 'searchedMembers' => $data['searchedMembers'] ?? []
             ])->render();
         }
