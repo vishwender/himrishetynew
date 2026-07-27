@@ -639,7 +639,7 @@
                         <!-- Conditional field — shown when disability = Yes -->
                         <div class="ep-field-group ep-full-width" id="disability-detail-wrap" hidden>
                             <label class="ep-label" for="disability_detail">Please describe the disability</label>
-                            <input class="ep-input" type="text" id="disability_detail" name="disability_detail" placeholder="Brief description..." />
+                            <input class="ep-input" type="text" id="disability_detail" name="disability_detail" placeholder="Brief description..." value="{{old('disability_detail', $member->disability_detail)}}" />
                         </div>
 
                         <div class="ep-form-footer">
@@ -723,6 +723,11 @@
                             <label class="ep-label" for="about_my_partner">About My Partner</label>
                             <textarea class="ep-textarea" id="about_my_partner" name="about_my_partner" rows="3" placeholder="What are you looking for in a partner...">{{old('about_my_partner', $member->about_my_partner)}}</textarea>
                         </div>
+                        @php
+                        $looking = $member->looking_for ?? '';
+                        $looking = $looking !== '' ? array_map('trim', explode(',', $looking)) : [];
+                        $ms = ["Never Married","Divorced","Widowed","Awating Divorce"];
+                        @endphp
                         <!-- Partner Marital status -->
                         <div class="ep-field-group">
                             <label class="ep-label" for="looking_for">Partner Marital Status</label>
@@ -732,59 +737,63 @@
                             </div>
                             <input type="hidden" id="looking_for" name="looking_for" value="Any" />
                             <div class="ep-multiselect-dropdown" id="looking_for-dropdown" hidden>
-                                <label><input type="checkbox" value="Never Married"> Never Married</label>
-                                <label><input type="checkbox" value="Divorced"> Divorced</label>
-                                <label><input type="checkbox" value="Widowed"> Widowed</label>
-                                <label><input type="checkbox" value="Awaiting Divorce"> Awaiting Divorce</label>
+                                @foreach($ms as $m)
+                                <label><input type="checkbox" name="looking_for[]" value="{{$m}}" {{in_array($m, $looking) ? "checked" : "" }} />{{$m}}</label>
+                                @endforeach
                             </div>
                         </div>
-
+                        @php
+                        $religion = $member->partner_religion ?? '';
+                        $religion = $religion !== '' ? array_map('trim', explode(',', $religion)) : [];
+                        $rl = ["Hindu", "Muslim","Christian","Sikh","Buddhist","Jain"];
+                        @endphp
                         <div class="ep-field-group">
                             <label class="ep-label" for="partner_religion">Religion</label>
                             <div class="ep-multiselect-trigger" data-target="partner_religion" tabindex="0" role="button">
-                                <span class="ep-multiselect-value" id="partner_religion-display">Any</span>
+                                <span class="ep-multiselect-value" id="partner_religion-display">{{count($religion) ? implode(',', $religion) : 'Any'}}</span>
                                 <i data-lucide="chevron-down" width="16" height="16"></i>
                             </div>
                             <input type="hidden" id="partner_religion" name="partner_religion" value="Any" />
                             <div class="ep-multiselect-dropdown" id="partner_religion-dropdown" hidden>
-                                <label><input type="checkbox" value="Hindu"> Hindu</label>
-                                <label><input type="checkbox" value="Muslim"> Muslim</label>
-                                <label><input type="checkbox" value="Christian"> Christian</label>
-                                <label><input type="checkbox" value="Sikh"> Sikh</label>
-                                <label><input type="checkbox" value="Buddhist"> Buddhist</label>
-                                <label><input type="checkbox" value="Jain"> Jain</label>
+                                @foreach($rl as $r)
+                                <label><input type="checkbox" name="partner_religion[]" value="{{$r}}" {{in_array($r, $religion) ?  "checked" : "" }} />{{$r}}</label>
+                                @endforeach
                             </div>
                         </div>
-
+                        @php
+                        $mother_tounge = $member->partner_mothertongue ?? '';
+                        $mother_tounge = $mother_tounge !== '' ? array_map('trim', explode(',',$mother_tounge)) : [];
+                        $pmt = ["Hindi", "Pahari", "Punjabi","Dogri","Kinnauri"];
+                        @endphp
                         <div class="ep-field-group">
                             <label class="ep-label" for="partner_mothertongue">Mother Tongue</label>
                             <div class="ep-multiselect-trigger" data-target="partner_mothertongue" tabindex="0" role="button">
-                                <span class="ep-multiselect-value" id="partner_mothertongue-display">Any</span>
+                                <span class="ep-multiselect-value" id="partner_mothertongue-display">{{count($mother_tounge) ? implode(',', $mother_tounge) : 'Any'}}</span>
                                 <i data-lucide="chevron-down" width="16" height="16"></i>
                             </div>
                             <input type="hidden" id="partner_mothertongue" name="partner_mothertongue" value="Any" />
                             <div class="ep-multiselect-dropdown" id="partner_mothertongue-dropdown" hidden>
-                                <label><input type="checkbox" value="Hindi"> Hindi</label>
-                                <label><input type="checkbox" value="Pahari"> Pahari</label>
-                                <label><input type="checkbox" value="Punjabi"> Punjabi</label>
-                                <label><input type="checkbox" value="Dogri"> Dogri</label>
-                                <label><input type="checkbox" value="Kinnauri"> Kinnauri</label>
+                                @foreach($pmt as $mt)
+                                <label><input type="checkbox" name="partner_mothertongue[]" value="{{$mt}}" {{in_array($mt, $mother_tounge) ? "checked" : "" }} />{{$mt}}</label>
+                                @endforeach
                             </div>
                         </div>
-
+                        @php
+                        $cast = $member->partner_cast ?? '';
+                        $cast = $cast !== '' ? array_map('trim', explode(',',$cast)) : [];
+                        $cst = ["Brahmin", "Rajput", "SC/ST", "Other"];
+                        @endphp
                         <div class="ep-field-group">
                             <label class="ep-label" for="partner_cast">Caste</label>
                             <div class="ep-multiselect-trigger" data-target="partner_cast" tabindex="0" role="button">
-                                <span class="ep-multiselect-value" id="partner_cast-display">Any</span>
+                                <span class="ep-multiselect-value" id="partner_cast-display">{{count($cast) ? implode(',', $cast) : 'Any'}}</span>
                                 <i data-lucide="chevron-down" width="16" height="16"></i>
                             </div>
                             <input type="hidden" id="partner_cast" name="partner_cast" value="Any" />
                             <div class="ep-multiselect-dropdown" id="partner_cast-dropdown" hidden>
-                                <label><input type="checkbox" value="Any"> Any</label>
-                                <label><input type="checkbox" value="Brahmin"> Brahmin</label>
-                                <label><input type="checkbox" value="Rajput"> Rajput</label>
-                                <label><input type="checkbox" value="SC/ST"> SC/ST</label>
-                                <label><input type="checkbox" value="Other"> Other</label>
+                                @foreach($cst as $ct)
+                                <label><input type="checkbox" name="partner_cast[]" value="{{$ct}}" {{ in_array($ct,$cast) ? "Checked" : "" }} />{{$ct}}</label>
+                                @endforeach
                             </div>
                         </div>
 
@@ -792,43 +801,47 @@
                             <label class="ep-label" for="is_partner_manglik">Partner Manglik</label>
                             <div class="ep-select-wrapper">
                                 <select class="ep-select" id="is_partner_manglik" name="is_partner_manglik">
-                                    <option>Any</option>
-                                    <option>Yes</option>
-                                    <option>No</option>
+                                    <option value="Any" {{ old('is_partner_manglik', $member->is_partner_manglik) == 'Any' ? 'selected' : '' }}>Any</option>
+                                    <option value="Yes" {{ old('is_partner_manglik', $member->is_partner_manglik) == 'Yes' ? 'selected' : '' }}>Yes</option>
+                                    <option value="No" {{ old('is_partner_manglik', $member->is_partner_manglik) == 'No' ? 'selected' : '' }}>No</option>
                                 </select>
                                 <i data-lucide="chevron-down" width="16" height="16" class="ep-select-icon"></i>
                             </div>
                         </div>
-
+                        @php
+                        $partner_edu = $member->partner_education ?? '';
+                        $partner_edu = $partner_edu !=='' ? array_map('trim', explode(',',$partner_edu)) : [];
+                        $ptedu = ["10th","12th","Graduate","Post Graduate","Doctrate"];
+                        @endphp
                         <div class="ep-field-group">
                             <label class="ep-label" for="partner_education">Highest Qualification</label>
                             <div class="ep-multiselect-trigger" data-target="partner_education" tabindex="0" role="button">
-                                <span class="ep-multiselect-value" id="partner_education-display">Any</span>
+                                <span class="ep-multiselect-value" id="partner_education-display">{{count($partner_edu) ? implode(',', $partner_edu) : 'Any'}}</span>
                                 <i data-lucide="chevron-down" width="16" height="16"></i>
                             </div>
                             <input type="hidden" id="partner_education" name="partner_education" value="Any" />
                             <div class="ep-multiselect-dropdown" id="partner_education-dropdown" hidden>
-                                <label><input type="checkbox" value="10th"> 10th</label>
-                                <label><input type="checkbox" value="12th"> 12th</label>
-                                <label><input type="checkbox" value="Graduate"> Graduate</label>
-                                <label><input type="checkbox" value="Post Graduate"> Post Graduate</label>
-                                <label><input type="checkbox" value="Doctorate"> Doctorate</label>
+                                @foreach($ptedu as $edu)
+                                <label><input type="checkbox" name="partner_education[]" value="{{$edu}}" {{in_array($edu, $partner_edu) ? "checked" : "" }}>{{$edu}}</label>
+                                @endforeach
                             </div>
                         </div>
-
+                        @php
+                        $partner_occ = $member->partner_occupation ?? '';
+                        $partner_occ = $partner_edu !=='' ? array_map('trim', explode(',',$partner_occ)) : [];
+                        $ptocc = ["Government","Private","Bussiness/Self Employed","Defence","Not Working"];
+                        @endphp
                         <div class="ep-field-group">
                             <label class="ep-label" for="partner_occupation">Employed In</label>
                             <div class="ep-multiselect-trigger" data-target="partner_occupation" tabindex="0" role="button">
-                                <span class="ep-multiselect-value" id="partner_occupation-display">Any</span>
+                                <span class="ep-multiselect-value" id="partner_occupation-display">{{count($partner_occ) ? implode(',', $partner_occ) : 'Any'}}</span>
                                 <i data-lucide="chevron-down" width="16" height="16"></i>
                             </div>
                             <input type="hidden" id="partner_occupation" name="partner_occupation" value="Any" />
                             <div class="ep-multiselect-dropdown" id="partner_occupation-dropdown" hidden>
-                                <label><input type="checkbox" value="Government"> Government</label>
-                                <label><input type="checkbox" value="Private"> Private</label>
-                                <label><input type="checkbox" value="Business / Self Employed"> Business / Self Employed</label>
-                                <label><input type="checkbox" value="Defense"> Defense</label>
-                                <label><input type="checkbox" value="Not Working"> Not Working</label>
+                                @foreach($ptocc as $oc)
+                                <label><input type="checkbox" name="partner_occupation[]" value="{{$oc}}" {{in_array($oc, $partner_occ) ? "checked" : "" }} />{{$oc}}</label>
+                                @endforeach
                             </div>
                         </div>
 
