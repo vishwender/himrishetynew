@@ -1,6 +1,9 @@
 
     // ===== INIT LUCIDE =====
-    lucide.createIcons();
+  if (window.lucide) {
+
+            lucide.createIcons();
+        }
 
    
 

@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'HimRishtey – Find Your Life Partner')</title>
 
   <!-- Fonts -->
@@ -19,14 +20,13 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
-
   @yield('styles')
 </head>
 
 <body>
 
   <!-- Skip link -->
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- <a href="#main-content" class="skip-link">Skip to main content</a> -->
 
   <!-- SIDEBAR OVERLAY -->
   <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
