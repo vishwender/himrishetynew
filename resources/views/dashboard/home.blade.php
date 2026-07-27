@@ -149,23 +149,23 @@
 
 <!-- PROFILE SECTIONS -->
 
-@include('dashboard.recent.recent-profiles', [
+@include('dashboard.home.recent-profiles', [
 'recents' => $data['recents']
 ])
 
-@include('dashboard.matching.matching-profiles', [
+@include('dashboard.home.matching-profiles', [
 'matching' => $data['matching_profiles']
 ])
 
-@include('dashboard.verified.verified-profiles', [
+@include('dashboard.home.verified-profiles', [
 'verifiedProfiles' => $data['verifiedUsers']
 ])
 
-@include('dashboard.viewed.who-viewed-profiles', [
+@include('dashboard.home.who-viewed-profiles', [
 'viewedMyProfile' => $data['viewed']
 ])
 
-@include('dashboard.shortlisted.shortlisted-profiles', [
+@include('dashboard.home.shortlisted-profiles', [
 'shortlisted' => $data['shortlist']
 ])
 

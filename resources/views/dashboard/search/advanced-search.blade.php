@@ -16,7 +16,7 @@
             <div>
                 <nav aria-label="Breadcrumb">
                     <ol class="breadcrumb-custom">
-                        <li><a href="index.html">Home</a></li>
+                        <li><a href="{{route('home')}}">Home</a></li>
                         <li>Advance Search</li>
                     </ol>
                 </nav>
