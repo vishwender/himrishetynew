@@ -1,354 +1,778 @@
 /* ================================================================
    SEARCH BY PROFILE ID — search-by-id.js
-   Depends on: script.js (base), lucide icons already loaded
+   Laravel endpoint:
+   GET /search-by-profile-id?profile_id=HIM10027
    ================================================================ */
 
 (function () {
-  'use strict';
+    'use strict';
 
-  /* ----------------------------------------------------------------
-     MOCK DATA — replace with real API call in production
-     Simulates the API response shape: { success, user }
-  ---------------------------------------------------------------- */
-  const MOCK_PROFILES = {
-    'HR-10001': {
-      id: 'HR-10001',
-      name: 'Anjali Sharma',
-      age: 26,
-      height: '5\'4"',
-      religion: 'Hindu',
-      community: 'Brahmin',
-      education: 'B.Tech (Computer Science)',
-      occupation: 'Software Engineer',
-      location: 'Shimla, HP',
-      maritalStatus: 'Never Married',
-      motherTongue: 'Hindi',
-      income: '₹8 LPA',
-      verified: true,
-      online: true,
-      photo: 'https://picsum.photos/seed/anjali1/400/400',
-      cover: 'https://picsum.photos/seed/anjali1cover/680/160',
-    },
-    'HR-10002': {
-      id: 'HR-10002',
-      name: 'Rohan Thakur',
-      age: 30,
-      height: '5\'10"',
-      religion: 'Hindu',
-      community: 'Rajput',
-      education: 'MBA Finance',
-      occupation: 'Bank Manager',
-      location: 'Dharamshala, HP',
-      maritalStatus: 'Never Married',
-      motherTongue: 'Pahari',
-      income: '₹12 LPA',
-      verified: true,
-      online: false,
-      photo: 'https://picsum.photos/seed/rohan2/400/400',
-      cover: 'https://picsum.photos/seed/rohan2cover/680/160',
-    },
-    'HR-20241': {
-      id: 'HR-20241',
-      name: 'Priya Verma',
-      age: 24,
-      height: '5\'2"',
-      religion: 'Hindu',
-      community: 'Agarwal',
-      education: 'B.Com (Hons)',
-      occupation: 'Teacher',
-      location: 'Mandi, HP',
-      maritalStatus: 'Never Married',
-      motherTongue: 'Hindi',
-      income: '₹4 LPA',
-      verified: false,
-      online: true,
-      photo: 'https://picsum.photos/seed/bride1/400/400',
-      cover: 'https://picsum.photos/seed/bride1cover/680/160',
-    },
-  };
+    /* ================================================================
+       DOM REFERENCES
+    ================================================================ */
 
-  /* ----------------------------------------------------------------
-     DOM references
-  ---------------------------------------------------------------- */
-  const input          = document.getElementById('profileIdInput');
-  const clearInputBtn  = document.getElementById('sbidClearInput');
-  const searchBtn      = document.getElementById('sbidSearchBtn');
-  const btnText        = searchBtn  && searchBtn.querySelector('.sbid-btn-text');
-  const btnIcon        = searchBtn  && searchBtn.querySelector('.sbid-btn-icon');
-  const btnSpinner     = searchBtn  && searchBtn.querySelector('.sbid-btn-spinner');
-  const tryAgainBtn    = document.getElementById('sbidTryAgain');
-  const interestBtn    = document.getElementById('sbidInterestBtn');
-  const shortlistBtn   = document.getElementById('sbidShortlistBtn');
+    const input = document.getElementById('profileIdInput');
+    const clearInputBtn = document.getElementById('sbidClearInput');
+    const searchBtn = document.getElementById('sbidSearchBtn');
 
-  /* States */
-  const stateIdle      = document.getElementById('stateIdle');
-  const stateLoading   = document.getElementById('stateLoading');
-  const stateNotFound  = document.getElementById('stateNotFound');
-  const stateResult    = document.getElementById('stateResult');
+    const btnText = searchBtn
+        ? searchBtn.querySelector('.sbid-btn-text')
+        : null;
 
-  /* ----------------------------------------------------------------
-     State management
-  ---------------------------------------------------------------- */
-  function showState(which) {
-    [stateIdle, stateLoading, stateNotFound, stateResult].forEach(function (el) {
-      if (el) el.style.display = 'none';
-    });
-    if (which) {
-      which.style.display = '';
-      if (which === stateResult) {
-        // Trigger animation
-        which.classList.remove('visible');
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            which.classList.add('visible');
-          });
+    const btnIcon = searchBtn
+        ? searchBtn.querySelector('.sbid-btn-icon')
+        : null;
+
+    const btnSpinner = searchBtn
+        ? searchBtn.querySelector('.sbid-btn-spinner')
+        : null;
+
+    const tryAgainBtn = document.getElementById('sbidTryAgain');
+    const interestBtn = document.getElementById('sbidInterestBtn');
+    const shortlistBtn = document.getElementById('sbidShortlistBtn');
+
+    /* States */
+    const stateIdle = document.getElementById('stateIdle');
+    const stateLoading = document.getElementById('stateLoading');
+    const stateNotFound = document.getElementById('stateNotFound');
+    const stateResult = document.getElementById('stateResult');
+
+
+    /* ================================================================
+       STATE MANAGEMENT
+    ================================================================ */
+
+    function showState(state) {
+        const states = [
+            stateIdle,
+            stateLoading,
+            stateNotFound,
+            stateResult
+        ];
+
+        states.forEach(function (element) {
+            if (element) {
+                element.style.display = 'none';
+            }
         });
-      }
-    }
-  }
 
-  /* ----------------------------------------------------------------
-     Loading button state
-  ---------------------------------------------------------------- */
-  function setSearching(on) {
-    if (!searchBtn) return;
-    searchBtn.disabled = on;
-    if (btnText)    btnText.style.display    = on ? 'none' : '';
-    if (btnIcon)    btnIcon.style.display    = on ? 'none' : '';
-    if (btnSpinner) btnSpinner.style.display = on ? '' : 'none';
-  }
-
-  /* ----------------------------------------------------------------
-     Shake invalid input
-  ---------------------------------------------------------------- */
-  function shakeInput() {
-    if (!input) return;
-    input.classList.add('sbid-input-error', 'shake');
-    input.addEventListener('animationend', function () {
-      input.classList.remove('shake');
-    }, { once: true });
-  }
-
-  /* ----------------------------------------------------------------
-     Normalise ID: strip spaces, uppercase
-  ---------------------------------------------------------------- */
-  function normaliseId(raw) {
-    return raw.trim().toUpperCase().replace(/\s+/g, '');
-  }
-
-  /* ----------------------------------------------------------------
-     Mock API call (replace with fetch() to real endpoint)
-  ---------------------------------------------------------------- */
-  function apiSearchById(profileId) {
-    return new Promise(function (resolve) {
-      setTimeout(function () {
-        const user = MOCK_PROFILES[profileId];
-        if (user) {
-          resolve({ success: true, user: user });
-        } else {
-          resolve({ success: false });
+        if (!state) {
+            return;
         }
-      }, 900); // simulate network delay
+
+        state.style.display = '';
+
+        if (state === stateResult) {
+            state.classList.remove('visible');
+
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    state.classList.add('visible');
+                });
+            });
+        }
+    }
+
+
+    /* ================================================================
+       SEARCH BUTTON LOADING STATE
+    ================================================================ */
+
+    function setSearching(isSearching) {
+        if (!searchBtn) {
+            return;
+        }
+
+        searchBtn.disabled = isSearching;
+
+        if (btnText) {
+            btnText.style.display = isSearching ? 'none' : '';
+        }
+
+        if (btnIcon) {
+            btnIcon.style.display = isSearching ? 'none' : '';
+        }
+
+        if (btnSpinner) {
+            btnSpinner.style.display = isSearching ? '' : 'none';
+        }
+    }
+
+
+    /* ================================================================
+       INPUT ERROR
+    ================================================================ */
+
+    function shakeInput() {
+        if (!input) {
+            return;
+        }
+
+        input.classList.add('sbid-input-error', 'shake');
+
+        input.addEventListener(
+            'animationend',
+            function () {
+                input.classList.remove('shake');
+            },
+            { once: true }
+        );
+    }
+
+
+    /* ================================================================
+       NORMALISE PROFILE ID
+    ================================================================ */
+
+    function normaliseId(value) {
+        if (!value) {
+            return '';
+        }
+
+        return value
+            .trim()
+            .toUpperCase()
+            .replace(/\s+/g, '');
+    }
+
+
+    /* ================================================================
+       SEARCH API
+    ================================================================ */
+
+async function apiSearchById(profileId) {
+
+    const url =
+        `/api/search-by-profile-id/${encodeURIComponent(profileId)}`;
+
+    console.log('Calling:', url);
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
     });
-  }
 
-  /* ----------------------------------------------------------------
-     Render profile card
-  ---------------------------------------------------------------- */
-  function renderProfile(user) {
-    /* Label */
+    console.log('HTTP status:', response.status);
+    console.log(
+        'Content-Type:',
+        response.headers.get('content-type')
+    );
+
+    if (!response.ok) {
+
+        if (response.status === 404) {
+            return {
+                success: false,
+                message: 'Profile not found.'
+            };
+        }
+
+        const text = await response.text();
+
+        console.error('Server response:', text);
+
+        throw new Error(
+            `Request failed with status ${response.status}`
+        );
+    }
+
+    const data = await response.json();
+
+    console.log('JSON response:', data);
+
+    return data;
+}
+
+
+    /* ================================================================
+       HTML ESCAPE
+    ================================================================ */
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) {
+            return '';
+        }
+
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+
+    /* ================================================================
+       RENDER PROFILE
+    ================================================================ */
+
+   function renderProfile(user) {
+
+    console.log('Profile received:', user);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Basic values
+    |--------------------------------------------------------------------------
+    */
+
+    const profileId = user.profile_id || '';
+
+    const fullName = [
+        user.first_name,
+        user.last_name
+    ].filter(Boolean).join(' ') || 'Member';
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Result ID
+    |--------------------------------------------------------------------------
+    */
+
     const resultIdLabel = document.getElementById('resultIdLabel');
-    if (resultIdLabel) resultIdLabel.textContent = user.id;
 
-    /* Cover */
+    if (resultIdLabel) {
+        resultIdLabel.textContent = profileId;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cover image
+    |--------------------------------------------------------------------------
+    */
+
     const coverImg = document.getElementById('resultCoverImg');
+
     if (coverImg) {
-      coverImg.src = user.cover || '';
-      coverImg.alt = user.name + ' cover photo';
+        coverImg.src =
+            user.cover ||
+            'https://picsum.photos/seed/himrishteycover/680/160';
+
+        coverImg.alt = fullName + ' cover photo';
     }
 
-    /* Avatar */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile photo
+    |--------------------------------------------------------------------------
+    */
+
     const avatar = document.getElementById('resultAvatar');
+
     if (avatar) {
-      avatar.src = user.photo || 'https://picsum.photos/seed/default/80/80';
-      avatar.alt = user.name;
+        avatar.src =
+            user.photo_url ||
+            'https://himrishtey.com/img/boy.jpg';
+
+        avatar.alt = fullName;
     }
 
-    /* Online */
-    const onlineBadge = document.getElementById('resultOnlineBadge');
-    if (onlineBadge) onlineBadge.style.display = user.online ? '' : 'none';
 
-    /* Name */
-    const name = document.getElementById('resultName');
-    if (name) name.textContent = user.name;
+    /*
+    |--------------------------------------------------------------------------
+    | Online status
+    |--------------------------------------------------------------------------
+    */
 
-    /* Verified */
-    const verifiedBadge = document.getElementById('resultVerifiedBadge');
-    if (verifiedBadge) verifiedBadge.style.display = user.verified ? '' : 'none';
+    const onlineBadge =
+        document.getElementById('resultOnlineBadge');
 
-    /* ID tag */
-    const idTag = document.getElementById('resultIdTag');
-    if (idTag) idTag.textContent = user.id;
+    if (onlineBadge) {
+        onlineBadge.style.display =
+            user.online ? '' : 'none';
+    }
 
-    /* Quick stats pills */
-    const statsRow = document.getElementById('resultStatsRow');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Name
+    |--------------------------------------------------------------------------
+    */
+
+    const name =
+        document.getElementById('resultName');
+
+    if (name) {
+        name.textContent = fullName;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Verified
+    |--------------------------------------------------------------------------
+    */
+
+    const verifiedBadge =
+        document.getElementById('resultVerifiedBadge');
+
+    if (verifiedBadge) {
+        verifiedBadge.style.display =
+            user.verified ? '' : 'none';
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile ID
+    |--------------------------------------------------------------------------
+    */
+
+    const idTag =
+        document.getElementById('resultIdTag');
+
+    if (idTag) {
+        idTag.textContent = profileId;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Age
+    |--------------------------------------------------------------------------
+    */
+
+    let ageText = 'Age not specified';
+
+    if (user.age_years !== null && user.age_years !== undefined) {
+        ageText = user.age_years + ' yrs';
+
+        if (user.age_months) {
+            ageText += ' ' + user.age_months + ' mo';
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Quick stats
+    |--------------------------------------------------------------------------
+    */
+
+    const statsRow =
+        document.getElementById('resultStatsRow');
+
     if (statsRow) {
-      const stats = [
-        { icon: 'calendar', label: user.age + ' yrs' },
-        { icon: 'ruler',    label: user.height },
-        { icon: 'map-pin',  label: user.location },
-        { icon: 'briefcase',label: user.occupation },
-      ];
-      statsRow.innerHTML = stats.map(function (s) {
-        return '<span class="sbid-stat-pill">' +
-          '<svg data-lucide="' + s.icon + '" width="12" height="12"></svg>' +
-          s.label +
-          '</span>';
-      }).join('');
+
+        const stats = [
+            {
+                icon: 'calendar',
+                label: ageText
+            },
+            {
+                icon: 'ruler',
+                label: user.height || 'Height not specified'
+            },
+            {
+                icon: 'map-pin',
+                label: user.city || user.location || 'Location not specified'
+            },
+            {
+                icon: 'briefcase',
+                label: user.occupation || 'Occupation not specified'
+            }
+        ];
+
+        statsRow.innerHTML = stats.map(function (item) {
+
+            return `
+                <span class="sbid-stat-pill">
+                    <i data-lucide="${item.icon}"
+                       width="12"
+                       height="12"></i>
+                    ${escapeHtml(item.label)}
+                </span>
+            `;
+
+        }).join('');
     }
 
-    /* Details grid */
-    const detailsGrid = document.getElementById('resultDetailsGrid');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Details
+    |--------------------------------------------------------------------------
+    */
+
+    const detailsGrid =
+        document.getElementById('resultDetailsGrid');
+
     if (detailsGrid) {
-      const details = [
-        { label: 'Religion',       value: user.religion },
-        { label: 'Community',      value: user.community },
-        { label: 'Education',      value: user.education },
-        { label: 'Mother Tongue',  value: user.motherTongue },
-        { label: 'Marital Status', value: user.maritalStatus },
-        { label: 'Annual Income',  value: user.income },
-      ];
-      detailsGrid.innerHTML = details.map(function (d) {
-        return '<div class="sbid-detail-item">' +
-          '<span class="sbid-detail-label">' + d.label + '</span>' +
-          '<span class="sbid-detail-value' + (d.value ? '' : ' empty') + '">' +
-          (d.value || 'Not specified') +
-          '</span></div>';
-      }).join('');
+
+        const details = [
+            {
+                label: 'Religion',
+                value: user.religion
+            },
+            {
+                label: 'Community',
+                value: user.community
+            },
+            {
+                label: 'Education',
+                value: user.education
+            },
+            {
+                label: 'Mother Tongue',
+                value: user.mother_tongue || user.motherTongue
+            },
+            {
+                label: 'Marital Status',
+                value: user.marital_status || user.maritalStatus
+            },
+            {
+                label: 'Annual Income',
+                value: user.income
+            }
+        ];
+
+        detailsGrid.innerHTML = details.map(function (item) {
+
+            const value =
+                item.value ||
+                'Not specified';
+
+            return `
+                <div class="sbid-detail-item">
+
+                    <span class="sbid-detail-label">
+                        ${escapeHtml(item.label)}
+                    </span>
+
+                    <span class="sbid-detail-value ${
+                        item.value ? '' : 'empty'
+                    }">
+                        ${escapeHtml(value)}
+                    </span>
+
+                </div>
+            `;
+
+        }).join('');
     }
 
-    /* View full profile link */
-    const viewBtn = document.getElementById('sbidViewFullBtn');
-    if (viewBtn) viewBtn.href = 'profile-detail.html?id=' + encodeURIComponent(user.id);
 
-    /* Re-render lucide icons inside the card */
-    if (window.lucide) lucide.createIcons();
-  }
+    /*
+    |--------------------------------------------------------------------------
+    | View profile
+    |--------------------------------------------------------------------------
+    */
 
-  /* ----------------------------------------------------------------
-     Main search handler
-  ---------------------------------------------------------------- */
-  async function doSearch() {
-    if (!input) return;
+    const viewBtn =
+        document.getElementById('sbidViewFullBtn');
+
+    if (viewBtn) {
+
+        viewBtn.href =
+            `/view-profile/${encodeURIComponent(user.id)}`;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reinitialize Lucide
+    |--------------------------------------------------------------------------
+    */
+
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+}
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return '';
+    }
+
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+
+    /* ================================================================
+       MAIN SEARCH
+    ================================================================ */
+
+    async function doSearch() {
+
+    if (!input) {
+        return;
+    }
 
     const rawId = input.value;
+
     const profileId = normaliseId(rawId);
 
-    /* Validate */
+    /*
+    |--------------------------------------------------------------------------
+    | Validate
+    |--------------------------------------------------------------------------
+    */
+
     if (!profileId) {
-      shakeInput();
-      input.focus();
-      return;
+
+        shakeInput();
+
+        input.focus();
+
+        return;
     }
 
     input.classList.remove('sbid-input-error');
+
     setSearching(true);
+
     showState(stateLoading);
 
     try {
-      const response = await apiSearchById(profileId);
 
-      if (response.success && response.user) {
-        renderProfile(response.user);
-        showState(stateResult);
-      } else {
-        const notFoundId = document.getElementById('notFoundId');
-        if (notFoundId) notFoundId.textContent = profileId;
-        showState(stateNotFound);
-      }
-    } catch (err) {
-      console.error('Search failed:', err);
-      const notFoundId = document.getElementById('notFoundId');
-      if (notFoundId) notFoundId.textContent = profileId;
-      showState(stateNotFound);
-    } finally {
-      setSearching(false);
-    }
-  }
+        console.log('Searching profile:', profileId);
 
-  /* ----------------------------------------------------------------
-     Event listeners
-  ---------------------------------------------------------------- */
-  function init() {
-    /* Search on button click */
-    if (searchBtn) {
-      searchBtn.addEventListener('click', doSearch);
-    }
+        const response =
+            await apiSearchById(profileId);
 
-    /* Search on Enter */
-    if (input) {
-      input.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') doSearch();
-        input.classList.remove('sbid-input-error');
-      });
+        console.log('API response:', response);
 
-      /* Show/hide clear button */
-      input.addEventListener('input', function () {
-        if (clearInputBtn) {
-          clearInputBtn.style.display = this.value ? 'flex' : 'none';
+        if (response.success && response.user) {
+
+            renderProfile(response.user);
+
+            showState(stateResult);
+
+        } else {
+
+            const notFoundId =
+                document.getElementById('notFoundId');
+
+            if (notFoundId) {
+                notFoundId.textContent = profileId;
+            }
+
+            showState(stateNotFound);
         }
-      });
+
+    } catch (error) {
+
+        console.error(
+            'Search by profile ID failed:',
+            error
+        );
+
+        const notFoundId =
+            document.getElementById('notFoundId');
+
+        if (notFoundId) {
+            notFoundId.textContent = profileId;
+        }
+
+        showState(stateNotFound);
+
+    } finally {
+
+        setSearching(false);
+    }
+}
+
+
+    /* ================================================================
+       EVENT LISTENERS
+    ================================================================ */
+
+    function init() {
+alert('working');
+        /* ------------------------------------------------------------
+           Search button
+        ------------------------------------------------------------ */
+
+        if (searchBtn) {
+            searchBtn.addEventListener(
+                'click',
+                doSearch
+            );
+        }
+
+
+        /* ------------------------------------------------------------
+           Enter key
+        ------------------------------------------------------------ */
+
+        if (input) {
+            input.addEventListener(
+                'keydown',
+                function (event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        doSearch();
+                    }
+
+                    input.classList.remove(
+                        'sbid-input-error'
+                    );
+                }
+            );
+
+
+            /* --------------------------------------------------------
+               Input change
+            -------------------------------------------------------- */
+
+            input.addEventListener(
+                'input',
+                function () {
+                    if (clearInputBtn) {
+                        clearInputBtn.style.display =
+                            this.value ? 'flex' : 'none';
+                    }
+                }
+            );
+        }
+
+
+        /* ------------------------------------------------------------
+           Clear input
+        ------------------------------------------------------------ */
+
+        if (clearInputBtn) {
+            clearInputBtn.addEventListener(
+                'click',
+                function () {
+                    if (input) {
+                        input.value = '';
+                        input.focus();
+                    }
+
+                    clearInputBtn.style.display = 'none';
+
+                    showState(stateIdle);
+                }
+            );
+        }
+
+
+        /* ------------------------------------------------------------
+           Try again
+        ------------------------------------------------------------ */
+
+        if (tryAgainBtn) {
+            tryAgainBtn.addEventListener(
+                'click',
+                function () {
+                    showState(stateIdle);
+
+                    if (input) {
+                        input.value = '';
+                        input.focus();
+                    }
+
+                    if (clearInputBtn) {
+                        clearInputBtn.style.display = 'none';
+                    }
+                }
+            );
+        }
+
+
+        /* ============================================================
+           INTEREST BUTTON
+        ============================================================ */
+
+        if (interestBtn) {
+            interestBtn.addEventListener(
+                'click',
+                function () {
+                    const isActive =
+                        this.classList.toggle('active');
+
+                    const textEl =
+                        this.querySelector('span');
+
+                    const iconEl =
+                        this.querySelector('svg');
+
+                    if (textEl) {
+                        textEl.textContent =
+                            isActive
+                                ? 'Interested'
+                                : 'Interest';
+                    }
+
+                    this.setAttribute(
+                        'aria-pressed',
+                        String(isActive)
+                    );
+
+                    if (iconEl) {
+                        iconEl.style.fill =
+                            isActive ? 'white' : 'none';
+                    }
+                }
+            );
+        }
+
+
+        /* ============================================================
+           SHORTLIST BUTTON
+        ============================================================ */
+
+        if (shortlistBtn) {
+            shortlistBtn.addEventListener(
+                'click',
+                function () {
+                    const isActive =
+                        this.classList.toggle('active');
+
+                    const textEl =
+                        this.querySelector('span');
+
+                    if (textEl) {
+                        textEl.textContent =
+                            isActive
+                                ? 'Saved'
+                                : 'Shortlist';
+                    }
+
+                    this.setAttribute(
+                        'aria-pressed',
+                        String(isActive)
+                    );
+                }
+            );
+        }
+
+
+        /* ============================================================
+           LUCIDE ICONS
+        ============================================================ */
+
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
     }
 
-    /* Clear input */
-    if (clearInputBtn) {
-      clearInputBtn.addEventListener('click', function () {
-        if (input) { input.value = ''; input.focus(); }
-        clearInputBtn.style.display = 'none';
-        showState(stateIdle);
-      });
+
+    /* ================================================================
+       DOM READY
+    ================================================================ */
+
+    if (document.readyState === 'loading') {
+        document.addEventListener(
+            'DOMContentLoaded',
+            init
+        );
+    } else {
+        init();
     }
-
-    /* Try Again */
-    if (tryAgainBtn) {
-      tryAgainBtn.addEventListener('click', function () {
-        showState(stateIdle);
-        if (input) { input.value = ''; input.focus(); }
-        if (clearInputBtn) clearInputBtn.style.display = 'none';
-      });
-    }
-
-    /* Interest button toggle */
-    if (interestBtn) {
-      interestBtn.addEventListener('click', function () {
-        const isActive = this.classList.toggle('active');
-        const iconEl   = this.querySelector('svg');
-        const textEl   = this.querySelector('span');
-        if (textEl) textEl.textContent = isActive ? 'Interested' : 'Interest';
-        this.setAttribute('aria-pressed', isActive);
-        if (iconEl) iconEl.style.fill = isActive ? 'white' : 'none';
-      });
-    }
-
-    /* Shortlist button toggle */
-    if (shortlistBtn) {
-      shortlistBtn.addEventListener('click', function () {
-        const isActive = this.classList.toggle('active');
-        const textEl   = this.querySelector('span');
-        if (textEl) textEl.textContent = isActive ? 'Saved' : 'Shortlist';
-        this.setAttribute('aria-pressed', isActive);
-      });
-    }
-
-    /* Init lucide icons */
-    if (window.lucide) lucide.createIcons();
-  }
-
-  /* Run after DOM ready */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
 
 })();

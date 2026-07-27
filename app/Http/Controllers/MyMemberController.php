@@ -344,7 +344,7 @@ class MyMemberController extends Controller
                 'searchedMembers' => $data['searchedMembers'] ?? []
             ])->render();
         }
-        return view('dashboard.advance_search', compact('data', 'partnerAgeFrom', 'partnerAgeTo', 'partnerReligions', 'partnerCasts', 'maritalStatus'));
+        return view('dashboard.search.advanced-search', compact('data', 'partnerAgeFrom', 'partnerAgeTo', 'partnerReligions', 'partnerCasts', 'maritalStatus'));
     }
 
     public function edit_profile()

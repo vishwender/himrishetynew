@@ -52,6 +52,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware('auth:member')->group(function () {
     Route::get('search-home-member', [App\Http\Controllers\MyMemberController::class, 'search_home_member'])->name('search-home-member');
     Route::get('quick-search', [App\Http\Controllers\HomeController::class, 'quick_search'])->name('quick-search');
+    Route::get('search-results', [App\Http\Controllers\HomeController::class, 'searchResults'])->name('search-results');
+    Route::get('search-by-profile-id', [App\Http\Controllers\HomeController::class, 'search_by_profile_id'])->name('search-by-profile-id');
+    Route::get('api/search-by-profile-id/{profile_id}', [App\Http\Controllers\HomeController::class, 'searchByProfileIdApi'])->name('api.search-by-profile-id');
+    Route::get('advance-search', [App\Http\Controllers\MyMemberController::class, 'advance_search'])->name('advance-search');
     Route::post('/unlock-contact/{profileId}', [App\Http\Controllers\HomeController::class, 'unlock_contact'])->name('unlock.contact');
     Route::get('memberships', [App\Http\Controllers\MembershipController::class, 'index'])->name('memberships');
     Route::get('referral', [App\Http\Controllers\HomeController::class, 'referral'])->name('referral');
@@ -65,14 +69,12 @@ Route::middleware('auth:member')->group(function () {
     Route::post('callback', [App\Http\Controllers\MembershipController::class, 'sendSms'])->name('callback');
     Route::get('plans/{id}', [App\Http\Controllers\MembershipController::class, 'plans'])->name('plans');
     Route::get('profile', [App\Http\Controllers\MyMemberController::class, 'myProfile'])->name('profile');
-    Route::get('search-by-profile-id', [App\Http\Controllers\HomeController::class, 'search_by_profile_id'])->name('search-by-profile-id');
     Route::get('interest-box', [App\Http\Controllers\HomeController::class, 'interest_box'])->name('interest-box');
     Route::get('view-my-profile', [App\Http\Controllers\HomeController::class, 'view_my_profile'])->name('view-my-profile');
     Route::get('viewed-contacts', [App\Http\Controllers\HomeController::class, 'viewed_contacts'])->name('viewed-contacts');
     Route::get('view-profile/{id}', [App\Http\Controllers\HomeController::class, 'view_profile'])->name('view-profile');
     Route::get('edit-profile', [App\Http\Controllers\MyMemberController::class, 'edit_profile'])->name('edit-profile');
     Route::post('update-password', [App\Http\Controllers\MemberController::class, 'updatePassword'])->name('update-password');
-    Route::get('advance-search', [App\Http\Controllers\MyMemberController::class, 'advance_search'])->name('advance-search');
     Route::get('send-interest/{id}', [App\Http\Controllers\HomeController::class, 'send_interest'])->name('send-interest');
     Route::post('like-profile', [App\Http\Controllers\HomeController::class, 'like_profile'])->name('like-profile');
     Route::get('/membership/checkout/{planId}', [App\Http\Controllers\MembershipController::class, 'buyPlan'])->name('membership.checkout');

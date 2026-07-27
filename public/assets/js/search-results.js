@@ -13,31 +13,10 @@
   /* ----------------------------------------------------------------
      MOCK DATA — replace with real API calls
   ---------------------------------------------------------------- */
-  const SEED_PROFILES = [
-    { id:'HR-10011', name:'Anjali Sharma',   age:26, height:"5'4\"",  location:'Shimla, HP',       occupation:'Software Engineer', religion:'Hindu',    education:'B.Tech',  verified:true,  online:true,  seed:'sr01' },
-    { id:'HR-10012', name:'Sneha Kapoor',    age:25, height:"5'2\"",  location:'Manali, HP',       occupation:'Doctor',           religion:'Hindu',    education:'MBBS',    verified:false, online:false, seed:'sr02' },
-    { id:'HR-10013', name:'Kavita Thakur',   age:28, height:"5'5\"",  location:'Dharamshala, HP',  occupation:'Teacher',          religion:'Sikh',     education:'M.Ed',    verified:true,  online:true,  seed:'sr03' },
-    { id:'HR-10014', name:'Ritika Devi',     age:26, height:"5'3\"",  location:'Kullu, HP',        occupation:'CA',               religion:'Hindu',    education:'CA',      verified:false, online:false, seed:'sr04' },
-    { id:'HR-10015', name:'Pooja Negi',      age:29, height:"5'1\"",  location:'Mandi, HP',        occupation:'Nurse',            religion:'Hindu',    education:'GNM',     verified:false, online:true,  seed:'sr05' },
-    { id:'HR-10016', name:'Meena Rawat',     age:27, height:"5'3\"",  location:'Bilaspur, HP',     occupation:'Bank Officer',     religion:'Hindu',    education:'MBA',     verified:true,  online:false, seed:'sr06' },
-    { id:'HR-10017', name:'Simran Bhatia',   age:26, height:"5'5\"",  location:'Chandigarh',       occupation:'IAS Officer',      religion:'Sikh',     education:'UPSC',    verified:true,  online:true,  seed:'sr07', matchPct:98 },
-    { id:'HR-10018', name:'Nisha Chauhan',   age:24, height:"5'4\"",  location:'Solan, HP',        occupation:'Architect',        religion:'Hindu',    education:'B.Arch',  verified:false, online:false, seed:'sr08', matchPct:92 },
-    { id:'HR-10019', name:'Puja Sharma',     age:27, height:"5'3\"",  location:'Hamirpur, HP',     occupation:'Lawyer',           religion:'Hindu',    education:'LLB',     verified:true,  online:true,  seed:'sr09', matchPct:88 },
-    { id:'HR-10020', name:'Tanu Gupta',      age:25, height:"5'2\"",  location:'Palampur, HP',     occupation:'Pharmacist',       religion:'Hindu',    education:'B.Pharma',verified:false, online:false, seed:'sr10' },
-    { id:'HR-10021', name:'Usha Rani',       age:28, height:"5'4\"",  location:'Una, HP',          occupation:'Govt. Officer',    religion:'Hindu',    education:'BA',      verified:false, online:true,  seed:'sr11' },
-    { id:'HR-10022', name:'Rekha Devi',      age:26, height:"5'3\"",  location:'Kangra, HP',       occupation:'Accountant',       religion:'Hindu',    education:'B.Com',   verified:true,  online:true,  seed:'sr12' },
-    { id:'HR-10023', name:'Lata Kumari',     age:27, height:"5'2\"",  location:'Chamba, HP',       occupation:'Principal',        religion:'Hindu',    education:'M.Sc',    verified:true,  online:false, seed:'sr13' },
-    { id:'HR-10024', name:'Geeta Negi',      age:25, height:"5'2\"",  location:'Spiti, HP',        occupation:'Nurse',            religion:'Buddhist', education:'GNM',     verified:true,  online:false, seed:'sr14' },
-    { id:'HR-10025', name:'Divya Mehta',     age:27, height:"5'3\"",  location:'Paonta Sahib, HP', occupation:'Designer',         religion:'Hindu',    education:'B.Des',   verified:false, online:true,  seed:'sr15' },
-    { id:'HR-10026', name:'Kiran Bala',      age:26, height:"5'2\"",  location:'Nahan, HP',        occupation:'Dietitian',        religion:'Hindu',    education:'B.Sc',    verified:false, online:false, seed:'sr16' },
-    { id:'HR-10027', name:'Anita Sharma',    age:26, height:"5'3\"",  location:'Shimla, HP',       occupation:'Banker',           religion:'Hindu',    education:'MBA',     verified:true,  online:true,  seed:'sr17' },
-    { id:'HR-10028', name:'Asha Kumari',     age:25, height:"5'4\"",  location:'Solan, HP',        occupation:'Entrepreneur',     religion:'Hindu',    education:'BBA',     verified:false, online:false, seed:'sr18' },
-    { id:'HR-10029', name:'Renu Pathak',     age:27, height:"5'3\"",  location:'Mandi, HP',        occupation:'Teacher',          religion:'Hindu',    education:'B.Ed',    verified:true,  online:true,  seed:'sr19' },
-    { id:'HR-10030', name:'Mamta Rana',      age:28, height:"5'5\"",  location:'Baddi, HP',        occupation:'Engineer',         religion:'Hindu',    education:'B.E',     verified:true,  online:false, seed:'sr20' },
-  ];
+  const PROFILES = window.searchResults || [];
 
   const PAGE_SIZE  = 8;
-  const TOTAL_MOCK = SEED_PROFILES.length;
+  const TOTAL_MOCK =  PROFILES.length;
 
   let currentPage  = 0;
   let isLoading    = false;
@@ -133,7 +112,7 @@
     return new Promise(function (resolve) {
       setTimeout(function () {
         const start   = page * PAGE_SIZE;
-        const slice   = SEED_PROFILES.slice(start, start + PAGE_SIZE);
+        const slice   = PROFILES.slice(start, start + PAGE_SIZE);
         const hasMore = start + PAGE_SIZE < TOTAL_MOCK;
         resolve({ success: true, user: slice, hasMore: hasMore });
       }, 600 + Math.random() * 400);
