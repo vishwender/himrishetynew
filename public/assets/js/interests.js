@@ -14,32 +14,34 @@
      acceptedInterest, accepted_sent_interest,
      rejectedInterest, rejected_sent_interest
   ---------------------------------------------------------------- */
-  const ALL_INTERESTS = {
-    received_interest: [
-      { id:'HR-20011', name:'Rahul Sharma',    age:29, height:"5'10\"", location:'Shimla, HP',      occupation:'Software Engineer', religion:'Hindu',  education:'B.Tech',  verified:true,  online:true,  seed:'m01', sentDate:'2 days ago'  },
-      { id:'HR-20012', name:'Amit Thakur',     age:31, height:"5'11\"", location:'Manali, HP',      occupation:'Doctor',           religion:'Hindu',  education:'MBBS',    verified:true,  online:false, seed:'m02', sentDate:'3 days ago'  },
-      { id:'HR-20013', name:'Rohan Verma',     age:28, height:"5'9\"",  location:'Dharamshala, HP', occupation:'CA',               religion:'Hindu',  education:'CA',      verified:false, online:true,  seed:'m03', sentDate:'5 days ago'  },
-      { id:'HR-20014', name:'Vikas Negi',      age:30, height:"6'0\"",  location:'Kullu, HP',       occupation:'IAS Officer',       religion:'Hindu',  education:'UPSC',    verified:true,  online:false, seed:'m04', sentDate:'1 week ago'  },
-      { id:'HR-20015', name:'Suresh Kumar',    age:27, height:"5'8\"",  location:'Mandi, HP',       occupation:'Engineer',          religion:'Hindu',  education:'B.E',     verified:false, online:true,  seed:'m05', sentDate:'1 week ago'  },
-      { id:'HR-20016', name:'Deepak Chauhan',  age:32, height:"5'10\"", location:'Solan, HP',       occupation:'Banker',            religion:'Hindu',  education:'MBA',     verified:true,  online:true,  seed:'m06', sentDate:'2 weeks ago' },
-    ],
-    sentInterest: [
-      { id:'HR-20021', name:'Karan Mehta',     age:29, height:"5'10\"", location:'Chandigarh',      occupation:'Architect',         religion:'Hindu',  education:'B.Arch',  verified:true,  online:true,  seed:'m11', sentDate:'1 day ago'   },
-      { id:'HR-20022', name:'Ajay Singh',      age:30, height:"5'11\"", location:'Shimla, HP',      occupation:'Govt. Officer',     religion:'Sikh',   education:'BA',      verified:false, online:false, seed:'m12', sentDate:'4 days ago'  },
-      { id:'HR-20023', name:'Mohit Pathak',    age:28, height:"5'9\"",  location:'Baddi, HP',       occupation:'Pharmacist',        religion:'Hindu',  education:'B.Pharma',verified:false, online:true,  seed:'m13', sentDate:'6 days ago'  },
-    ],
-    acceptedInterest: [
-      { id:'HR-20031', name:'Naveen Rawat',    age:30, height:"5'10\"", location:'Bilaspur, HP',    occupation:'Lawyer',            religion:'Hindu',  education:'LLB',     verified:true,  online:true,  seed:'m21', sentDate:'3 days ago'  },
-      { id:'HR-20032', name:'Arjun Bhatia',    age:28, height:"5'11\"", location:'Palampur, HP',    occupation:'Teacher',           religion:'Hindu',  education:'B.Ed',    verified:true,  online:false, seed:'m22', sentDate:'1 week ago'  },
-    ],
-    accepted_sent_interest: [
-      { id:'HR-20041', name:'Sachin Devi',     age:29, height:"5'10\"", location:'Hamirpur, HP',    occupation:'Engineer',          religion:'Hindu',  education:'B.E',     verified:false, online:true,  seed:'m31', sentDate:'5 days ago'  },
-    ],
-    rejectedInterest: [
-      { id:'HR-20051', name:'Praveen Gupta',   age:33, height:"5'8\"",  location:'Una, HP',         occupation:'Businessman',       religion:'Hindu',  education:'MBA',     verified:false, online:false, seed:'m41', sentDate:'2 weeks ago' },
-    ],
-    rejected_sent_interest: [],
-  };
+  // const ALL_INTERESTS = {
+  //   received_interest: [
+  //     { id:'HR-20011', name:'Rahul Sharma',    age:29, height:"5'10\"", location:'Shimla, HP',      occupation:'Software Engineer', religion:'Hindu',  education:'B.Tech',  verified:true,  online:true,  seed:'m01', sentDate:'2 days ago'  },
+  //     { id:'HR-20012', name:'Amit Thakur',     age:31, height:"5'11\"", location:'Manali, HP',      occupation:'Doctor',           religion:'Hindu',  education:'MBBS',    verified:true,  online:false, seed:'m02', sentDate:'3 days ago'  },
+  //     { id:'HR-20013', name:'Rohan Verma',     age:28, height:"5'9\"",  location:'Dharamshala, HP', occupation:'CA',               religion:'Hindu',  education:'CA',      verified:false, online:true,  seed:'m03', sentDate:'5 days ago'  },
+  //     { id:'HR-20014', name:'Vikas Negi',      age:30, height:"6'0\"",  location:'Kullu, HP',       occupation:'IAS Officer',       religion:'Hindu',  education:'UPSC',    verified:true,  online:false, seed:'m04', sentDate:'1 week ago'  },
+  //     { id:'HR-20015', name:'Suresh Kumar',    age:27, height:"5'8\"",  location:'Mandi, HP',       occupation:'Engineer',          religion:'Hindu',  education:'B.E',     verified:false, online:true,  seed:'m05', sentDate:'1 week ago'  },
+  //     { id:'HR-20016', name:'Deepak Chauhan',  age:32, height:"5'10\"", location:'Solan, HP',       occupation:'Banker',            religion:'Hindu',  education:'MBA',     verified:true,  online:true,  seed:'m06', sentDate:'2 weeks ago' },
+  //   ],
+  //   sentInterest: [
+  //     { id:'HR-20021', name:'Karan Mehta',     age:29, height:"5'10\"", location:'Chandigarh',      occupation:'Architect',         religion:'Hindu',  education:'B.Arch',  verified:true,  online:true,  seed:'m11', sentDate:'1 day ago'   },
+  //     { id:'HR-20022', name:'Ajay Singh',      age:30, height:"5'11\"", location:'Shimla, HP',      occupation:'Govt. Officer',     religion:'Sikh',   education:'BA',      verified:false, online:false, seed:'m12', sentDate:'4 days ago'  },
+  //     { id:'HR-20023', name:'Mohit Pathak',    age:28, height:"5'9\"",  location:'Baddi, HP',       occupation:'Pharmacist',        religion:'Hindu',  education:'B.Pharma',verified:false, online:true,  seed:'m13', sentDate:'6 days ago'  },
+  //   ],
+  //   acceptedInterest: [
+  //     { id:'HR-20031', name:'Naveen Rawat',    age:30, height:"5'10\"", location:'Bilaspur, HP',    occupation:'Lawyer',            religion:'Hindu',  education:'LLB',     verified:true,  online:true,  seed:'m21', sentDate:'3 days ago'  },
+  //     { id:'HR-20032', name:'Arjun Bhatia',    age:28, height:"5'11\"", location:'Palampur, HP',    occupation:'Teacher',           religion:'Hindu',  education:'B.Ed',    verified:true,  online:false, seed:'m22', sentDate:'1 week ago'  },
+  //   ],
+  //   accepted_sent_interest: [
+  //     { id:'HR-20041', name:'Sachin Devi',     age:29, height:"5'10\"", location:'Hamirpur, HP',    occupation:'Engineer',          religion:'Hindu',  education:'B.E',     verified:false, online:true,  seed:'m31', sentDate:'5 days ago'  },
+  //   ],
+  //   rejectedInterest: [
+  //     { id:'HR-20051', name:'Praveen Gupta',   age:33, height:"5'8\"",  location:'Una, HP',         occupation:'Businessman',       religion:'Hindu',  education:'MBA',     verified:false, online:false, seed:'m41', sentDate:'2 weeks ago' },
+  //   ],
+  //   rejected_sent_interest: [],
+  // };
+
+  const ALL_INTERESTS = window.ALL_INTERESTS || {};
 
   /* ----------------------------------------------------------------
      STATE
@@ -96,21 +98,22 @@
   /* ----------------------------------------------------------------
      Get dataset key for current mode + tab
   ---------------------------------------------------------------- */
-  function getKey(mode, tab) {
+function getKey(mode, tab) {
     const map = {
-      received: {
-        pending:  'received_interest',
-        accepted: 'acceptedInterest',
-        rejected: 'rejectedInterest',
-      },
-      sent: {
-        pending:  'sentInterest',
-        accepted: 'accepted_sent_interest',
-        rejected: 'rejected_sent_interest',
-      },
+        received: {
+            pending: 'received_pending_interests',
+            accepted: 'received_accepted_interests',
+            rejected: 'received_rejected_interests'
+        },
+        sent: {
+            pending: 'sent_pending_interests',
+            accepted: 'sent_accepted_interests',
+            rejected: 'sent_rejected_interests'
+        }
     };
+
     return map[mode][tab];
-  }
+}
 
   /* ----------------------------------------------------------------
      Build profile card HTML — same pattern as index.html
@@ -141,10 +144,10 @@
     /* Accept / Reject buttons — only for received-pending */
     const actionBtns = (tab === 'pending' && currentMode === 'received')
       ? '<div class="int-card-actions">' +
-          '<button class="int-action-btn accept" data-id="' + profile.id + '" aria-label="Accept interest from ' + profile.name + '">' +
+          '<button class="int-action-btn accept" data-id="' + profile.id + '" aria-label="Accept interest from ' + profile.full_name + '">' +
             '<i data-lucide="check" width="12" height="12"></i> Accept' +
           '</button>' +
-          '<button class="int-action-btn reject" data-id="' + profile.id + '" aria-label="Reject interest from ' + profile.name + '">' +
+          '<button class="int-action-btn reject" data-id="' + profile.id + '" aria-label="Reject interest from ' + profile.full_name + '">' +
             '<i data-lucide="x" width="12" height="12"></i> Decline' +
           '</button>' +
         '</div>'
@@ -152,14 +155,14 @@
 
     article.innerHTML =
       '<div class="profile-card-img-wrap">' +
-        '<img src="' + imgUrl + '" alt="' + profile.name + ', ' + profile.age + '" width="220" height="280" loading="lazy" class="profile-card-img" />' +
+        '<img src="' + imgUrl + '" alt="' + profile.full_name + ', ' + profile.age_years + '" width="220" height="280" loading="lazy" class="profile-card-img" />' +
         onlineDot +
         statusBadge +
       '</div>' +
       '<div class="profile-card-body">' +
-        '<h3 class="profile-card-name">' + profile.name + verifiedIcon + '</h3>' +
-        '<p class="profile-card-meta"><i data-lucide="map-pin" width="12" height="12"></i> ' + profile.location + '</p>' +
-        '<p class="profile-card-meta"><i data-lucide="briefcase" width="12" height="12"></i> ' + profile.occupation + ' • ' + profile.age + ' yrs</p>' +
+        '<h3 class="profile-card-name">' + profile.full_name + verifiedIcon + '</h3>' +
+        '<p class="profile-card-meta"><i data-lucide="map-pin" width="12" height="12"></i> ' + profile.city_living_in + '</p>' +
+        '<p class="profile-card-meta"><i data-lucide="briefcase" width="12" height="12"></i> ' + profile.occupation + ' • ' + profile.age_years + ' yrs</p>' +
         '<p class="profile-card-meta"><i data-lucide="clock" width="12" height="12"></i> ' + profile.sentDate + '</p>' +
         '<div class="profile-card-tags">' +
           '<span class="pct">' + profile.religion + '</span>' +
@@ -205,32 +208,89 @@
   /* ----------------------------------------------------------------
      Accept / Reject action
   ---------------------------------------------------------------- */
-  function handleAction(profileId, action, cardEl) {
-    /* Optimistic UI — remove from pending, add to accepted/rejected */
-    const key     = getKey('received', 'pending');
-    const dataset = ALL_INTERESTS[key];
-    const idx     = dataset.findIndex(function (p) { return p.id === profileId; });
+async function handleAction(profileId, action, cardEl) {
+
+    const pendingKey = getKey('received', 'pending');
+    const dataset = ALL_INTERESTS[pendingKey];
+
+    const idx = dataset.findIndex(function (p) {
+        return p.id == profileId;
+    });
+
     if (idx === -1) return;
 
-    const [profile] = dataset.splice(idx, 1);
+    const profile = dataset[idx];
 
-    if (action === 'accept') {
-      ALL_INTERESTS.acceptedInterest.unshift(profile);
-      showToast('✅', profile.name + ' interest accepted!');
-    } else {
-      ALL_INTERESTS.rejectedInterest.unshift(profile);
-      showToast('❌', 'Interest from ' + profile.name + ' declined.');
+    const status = (action === 'accept') ? 1 : 2;
+
+    try {
+
+        const response = await fetch(updateInterestUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                member_id: profile.id,
+                status: status
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update status.');
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+            alert(result.message);
+            return;
+        }
+
+        // Remove from pending
+        dataset.splice(idx, 1);
+
+        if (action === 'accept') {
+
+            const acceptedKey = getKey('received', 'accepted');
+
+            if (!ALL_INTERESTS[acceptedKey]) {
+                ALL_INTERESTS[acceptedKey] = [];
+            }
+
+            ALL_INTERESTS[acceptedKey].unshift(profile);
+
+            showToast('✅', profile.full_name + ' interest accepted!');
+
+        } else {
+
+            const rejectedKey = getKey('received', 'rejected');
+
+            if (!ALL_INTERESTS[rejectedKey]) {
+                ALL_INTERESTS[rejectedKey] = [];
+            }
+
+            ALL_INTERESTS[rejectedKey].unshift(profile);
+
+            showToast('❌', 'Interest from ' + profile.full_name + ' declined.');
+        }
+
+        cardEl.style.transition = 'opacity 200ms ease, transform 200ms ease';
+        cardEl.style.opacity = '0';
+        cardEl.style.transform = 'scale(0.93)';
+
+        setTimeout(function () {
+            renderTab(currentTab);
+            updateBadgesAndCounts();
+        }, 220);
+
+    } catch (error) {
+        console.error(error);
+        alert('Unable to update interest status. Please try again.');
     }
-
-    /* Animate card out */
-    cardEl.style.transition = 'opacity 200ms ease, transform 200ms ease';
-    cardEl.style.opacity    = '0';
-    cardEl.style.transform  = 'scale(0.93)';
-    setTimeout(function () {
-      renderTab(currentTab);
-      updateBadgesAndCounts();
-    }, 220);
-  }
+}
 
   /* ----------------------------------------------------------------
      Render a tab panel

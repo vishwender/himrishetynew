@@ -762,7 +762,8 @@ class HomeController extends Controller
         $data['sent_pending_interests'] = $this->sent_pending_interest();
         $data['sent_accepted_interests'] = $this->sent_accepted_interest();
         $data['sent_rejected_interests'] = $this->sent_rejected_interest();
-        return view('dashboard.interest_box', compact('data'));
+        //dd($data['received_pending_interests']->first());
+        return view('dashboard.interest.interest-box', compact('data'));
     }
 
     public function received_pending_interest()
@@ -773,6 +774,7 @@ class HomeController extends Controller
             ->select(
                 'members.*',
                 'sent_interests.member_id',
+                'sent_interests.created_at as interest_created_at',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
             ->where('sent_interests.profile_id', $user_id)
@@ -809,6 +811,11 @@ class HomeController extends Controller
             if ($result->is_trusted === 'Trusted') {
                 $results[$key]->is_trusted = "https://himrishtey.com/img/trusted.png";
             }
+            if (!empty($result->interest_created_at)) {
+                $results[$key]->sentDate = Carbon::parse($result->interest_created_at)->diffForHumans();
+            } else {
+                $results[$key]->sentDate = '';
+            }
         }
 
         return $results;
@@ -822,6 +829,7 @@ class HomeController extends Controller
             ->select(
                 'members.*',
                 'sent_interests.member_id',
+                'sent_interests.created_at as interest_created_at',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
             ->where('sent_interests.profile_id', $user_id)
@@ -858,6 +866,11 @@ class HomeController extends Controller
             if ($result->is_trusted === 'Trusted') {
                 $results[$key]->is_trusted = "https://himrishtey.com/img/trusted.png";
             }
+            if (!empty($result->interest_created_at)) {
+                $results[$key]->sentDate = Carbon::parse($result->interest_created_at)->diffForHumans();
+            } else {
+                $results[$key]->sentDate = '';
+            }
         }
 
         return $results;
@@ -871,6 +884,7 @@ class HomeController extends Controller
             ->select(
                 'members.*',
                 'sent_interests.member_id',
+                'sent_interests.created_at as interest_created_at',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
             ->where('sent_interests.profile_id', $user_id)
@@ -907,6 +921,11 @@ class HomeController extends Controller
             if ($result->is_trusted === 'Trusted') {
                 $results[$key]->is_trusted = "https://himrishtey.com/img/trusted.png";
             }
+            if (!empty($result->interest_created_at)) {
+                $results[$key]->sentDate = Carbon::parse($result->interest_created_at)->diffForHumans();
+            } else {
+                $results[$key]->sentDate = '';
+            }
         }
 
         return $results;
@@ -920,6 +939,7 @@ class HomeController extends Controller
             ->select(
                 'members.*',
                 'sent_interests.member_id',
+                'sent_interests.created_at as interest_created_at',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
             ->where('sent_interests.member_id', $user_id)
@@ -956,6 +976,11 @@ class HomeController extends Controller
             if ($result->is_trusted === 'Trusted') {
                 $results[$key]->is_trusted = "https://himrishtey.com/img/trusted.png";
             }
+            if (!empty($result->interest_created_at)) {
+                $results[$key]->sentDate = Carbon::parse($result->interest_created_at)->diffForHumans();
+            } else {
+                $results[$key]->sentDate = '';
+            }
         }
 
         return $results;
@@ -969,6 +994,7 @@ class HomeController extends Controller
             ->select(
                 'members.*',
                 'sent_interests.member_id',
+                'sent_interests.created_at as interest_created_at',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
             ->where('sent_interests.member_id', $user_id)
@@ -1005,6 +1031,11 @@ class HomeController extends Controller
             if ($result->is_trusted === 'Trusted') {
                 $results[$key]->is_trusted = "https://himrishtey.com/img/trusted.png";
             }
+            if (!empty($result->interest_created_at)) {
+                $results[$key]->sentDate = Carbon::parse($result->interest_created_at)->diffForHumans();
+            } else {
+                $results[$key]->sentDate = '';
+            }
         }
 
         return $results;
@@ -1018,6 +1049,7 @@ class HomeController extends Controller
             ->select(
                 'members.*',
                 'sent_interests.member_id',
+                'sent_interests.created_at as interest_created_at',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
             ->where('sent_interests.member_id', $user_id)
@@ -1054,9 +1086,44 @@ class HomeController extends Controller
             if ($result->is_trusted === 'Trusted') {
                 $results[$key]->is_trusted = "https://himrishtey.com/img/trusted.png";
             }
+            if (!empty($result->interest_created_at)) {
+                $results[$key]->sentDate = Carbon::parse($result->interest_created_at)->diffForHumans();
+            } else {
+                $results[$key]->sentDate = '';
+            }
         }
 
         return $results;
+    }
+
+    public function updateInterestStatus(Request $request)
+    {
+        //dd($request->status);
+        $request->validate([
+            'member_id' => 'required|integer',
+            'status'    => 'required|in:0,1,2', //0=Pending, 1=Accepted, 2=Rejected
+        ]);
+
+        $loggedInUser = Auth::guard('member')->user()->id;
+
+        $updated = DB::table('sent_interests')
+            ->where('member_id', $request->member_id)
+            ->where('profile_id', $loggedInUser)
+            ->update([
+                'status' => $request->status
+            ]);
+
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Unable to update status.'
+        ], 400);
     }
 
     public function view_my_profile()
@@ -1153,6 +1220,7 @@ class HomeController extends Controller
 
     public function view_profile($profileId, EmailService $emailService)
     {
+        // dd($profileId);
         $data['user_id'] = Auth::guard('member')->user()->id;
         $profilemain = Member::findOrFail($profileId);
         $data['photos'] = $profilemain->photos()->get();
@@ -1162,7 +1230,7 @@ class HomeController extends Controller
             ->where('profile_hide', '!=', 'yes')
             ->where('active', 'Yes')
             ->first();
-
+        //dd($usr);
         if (!$usr) {
             return null;
         }
@@ -1172,6 +1240,7 @@ class HomeController extends Controller
             ->where('member_id', $data['user_id'])
             ->where('profile_id', $data['profile_id'])
             ->first();
+        dd($profile);
         // Shortlisted count
         $short = DB::table('short_listed')
             ->where('member_id', $data['user_id'])
@@ -1303,7 +1372,7 @@ class HomeController extends Controller
         $usr->age_years  = $diff->y;
         $usr->age_months = $diff->m;
 
-        // dd($usr);
+        dd($usr);
         return view('dashboard.view_profile', compact('usr', 'data', 'wallet'));
     }
 

@@ -28,7 +28,7 @@
   <!-- ===================== NAVBAR ===================== -->
   <nav class="pd-navbar">
     <div class="pd-navbar-inner">
-      <a href="{{route('profile')}}" class="pd-back-btn" aria-label="Go back">
+      <a href="{{route('home')}}" class="pd-back-btn" aria-label="Go back">
         <i data-lucide="arrow-left" width="20" height="20"></i>
         <span>Back</span>
       </a>

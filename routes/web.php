@@ -90,6 +90,7 @@ Route::middleware('auth:member')->group(function () {
     Route::post('short-profile', [App\Http\Controllers\HomeController::class, 'shortlist_profile'])->name('short-profile');
     Route::get('user-privacy-policy', [App\Http\Controllers\HomeController::class, 'privacy_policy'])->name('user-privacy-policy');
     Route::get('user-refund', [App\Http\Controllers\HomeController::class, 'refund'])->name('user-refund');
+    Route::post('/interest/update-status', [App\Http\Controllers\HomeController::class, 'updateInterestStatus'])->name('interest.update.status');
     Route::get('/membership/success', function () {
         return view('dashboard.success');
     })->name('membership.success');
