@@ -7,23 +7,29 @@
   'use strict';
 
   // ---- Mock data (replace with real API calls) ----
-  const MOCK_DATA = {
-    wallet_balance: '1,250',
-    wallet_transactions: [
-      { amount_added: '500',  amount_deducted: '0',   created_at: '23 Jun 2026' },
-      { amount_added: '0',    amount_deducted: '200', created_at: '22 Jun 2026' },
-      { amount_added: '1000', amount_deducted: '0',   created_at: '20 Jun 2026' },
-      { amount_added: '0',    amount_deducted: '50',  created_at: '19 Jun 2026' },
-      { amount_added: '0',    amount_deducted: '100', created_at: '18 Jun 2026' },
-      { amount_added: '250',  amount_deducted: '0',   created_at: '15 Jun 2026' },
-    ],
-    wallet_offers: [
-      { title: 'Starter Pack',  description: 'Get 10% bonus coins on your first recharge. Limited offer for new users.', amount: '199' },
-      { title: 'Power Pack',    description: 'Our most popular plan. Unlock unlimited interest sends for 30 days.', amount: '499' },
-      { title: 'Premium Pack',  description: 'Full access to all features including direct chat for 90 days.', amount: '999' },
-      { title: 'Elite Pack',    description: 'Annual plan with maximum benefits and dedicated matchmaking support.', amount: '1999' },
-    ]
-  };
+  // const MOCK_DATA = {
+  //   wallet_balance: '1,250',
+  //   wallet_transactions: [
+  //     { amount_added: '500',  amount_deducted: '0',   created_at: '23 Jun 2026' },
+  //     { amount_added: '0',    amount_deducted: '200', created_at: '22 Jun 2026' },
+  //     { amount_added: '1000', amount_deducted: '0',   created_at: '20 Jun 2026' },
+  //     { amount_added: '0',    amount_deducted: '50',  created_at: '19 Jun 2026' },
+  //     { amount_added: '0',    amount_deducted: '100', created_at: '18 Jun 2026' },
+  //     { amount_added: '250',  amount_deducted: '0',   created_at: '15 Jun 2026' },
+  //   ],
+  //   wallet_offers: [
+  //     { title: 'Starter Pack',  description: 'Get 10% bonus coins on your first recharge. Limited offer for new users.', amount: '199' },
+  //     { title: 'Power Pack',    description: 'Our most popular plan. Unlock unlimited interest sends for 30 days.', amount: '499' },
+  //     { title: 'Premium Pack',  description: 'Full access to all features including direct chat for 90 days.', amount: '999' },
+  //     { title: 'Elite Pack',    description: 'Annual plan with maximum benefits and dedicated matchmaking support.', amount: '1999' },
+  //   ]
+  // };
+
+  const MOCK_DATA = window.walletData || {
+    wallet_balance: 0,
+    wallet_transactions: [],
+    wallet_offers: []
+};
 
   // ---- DOM refs ----
   let walletData = {};
@@ -54,7 +60,7 @@
       if (content)  content.removeAttribute('hidden');
 
       if (typeof lucide !== 'undefined') lucide.createIcons();
-    }, 900);
+    }, );
   }
 
   // =============================================

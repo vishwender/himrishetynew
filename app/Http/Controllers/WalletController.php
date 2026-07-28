@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -12,8 +13,15 @@ class WalletController extends Controller
 {
     public function index()
     {
-        $wallet = MemberWallet::where('member_id', Auth::guard('member')->id())->latest('created_at')->first();
-        return view('wallet.index', compact('wallet'));
+        $memberId = Auth::guard('member')->id();
+
+        $transactions = MemberWallet::where('member_id', $memberId)
+            ->latest('created_at')
+            ->get();
+
+        $balance = $transactions->first()->wallet_balance ?? 0;
+
+        return view('dashboard.wallet.index', compact('balance', 'transactions'));
     }
 
     public function createOrder(Request $request)
@@ -26,7 +34,7 @@ class WalletController extends Controller
 
         $order = $api->order->create([
             'receipt'  => 'wallet_' . uniqid(),
-            'amount'   => $request->amount * 100, 
+            'amount'   => $request->amount * 100,
             'currency' => 'INR',
         ]);
         session([
@@ -55,7 +63,7 @@ class WalletController extends Controller
             ];
 
             $api->utility->verifyPaymentSignature($attributes);
-            $amount = session('order_amount'); 
+            $amount = session('order_amount');
 
             DB::table('payments')->insert([
                 'member_id'    => $userId,
@@ -66,7 +74,7 @@ class WalletController extends Controller
             ]);
 
             $wallet = MemberWallet::where('member_id', $userId)
-                ->latest('id')  
+                ->latest('id')
                 ->first();
 
             if ($wallet) {
@@ -86,7 +94,6 @@ class WalletController extends Controller
                 'message' => 'Wallet recharged successfully!',
                 'balance' => $wallet->wallet_balance
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status'  => 'error',
@@ -94,5 +101,4 @@ class WalletController extends Controller
             ], 500);
         }
     }
-
 }

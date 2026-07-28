@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title','Interrest Box - Him Rishtey')
+@section('title','Interest Box - Him Rishtey')
 
 @section('styles')
 <link rel="stylesheet" href="{{asset('assets/css/interests.css') }}" />
