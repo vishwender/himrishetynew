@@ -59,7 +59,7 @@
       <span class="sidebar-nav-section-label">Menu</span>
       <ul role="list">
         <li><a href="{{ route('profile') }}" class="sidebar-nav-item @if(Route::currentRouteName() === 'dashboard') active @endif" @if(Route::currentRouteName()==='dashboard' ) aria-current="page" @endif><i data-lucide="home" width="18" height="18"></i><span>Home</span></a></li>
-        <li><a href="#" class="sidebar-nav-item"><i data-lucide="shield" width="18" height="18"></i><span>Membership</span></a></li>
+        <li><a href="{{ route('memberships') }}" class="sidebar-nav-item"><i data-lucide="shield" width="18" height="18"></i><span>Membership</span></a></li>
         <li><a href="{{ route('edit-profile') }}" class="sidebar-nav-item"><i data-lucide="edit-3" width="18" height="18"></i><span>Edit Profile</span></a></li>
         <li><a href="{{ route('quick-search') }}" class="sidebar-nav-item"><i data-lucide="search" width="18" height="18"></i><span>Quick Search</span></a></li>
         <li><a href="{{ route('advance-search') }}" class="sidebar-nav-item"><i data-lucide="sliders" width="18" height="18"></i><span>Advanced Search</span></a></li>

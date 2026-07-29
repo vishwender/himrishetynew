@@ -350,38 +350,53 @@ class MyMemberController extends Controller
     public function edit_profile()
     {
         $member = Auth::guard('member')->user();
-        $completionFields = [
-            'full_name',
-            'email',
-            'mobile_number',
-            'birth_date_time',
-            'gender',
-            'religion',
-            'cast',
-            'marital_status',
-            'mother_tongue',
-            'education',
-            'employer',
-            'annual_income',
-            'height',
-            'state_living_in',
-            'photo',
-            'about_me',
+        $steps = [
+            [
+                'title' => 'Basic Info',
+                'completed' => !empty($member->full_name)
+                    && !empty($member->gender)
+                    && !empty($member->height)
+            ],
+            [
+                'title' => 'Religion',
+                'completed' => !empty($member->religion)
+            ],
+            [
+                'title' => 'Horoscope',
+                'completed' => !empty($member->horoscope_needed)
+            ],
+            [
+                'title' => 'Contact',
+                'completed' => ''
+            ],
+
+            [
+                'title' => 'Education',
+                'completed' => !empty($member->education) && !empty($member->about_my_education)
+            ],
+            [
+                'title' => 'Family',
+                'completed' => !empty($member->family_status) && !empty($member->father_name)
+            ],
+            [
+                'title' => 'Lifestyle',
+                'completed' => ''
+            ],
+            [
+                'title' => 'Partner',
+                'completed' => ''
+            ],
         ];
 
-        $totalFields = count($completionFields);
+        $completedSteps = 0;
 
-        $completedFields = 0;
-
-        foreach ($completionFields as $field) {
-            if (!empty($member->{$field})) {
-                $completedFields++;
+        foreach ($steps as $step) {
+            if ($step['completed']) {
+                $completedSteps++;
             }
         }
 
-        $profilePercent = $totalFields > 0
-            ? round(($completedFields / $totalFields) * 100)
-            : 0;
+        $profilePercent = round(($completedSteps / count($steps)) * 100);
         //dd($profileCompletion);
         return view('dashboard.profile.edit', compact('member', 'profilePercent'));
     }
