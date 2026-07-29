@@ -48,6 +48,28 @@ class HomeController extends Controller
         $member = Auth::guard('member')->user();
         $id = $member->id;
 
+        //complete your profile section
+        $completion = $member->getProfileCompletion();
+        $steps = [
+            [
+                'title' => 'Basic Info',
+                'completed' => !empty($member->full_name)
+                    && !empty($member->gender)
+                    && !empty($member->height)
+            ],
+            [
+                'title' => 'Horoscope',
+                'completed' => !empty($member->horoscope_needed)
+            ],
+            [
+                'title' => 'Family Details',
+                'completed' => !empty($member->family_status) && !empty($member->father_name)
+            ]
+        ];
+
+        $circumference = 226.2;
+        $strokeOffset = $circumference - ($completion / 100) * $circumference;
+
         $data['plan'] = MembershipPlan::where('id', $member->plan_id)->first();
         $data['shortlisted'] = Shortlist::where('member_id', $id)->count();
         $data['iLikes'] = ProfileLike::where('user_id', $id)->count();
@@ -265,7 +287,34 @@ class HomeController extends Controller
                     in_array($profile->mother_tongue, $partner_mothertongue);
             });
         //dd($data['matching_profiles']);
-        return view('dashboard/home', compact(['member', 'data']));
+        return view('dashboard/home', compact(['member', 'data', 'completion', 'steps', 'strokeOffset']));
+    }
+
+    public function getProfileCompletion()
+    {
+        $totalFields = 10;
+        $completed = 0;
+
+        $fields = [
+            $this->fullname,
+            $this->email,
+            $this->mobile,
+            $this->gender,
+            $this->dob,
+            $this->height,
+            $this->religion,
+            $this->photos,
+            $this->horoscope,
+            $this->family_details,
+        ];
+
+        foreach ($fields as $field) {
+            if (!empty($field)) {
+                $completed++;
+            }
+        }
+
+        return round(($completed / $totalFields) * 100);
     }
 
     public function quick_search(Request $request)

@@ -31,5 +31,32 @@ class Member extends \Illuminate\Foundation\Auth\User
     {
         return $this->hasMany(MemberPhotos::class, 'member_id');
     }
-}
 
+    public function getProfileCompletion()
+    {
+        $totalFields = 10;
+        $completed = 0;
+
+        $fields = [
+            $this->full_name,
+            $this->email,
+            $this->mobile,
+            $this->gender,
+            $this->height,
+            $this->religion,
+            $this->horoscope_needed,
+            $this->family_type,
+            $this->family_status,
+            $this->father_name,
+            $this->father_occupation
+        ];
+
+        foreach ($fields as $field) {
+            if (!empty($field)) {
+                $completed++;
+            }
+        }
+
+        return round(($completed / $totalFields) * 100);
+    }
+}

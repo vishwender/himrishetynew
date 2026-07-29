@@ -38,29 +38,69 @@
 <section class="profile-completion-section container-xxl" aria-label="Profile completion">
     <div class="pc-card">
         <div class="pc-left">
-            <div class="pc-avatar-ring" style="--progress: 72%;">
-                <img src="https://picsum.photos/seed/bride1/70/70" alt="Priya Sharma" width="70" height="70" loading="lazy" class="pc-avatar" />
-                <svg class="pc-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
-                    <circle cx="40" cy="40" r="36" fill="none" stroke="var(--color-surface-offset)" stroke-width="4" />
-                    <circle cx="40" cy="40" r="36" fill="none" stroke="var(--color-primary)" stroke-width="4" stroke-dasharray="226.2" stroke-dashoffset="63.3" stroke-linecap="round" transform="rotate(-90 40 40)" />
+            <div class="pc-avatar-ring" style="--progress: {{ $completion }}%;">
+                <img src="{{ asset('images/default-avatar.png') }}"
+                    alt="{{ $member->fullname }}"
+                    class="pc-avatar">
+
+                <svg class="pc-ring-svg" viewBox="0 0 80 80">
+                    <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        fill="none"
+                        stroke="var(--color-surface-offset)"
+                        stroke-width="4" />
+
+                    <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        fill="none"
+                        stroke="var(--color-primary)"
+                        stroke-width="4"
+                        stroke-dasharray="226.2"
+                        stroke-dashoffset="{{ $strokeOffset }}"
+                        stroke-linecap="round"
+                        transform="rotate(-90 40 40)" />
                 </svg>
-                <span class="pc-percent">72%</span>
+
+                <span class="pc-percent">{{ $completion }}%</span>
             </div>
         </div>
         <div class="pc-right">
             <h3 class="pc-title">Complete Your Profile</h3>
             <p class="pc-desc">A complete profile gets <strong>5x more</strong> matches. Add your details to stand out.</p>
             <div class="pc-progress-bar-wrap">
-                <div class="pc-progress-bar" style="width: 72%;" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="pc-progress-bar"
+                    style="width: {{ $completion }}%;"
+                    role="progressbar"
+                    aria-valuenow="{{ $completion }}"
+                    aria-valuemin="0"
+                    aria-valuemax="100">
+                </div>
             </div>
             <div class="pc-steps">
-                <span class="pc-step done"><i data-lucide="check" width="12" height="12"></i> Basic Info</span>
-                <span class="pc-step done"><i data-lucide="check" width="12" height="12"></i> Photos</span>
-                <span class="pc-step pending"><i data-lucide="plus" width="12" height="12"></i> Horoscope</span>
-                <span class="pc-step pending"><i data-lucide="plus" width="12" height="12"></i> Family Details</span>
+                @foreach($steps as $step)
+                <span class="pc-step {{ $step['completed'] ? 'done' : 'pending' }}">
+                    @if($step['completed'])
+                    <i data-lucide="check" width="12" height="12"></i>
+                    @else
+                    <i data-lucide="plus" width="12" height="12"></i>
+                    @endif
+
+                    {{ $step['title'] }}
+                </span>
+                @endforeach
             </div>
         </div>
-        <a href="#" class="pc-cta-btn">Complete Now</a>
+        <a href="#" class="pc-cta-btn">
+            @if($completion == 100)
+            View Profile
+            @else
+            Complete Now
+            @endif
+        </a>
     </div>
 </section>
 
