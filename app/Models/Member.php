@@ -45,6 +45,8 @@ class Member extends \Illuminate\Foundation\Auth\User
             $this->height,
             $this->religion,
             $this->horoscope_needed,
+            $this->about_my_education,
+            $this->education,
             $this->family_type,
             $this->family_status,
             $this->father_name,

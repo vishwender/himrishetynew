@@ -49,7 +49,6 @@ class HomeController extends Controller
         $id = $member->id;
 
         //complete your profile section
-        $completion = $member->getProfileCompletion();
         $steps = [
             [
                 'title' => 'Basic Info',
@@ -58,15 +57,45 @@ class HomeController extends Controller
                     && !empty($member->height)
             ],
             [
+                'title' => 'Religion',
+                'completed' => !empty($member->religion)
+            ],
+            [
                 'title' => 'Horoscope',
                 'completed' => !empty($member->horoscope_needed)
             ],
             [
-                'title' => 'Family Details',
+                'title' => 'Contact',
+                'completed' => ''
+            ],
+
+            [
+                'title' => 'Education',
+                'completed' => !empty($member->education) && !empty($member->about_my_education)
+            ],
+            [
+                'title' => 'Family',
                 'completed' => !empty($member->family_status) && !empty($member->father_name)
-            ]
+            ],
+            [
+                'title' => 'Lifestyle',
+                'completed' => ''
+            ],
+            [
+                'title' => 'Partner',
+                'completed' => ''
+            ],
         ];
 
+        $completedSteps = 0;
+
+        foreach ($steps as $step) {
+            if ($step['completed']) {
+                $completedSteps++;
+            }
+        }
+
+        $completion = round(($completedSteps / count($steps)) * 100);
         $circumference = 226.2;
         $strokeOffset = $circumference - ($completion / 100) * $circumference;
 
@@ -288,33 +317,6 @@ class HomeController extends Controller
             });
         //dd($data['matching_profiles']);
         return view('dashboard/home', compact(['member', 'data', 'completion', 'steps', 'strokeOffset']));
-    }
-
-    public function getProfileCompletion()
-    {
-        $totalFields = 10;
-        $completed = 0;
-
-        $fields = [
-            $this->fullname,
-            $this->email,
-            $this->mobile,
-            $this->gender,
-            $this->dob,
-            $this->height,
-            $this->religion,
-            $this->photos,
-            $this->horoscope,
-            $this->family_details,
-        ];
-
-        foreach ($fields as $field) {
-            if (!empty($field)) {
-                $completed++;
-            }
-        }
-
-        return round(($completed / $totalFields) * 100);
     }
 
     public function quick_search(Request $request)
