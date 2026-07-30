@@ -59,7 +59,7 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/unlock-contact/{profileId}', [App\Http\Controllers\HomeController::class, 'unlock_contact'])->name('unlock.contact');
     Route::get('memberships', [App\Http\Controllers\MembershipController::class, 'index'])->name('memberships');
     Route::get('referral', [App\Http\Controllers\HomeController::class, 'referral'])->name('referral');
-    Route::get('user-terms-and-conditions', [App\Http\Controllers\HomeController::class, 'terms_conditions'])->name('user-terms-and-conditions');
+    Route::get('terms-and-conditions', [App\Http\Controllers\PagesController::class, 'terms_conditions'])->name('terms-and-conditions');
     Route::get('user-rating', [App\Http\Controllers\HomeController::class, 'rating'])->name('user-rating');
     Route::post('user-rate', [App\Http\Controllers\HomeController::class, 'rating_store'])->name('user-rate');
     Route::get('success_stories', [App\Http\Controllers\HomeController::class, 'success_stories'])->name('success_stories');
@@ -74,6 +74,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('viewed-contacts', [App\Http\Controllers\HomeController::class, 'viewed_contacts'])->name('viewed-contacts');
     Route::get('view-profile/{id}', [App\Http\Controllers\HomeController::class, 'view_profile'])->name('view-profile');
     Route::get('edit-profile', [App\Http\Controllers\MyMemberController::class, 'edit_profile'])->name('edit-profile');
+    Route::get('change-password', [App\Http\Controllers\MemberController::class, 'changePassword'])->name('change-password');
     Route::post('update-password', [App\Http\Controllers\MemberController::class, 'updatePassword'])->name('update-password');
     Route::get('send-interest/{id}', [App\Http\Controllers\HomeController::class, 'send_interest'])->name('send-interest');
     Route::post('like-profile', [App\Http\Controllers\HomeController::class, 'like_profile'])->name('like-profile');
@@ -88,8 +89,8 @@ Route::middleware('auth:member')->group(function () {
     Route::get('/stats-profiles', [App\Http\Controllers\ProfileController::class, 'stats_profiles'])->name('stats-profiles');
     Route::get('/all-stats-profiles', [App\Http\Controllers\ProfileController::class, 'all_stats_profiles'])->name('all-stats-profiles');
     Route::post('short-profile', [App\Http\Controllers\HomeController::class, 'shortlist_profile'])->name('short-profile');
-    Route::get('user-privacy-policy', [App\Http\Controllers\HomeController::class, 'privacy_policy'])->name('user-privacy-policy');
-    Route::get('user-refund', [App\Http\Controllers\HomeController::class, 'refund'])->name('user-refund');
+    Route::get('privacy-policy', [App\Http\Controllers\PagesController::class, 'privacy_policy'])->name('privacy-policy');
+    Route::get('refund-policy', [App\Http\Controllers\PagesController::class, 'refund'])->name('refund-policy');
     Route::post('/interest/update-status', [App\Http\Controllers\HomeController::class, 'updateInterestStatus'])->name('interest.update.status');
     Route::get('/membership/success', function () {
         return view('dashboard.success');

@@ -65,17 +65,17 @@
         <li><a href="{{ route('advance-search') }}" class="sidebar-nav-item"><i data-lucide="sliders" width="18" height="18"></i><span>Advanced Search</span></a></li>
         <li><a href="{{ route('search-by-profile-id') }}" class="sidebar-nav-item"><i data-lucide="user-search" width="18" height="18"></i><span>Search by Profile ID</span></a></li>
         <li><a href="{{ route('interest-box') }}" class="sidebar-nav-item"><i data-lucide="inbox" width="18" height="18"></i><span>Interest Box</span></a></li>
-        <li><a href="{{ route('view-my-profile')}}" class="sidebar-nav-item"><i data-lucide="eye" width="18" height="18"></i><span>View My Profile</span></a></li>
-        <li><a href="#" class="sidebar-nav-item"><i data-lucide="key-round" width="18" height="18"></i><span>Change Password</span></a></li>
+        <li><a href="{{ route('view-my-profile') }}" class="sidebar-nav-item"><i data-lucide="eye" width="18" height="18"></i><span>View My Profile</span></a></li>
+        <li><a href="{{ route('change-password') }}" class="sidebar-nav-item"><i data-lucide="key-round" width="18" height="18"></i><span>Change Password</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="phone" width="18" height="18"></i><span>Viewed Contact</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="gift" width="18" height="18"></i><span>Refer &amp; Earn</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="trophy" width="18" height="18"></i><span>Success Stories</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="user-x" width="18" height="18"></i><span>Delete Profile</span></a></li>
-        <li><a href="#" class="sidebar-nav-item"><i data-lucide="file-text" width="18" height="18"></i><span>Refund &amp; Cancellation</span></a></li>
-        <li><a href="#" class="sidebar-nav-item"><i data-lucide="lock" width="18" height="18"></i><span>Privacy Policy</span></a></li>
+        <li><a href="{{route('refund-policy')}}" class="sidebar-nav-item"><i data-lucide="file-text" width="18" height="18"></i><span>Refund &amp; Cancellation</span></a></li>
+        <li><a href="{{ route('privacy-policy') }}" class="sidebar-nav-item"><i data-lucide="lock" width="18" height="18"></i><span>Privacy Policy</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="star" width="18" height="18"></i><span>Rate Us</span></a></li>
         <li><a href="tel:9857102002" class="sidebar-nav-item"><i data-lucide="phone-call" width="18" height="18"></i><span>Helpline: 9857102002</span></a></li>
-        <li><a href="#" class="sidebar-nav-item"><i data-lucide="scroll-text" width="18" height="18"></i><span>Terms &amp; Conditions</span></a></li>
+        <li><a href="{{route('terms-and-conditions')}}" class="sidebar-nav-item"><i data-lucide="scroll-text" width="18" height="18"></i><span>Terms &amp; Conditions</span></a></li>
         <li>
           <form method="POST" action="{{ route('logout') }}" class="d-inline">
             @csrf

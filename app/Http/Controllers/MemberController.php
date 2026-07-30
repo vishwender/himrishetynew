@@ -84,6 +84,11 @@ class MemberController extends Controller
         dd(session());
     }
 
+    public function changePassword()
+    {
+        return view('dashboard.profile.change-password');
+    }
+
     public function updatePassword(Request $request)
     {
         $id = Auth::guard('member')->id();

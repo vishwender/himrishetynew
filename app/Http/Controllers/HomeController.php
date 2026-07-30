@@ -1580,18 +1580,6 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Story deleted successfully!');
     }
 
-    public function terms_conditions()
-    {
-        return view('dashboard.terms_and_conditions');
-    }
-    public function privacy_policy()
-    {
-        return view('dashboard.privacy_policy');
-    }
-    public function refund()
-    {
-        return view('dashboard.refund');
-    }
     public function rating()
     {
 
