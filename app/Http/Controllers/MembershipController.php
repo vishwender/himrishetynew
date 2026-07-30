@@ -19,8 +19,10 @@ class MembershipController extends Controller
     public function index()
     {
         $data['memberships'] = membershipType::all();
+        //dd($data['memberships']);
         return view('dashboard.memberships.index', compact('data'));
     }
+
     public function sendSms(Request $request)
     {
         $user = $request->user_id;
@@ -37,7 +39,9 @@ class MembershipController extends Controller
     {
         $data['membership'] = MembershipType::where('id', $id)->first();
         $data['plans'] = MembershipPlan::where('membership_type', $id)->get();
-        return view('dashboard.layouts.modal', compact('data'));
+        //dd($data['plans']);
+        return view('dashboard.memberships.plan', compact('data'));
+        //return view('dashboard.layouts.modal', compact('data'));
     }
 
     public function buyPlan($planId)
