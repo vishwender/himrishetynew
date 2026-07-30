@@ -9,5 +9,11 @@ class DeleteProfile extends Model
 {
     use HasFactory;
     protected $table = "delete_profile_request";
+    protected $fillable = [
+        'user_id',
+        'reason',
+        'date',
+        'status',
+    ];
     public $timestamps = false;
 }

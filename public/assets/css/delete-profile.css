@@ -103,6 +103,25 @@
     background:#cf0d52;
 }
 
+.ep-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #333;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transition: .3s;
+    z-index: 9999;
+}
+
+.ep-toast.show {
+    opacity: 1;
+    visibility: visible;
+}
+
 @media(max-width:768px){
 
     .delete-wrapper{

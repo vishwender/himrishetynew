@@ -76,55 +76,14 @@
     </div>
 
 </main>
+<div id="epSuccessToast" class="ep-toast">
+    <span id="epToastMsg"></span>
+</div>
 
 @endsection
 
 @section('scripts')
 
-<script>
-    const radios = document.querySelectorAll('input[name="reason"]');
-    const otherBox = document.getElementById('otherReasonWrapper');
-
-    radios.forEach(radio => {
-
-        radio.addEventListener('change', function() {
-
-            if (this.value === 'Other') {
-                otherBox.style.display = 'block';
-            } else {
-                otherBox.style.display = 'none';
-            }
-
-        });
-
-    });
-
-
-    document.getElementById('deleteProfileForm').addEventListener('submit', function(e) {
-
-        e.preventDefault();
-
-        if (!confirm('Are you sure you want to permanently delete your profile?')) {
-            return;
-        }
-
-        // Call your API here
-
-        /*
-        fetch('/delete-profile',{
-            method:'POST',
-            headers:{
-                'X-CSRF-TOKEN':document.querySelector('input[name="_token"]').value,
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({
-                reason:document.querySelector('input[name="reason"]:checked').value,
-                other_reason:document.querySelector('textarea')?.value
-            })
-        })
-        */
-
-    });
-</script>
+<script src="{{ asset('assets/js/delete-profile.js') }}"></script>
 
 @endsection

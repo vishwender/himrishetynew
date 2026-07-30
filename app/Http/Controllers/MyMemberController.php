@@ -26,6 +26,7 @@ use App\Models\ProfileCreatedFor;
 use App\Models\Countrie;
 use App\Models\City;
 use App\Models\FamilyStatus;
+use App\Models\DeleteProfile;
 
 class MyMemberController extends Controller
 {
@@ -590,5 +591,24 @@ class MyMemberController extends Controller
     {
 
         return view('dashboard.profile.delete');
+    }
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+        ]);
+
+        DeleteProfile::create([
+            'user_id' => Auth::guard('member')->id(),
+            'reason'  => $request->reason,
+            'date'    => Carbon::now()->format('Y-m-d'),
+            'status'  => 0, // 0 = Pending
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your profile deletion request has been sent to the administrator.'
+        ]);
     }
 }
