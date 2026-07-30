@@ -74,6 +74,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('viewed-contacts', [App\Http\Controllers\HomeController::class, 'viewed_contacts'])->name('viewed-contacts');
     Route::get('view-profile/{id}', [App\Http\Controllers\HomeController::class, 'view_profile'])->name('view-profile');
     Route::get('edit-profile', [App\Http\Controllers\MyMemberController::class, 'edit_profile'])->name('edit-profile');
+    Route::get('delete-profile', [App\Http\Controllers\MyMemberController::class, 'delete_profile'])->name('delete-profile');
     Route::get('change-password', [App\Http\Controllers\MemberController::class, 'changePassword'])->name('change-password');
     Route::post('update-password', [App\Http\Controllers\MemberController::class, 'updatePassword'])->name('update-password');
     Route::get('send-interest/{id}', [App\Http\Controllers\HomeController::class, 'send_interest'])->name('send-interest');

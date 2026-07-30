@@ -585,4 +585,10 @@ class MyMemberController extends Controller
         $user->save();
         return response()->json(['success' => true, 'message' => 'Profile Updated Successfully']);
     }
+
+    public function delete_profile()
+    {
+
+        return view('dashboard.profile.delete');
+    }
 }
