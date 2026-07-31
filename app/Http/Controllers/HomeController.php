@@ -1181,7 +1181,7 @@ class HomeController extends Controller
     public function view_my_profile()
     {
         $profile = Auth::guard('member')->user();
-        //dd($profile);
+
         $profilegallery = $profile->photos()->get();
         if (!empty($profile->photo)) {
             $profile->photo = 'https://himrishtey.com/photos/photo/' . $profile->photo;
@@ -1208,7 +1208,8 @@ class HomeController extends Controller
         $ageDiff   = $birthDate->diff(Carbon::today());
         $profile->age_years  = $ageDiff->y;
         $profile->age_months = $ageDiff->m;
-        return view('dashboard.view-my-profile', compact('profile', 'profilegallery'));
+        //dd($profile);
+        return view('dashboard.profile.view-my-profile', compact('profile', 'profilegallery'));
     }
 
     public function viewed_contacts()
