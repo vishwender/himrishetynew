@@ -21,6 +21,7 @@ use App\Models\SuccessStory;
 use App\Models\MaritalStatus;
 use App\Models\MemberWallet;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
 
 use App\Services\EmailService;
 use App\Services\NimbusSmsService;
@@ -1222,7 +1223,7 @@ class HomeController extends Controller
                 'viewed_contacts.member_id',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
-            ->where('viewed_contacts.member_id', $id)
+            ->where('viewed_contacts.member_id', '1026')
             ->where('members.profile_hide', '!=', 'yes')
             ->where('members.active', 'Yes')
             ->orderBy('viewed_contacts.id', 'asc')
@@ -1263,10 +1264,11 @@ class HomeController extends Controller
             }
 
             // Merge original record into array (convert stdClass → array)
+
             $data['contacts'][$key] = array_merge((array) $recent, $data['contacts'][$key]);
         }
-
-        return view('dashboard.viewed_contacts', compact('data'));
+        //dd($data);
+        return view('dashboard.viewed_contacts.index', compact('data'));
     }
 
     public function view_profile($profileId, EmailService $emailService)
@@ -1624,21 +1626,49 @@ class HomeController extends Controller
 
     public function rating_store(Request $request)
     {
-        $request->validate([
-            'stars' => 'required',
+        $validator = Validator::make($request->all(), [
+            'stars'    => 'required|numeric|min:0.5|max:5',
             'feedback' => 'nullable|string|max:1000',
+        ], [
+            'stars.required' => 'Please select a rating.',
+            'stars.numeric'  => 'Invalid rating selected.',
+            'stars.min'      => 'Rating must be at least 0.5 stars.',
+            'stars.max'      => 'Rating cannot be greater than 5 stars.',
+            'feedback.max'   => 'Feedback cannot exceed 1000 characters.',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        // If rating is greater than 3.5, frontend should redirect.
+        // Just return the URL.
+        if ($request->stars > 3.5) {
+            return response()->json([
+                'success' => true,
+                'redirect' => true,
+                'url' => 'https://g.page/r/Caot8HkRuvFYEAE/review'
+            ]);
+        }
+
         \DB::table('user_rating')->insert([
-            'profile_id' => Auth::guard('member')->user()->profile_id,
-            'name' => Auth::guard('member')->user()->full_name,
-            'email' => Auth::guard('member')->user()->email,
-            'rating' => $request->stars,
-            'description' => $request->feedback,
+            'profile_id'   => Auth::guard('member')->user()->profile_id,
+            'name'         => Auth::guard('member')->user()->full_name,
+            'email'        => Auth::guard('member')->user()->email,
+            'rating'       => $request->stars,
+            'description'  => $request->feedback,
             'submitted_on' => now(),
         ]);
 
-        return response()->json(['message' => 'Rating submitted successfully!']);
+        return response()->json([
+            'success' => true,
+            'redirect' => false,
+            'message' => 'Thank you for your valuable feedback.'
+        ]);
     }
 
     public function unlock_contact(Request $request, $profileId)

@@ -28,7 +28,7 @@
                     class="vc-image"
                     alt="{{ $member['full_name'] }}">
 
-                @if($member['profile_completed'] == 100)
+                @if($member['member_type'] == 'verified')
                 <span class="verified-badge">
                     <i data-lucide="badge-check"></i>
                 </span>

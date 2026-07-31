@@ -20,6 +20,7 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
+  <link rel="stylesheet" href="{{ asset('assets/css/rateus.css') }}" />
   @yield('styles')
 </head>
 
@@ -67,13 +68,13 @@
         <li><a href="{{ route('interest-box') }}" class="sidebar-nav-item"><i data-lucide="inbox" width="18" height="18"></i><span>Interest Box</span></a></li>
         <li><a href="{{ route('view-my-profile') }}" class="sidebar-nav-item"><i data-lucide="eye" width="18" height="18"></i><span>View My Profile</span></a></li>
         <li><a href="{{ route('change-password') }}" class="sidebar-nav-item"><i data-lucide="key-round" width="18" height="18"></i><span>Change Password</span></a></li>
-        <li><a href="#" class="sidebar-nav-item"><i data-lucide="phone" width="18" height="18"></i><span>Viewed Contact</span></a></li>
+        <li><a href="{{ route('viewed-contacts') }}" class="sidebar-nav-item"><i data-lucide="phone" width="18" height="18"></i><span>Viewed Contact</span></a></li>
         <li><a href="#" class="sidebar-nav-item"><i data-lucide="gift" width="18" height="18"></i><span>Refer &amp; Earn</span></a></li>
         <li><a href="{{ route('success-stories') }}" class="sidebar-nav-item"><i data-lucide="trophy" width="18" height="18"></i><span>Success Stories</span></a></li>
         <li><a href="{{ route('delete-profile') }}" class="sidebar-nav-item"><i data-lucide="user-x" width="18" height="18"></i><span>Delete Profile</span></a></li>
         <li><a href="{{route('refund-policy')}}" class="sidebar-nav-item"><i data-lucide="file-text" width="18" height="18"></i><span>Refund &amp; Cancellation</span></a></li>
         <li><a href="{{ route('privacy-policy') }}" class="sidebar-nav-item"><i data-lucide="lock" width="18" height="18"></i><span>Privacy Policy</span></a></li>
-        <li><a href="#" class="sidebar-nav-item"><i data-lucide="star" width="18" height="18"></i><span>Rate Us</span></a></li>
+        <li><a href="javascript:void(0)" class="sidebar-nav-item" id="openRateModal"><i data-lucide="star" width="18" height="18"></i><span>Rate Us</span></a></li>
         <li><a href="tel:9857102002" class="sidebar-nav-item"><i data-lucide="phone-call" width="18" height="18"></i><span>Helpline: 9857102002</span></a></li>
         <li><a href="{{route('terms-and-conditions')}}" class="sidebar-nav-item"><i data-lucide="scroll-text" width="18" height="18"></i><span>Terms &amp; Conditions</span></a></li>
         <li>
@@ -201,6 +202,38 @@
       <p class="footer-copy">© 2026 HimRishtey. All rights reserved.</p>
     </div>
   </footer>
+
+  <!-- Rate Us Modal -->
+  <div class="rate-modal-overlay" id="rateModal">
+    <div class="rate-modal">
+
+      <button class="rate-close" id="closeRateModal">
+        &times;
+      </button>
+
+      <h2>Rate Us</h2>
+
+      <div class="rating-stars" id="ratingStars">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+      </div>
+
+      <input type="hidden" id="ratingValue" value="0">
+
+      <textarea
+        id="review"
+        placeholder="Enter your feedback here..."
+        maxlength="500"></textarea>
+
+      <button class="rate-submit">
+        Submit
+      </button>
+
+    </div>
+  </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -8,6 +8,178 @@
   /* ---- THEME TOGGLE ---- */
   const html = document.documentElement;
   const themeToggle = document.querySelector('[data-theme-toggle]');
+  const modal = document.getElementById("rateModal");
+  const openBtn = document.getElementById("openRateModal");
+  const closeBtn = document.getElementById("closeRateModal");
+  const submitBtn = document.querySelector(".rate-submit");
+  const ratingContainer = document.getElementById("ratingStars");
+  const ratingInput = document.getElementById("ratingValue");
+  const stars = document.querySelectorAll("#ratingStars .star");
+
+  if (!modal) return;
+  let selectedRating = 0;
+
+  openBtn?.addEventListener("click", function (e) {
+        e.preventDefault();
+        
+        modal.classList.add("show");
+  });
+
+  closeBtn?.addEventListener("click", function () {
+        modal.classList.remove("show");
+  });
+
+  modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
+            modal.classList.remove("show");
+        }
+  });
+
+  function paintStars(rating){
+
+    stars.forEach(star=>{
+
+        const value = Number(star.dataset.value);
+
+        star.classList.remove("full","half");
+
+        if(value <= Math.floor(rating)){
+            star.classList.add("full");
+        }
+        else if(value - 0.5 === rating){
+            star.classList.add("half");
+        }
+
+    });
+  }
+
+  stars.forEach(star=>{
+
+    star.addEventListener("mousemove",function(e){
+
+        const rect = this.getBoundingClientRect();
+
+        const isHalf = (e.clientX - rect.left) < rect.width/2;
+
+        const rating = Number(this.dataset.value) - (isHalf ? 0.5 : 0);
+
+        paintStars(rating);
+
+    });
+
+    star.addEventListener("mouseleave",function(){
+
+        paintStars(selectedRating);
+
+    });
+
+    star.addEventListener("click",function(e){
+
+        const rect = this.getBoundingClientRect();
+
+        const isHalf = (e.clientX - rect.left) < rect.width/2;
+
+        selectedRating = Number(this.dataset.value) - (isHalf ? 0.5 : 0);
+
+        ratingInput.value = selectedRating;
+
+        document.querySelector(".rate-submit").dataset.rating = selectedRating;
+
+        paintStars(selectedRating);
+
+    });
+
+  });
+
+document.querySelector(".rate-submit").addEventListener("click", function () {
+
+    const submitBtn = this;
+    const rating = submitBtn.dataset.rating || 0;
+    const review = document.getElementById("review").value.trim();
+
+    if (rating == 0) {
+        alert("Please select a rating.");
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Submitting...";
+
+    fetch("/user-rate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            stars: rating,
+            feedback: review
+        })
+    })
+    .then(async response => {
+        const data = await response.json();
+
+        if (!response.ok) {
+            // Validation errors
+            if (data.errors) {
+                let messages = [];
+
+                Object.keys(data.errors).forEach(function (key) {
+                    messages.push(data.errors[key][0]);
+                });
+
+                throw new Error(messages.join("\n"));
+            }
+
+            throw new Error(data.message || "Something went wrong.");
+        }
+
+        return data;
+    })
+    .then(data => {
+
+        if (data.redirect) {
+
+            modal.classList.remove("show");
+
+            // Reset form
+            document.getElementById("review").value = "";
+            document.getElementById("ratingValue").value = 0;
+            submitBtn.dataset.rating = 0;
+
+            document.querySelectorAll(".rating-stars .star").forEach(star => {
+                star.classList.remove("active", "half");
+            });
+
+            window.open(data.url, "_blank");
+            return;
+        }
+
+        alert(data.message);
+
+        // Reset form
+        document.getElementById("review").value = "";
+        document.getElementById("ratingValue").value = 0;
+        submitBtn.dataset.rating = 0;
+
+        document.querySelectorAll(".rating-stars .star").forEach(star => {
+            star.classList.remove("active", "half");
+        });
+
+        modal.classList.remove("show");
+    })
+    .catch(error => {
+        alert(error.message);
+        console.error(error);
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit";
+    });
+
+});
+
 
   let currentTheme = (() => {
     try {
