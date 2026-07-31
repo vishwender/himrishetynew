@@ -62,7 +62,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('terms-and-conditions', [App\Http\Controllers\PagesController::class, 'terms_conditions'])->name('terms-and-conditions');
     Route::get('user-rating', [App\Http\Controllers\HomeController::class, 'rating'])->name('user-rating');
     Route::post('user-rate', [App\Http\Controllers\HomeController::class, 'rating_store'])->name('user-rate');
-    Route::get('success_stories', [App\Http\Controllers\HomeController::class, 'success_stories'])->name('success_stories');
+    Route::get('success-stories', [App\Http\Controllers\HomeController::class, 'success_stories'])->name('success-stories');
     Route::post('stories_store', [App\Http\Controllers\HomeController::class, 'stories_store'])->name('stories_store');
     Route::put('/success-stories/{id}', [App\Http\Controllers\HomeController::class, 'update'])->name('stories_update');
     Route::delete('/success-stories/{id}', [App\Http\Controllers\HomeController::class, 'destroy'])->name('stories_delete');

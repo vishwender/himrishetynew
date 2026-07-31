@@ -1509,60 +1509,96 @@ class HomeController extends Controller
 
         $success_stories = SuccessStory::where('user_id', $userId)->get();
 
-        return view('dashboard.success_stories', compact('success_stories'));
+        return view('dashboard.success_stories.success-stories', compact('success_stories'));
     }
 
 
     public function stories_store(Request $request)
     {
         $request->validate([
-            'groom_name' => 'required|string|max:255',
-            'bride_name' => 'required|string|max:255',
-            'photo'      => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'detail'     => 'required|string',
+            'groom_name' => 'required|max:255',
+            'bride_name' => 'required|max:255',
+            'detail'     => 'required',
+            'photo'      => 'required|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+        $imageName = null;
+
+        if ($request->hasFile('photo')) {
+
             $image = $request->file('photo');
-            $imageName = 'story-image-' . time() . '.' . $image->getClientOriginalExtension();
-            $originalImagePath = public_path('../../photos/ss/');
-            $image->move($originalImagePath, $imageName);
+
+            $imageName = 'story_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+
+            $destination =  public_path('uploads/success-stories');
+            //dd(public_path('../../photos/ss')); -- change this on live 
+
+            if (!File::exists($destination)) {
+                File::makeDirectory($destination, 0755, true);
+            }
+
+            $image->move($destination, $imageName);
         }
 
         SuccessStory::create([
             'groom_name' => $request->groom_name,
             'bride_name' => $request->bride_name,
-            'photo'      => $imageName,
             'detail'     => $request->detail,
-            'user_id'    => Auth::guard('member')->user()->id
+            'photo'      => $imageName,
+            'user_id'    => Auth::guard('member')->id(),
         ]);
 
-        return redirect()->back()->with('success', 'Your story has been posted successfully!');
+        return response()->json([
+            'status' => true,
+            'message' => 'Story submitted successfully. It will be reviewed before publishing.'
+        ]);
+
+        //return redirect()->back()->with('success', 'Your story has been posted successfully!');
     }
     public function update(Request $request, $id)
     {
         $story = SuccessStory::findOrFail($id);
 
         $request->validate([
-            'groom_name' => 'required|string|max:255',
-            'bride_name' => 'required|string|max:255',
-            'photo'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'detail'     => 'required|string',
+            'groom_name' => 'required|max:255',
+            'bride_name' => 'required|max:255',
+            'detail'     => 'required',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
         if ($request->hasFile('photo')) {
-            if (File::exists(public_path('../../photos/ss/' . $story->photo))) {
-                File::delete(public_path('../../photos/ss/' . $story->photo));
+
+            $destination = public_path('../../photos/ss');
+
+
+            if (!empty($story->photo)) {
+
+                $oldFile = $destination . '/' . $story->photo;
+
+                if (File::exists($oldFile)) {
+                    File::delete($oldFile);
+                }
             }
-            $photoName = time() . '_' . $request->photo->getClientOriginalName();
-            $request->photo->move(public_path('../../photos/ss'), $photoName);
-            $story->photo = $photoName;
+
+            $image = $request->file('photo');
+
+            $imageName = 'story_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+
+            $image->move($destination, $imageName);
+
+            $story->photo = $imageName;
         }
 
         $story->groom_name = $request->groom_name;
         $story->bride_name = $request->bride_name;
-        $story->detail     = $request->detail;
+        $story->detail = $request->detail;
+
         $story->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Story updated successfully.'
+        ]);
 
         return redirect()->back()->with('success', 'Story updated successfully!');
     }

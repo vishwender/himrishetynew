@@ -229,26 +229,45 @@
 
     // Form submit
     form?.addEventListener('submit', async e => {
-      e.preventDefault();
-      const groom = document.getElementById('ssGroomName')?.value.trim();
-      const bride = document.getElementById('ssBrideName')?.value.trim();
-      const desc  = document.getElementById('ssStoryText')?.value.trim();
+    e.preventDefault();
 
-      if (!groom || !bride || !desc || !base64Image) {
-        if (errorEl) errorEl.removeAttribute('hidden');
-        return;
-      }
-      if (errorEl) errorEl.setAttribute('hidden', '');
+    const formData = new FormData();
 
-      setSubmitting(true);
+    formData.append('groom_name', document.getElementById('ssGroomName').value);
+    formData.append('bride_name', document.getElementById('ssBrideName').value);
+    formData.append('detail', document.getElementById('ssStoryText').value);
 
-      // TODO: Replace with real API call
-      await fakeSubmit({ groom_name: groom, bride_name: bride, description: desc, image: base64Image });
+    if (photoInput.files.length) {
+        formData.append('photo', photoInput.files[0]);
+    }
 
-      setSubmitting(false);
-      closeModal();
-      showToast('Thanks! Your story has been submitted and will be reviewed soon. 💕');
-    });
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+    setSubmitting(true);
+
+    try {
+        const response = await fetch('/stories_store', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        setSubmitting(false);
+
+        if (result.status) {
+            closeModal();
+            showToast(result.message);
+        } else {
+            showToast(result.message);
+        }
+
+    } catch (e) {
+        setSubmitting(false);
+        showToast('Something went wrong.');
+        console.log(e);
+    }
+  });
 
     function setSubmitting(state) {
       const label  = document.querySelector('.ss-btn-label');
