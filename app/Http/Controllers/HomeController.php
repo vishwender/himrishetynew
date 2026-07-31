@@ -1223,7 +1223,7 @@ class HomeController extends Controller
                 'viewed_contacts.member_id',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
-            ->where('viewed_contacts.member_id', '1026')
+            ->where('viewed_contacts.member_id', '$id')
             ->where('members.profile_hide', '!=', 'yes')
             ->where('members.active', 'Yes')
             ->orderBy('viewed_contacts.id', 'asc')
