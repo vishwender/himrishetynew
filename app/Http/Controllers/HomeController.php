@@ -1224,7 +1224,7 @@ class HomeController extends Controller
                 'viewed_contacts.member_id',
                 DB::raw("DATE_FORMAT(members.birth_date_time, '%d-%m-%Y %I:%i:%S %p') as birthdatetime")
             )
-            ->where('viewed_contacts.member_id', '$id')
+            ->where('viewed_contacts.member_id', $id)
             ->where('members.profile_hide', '!=', 'yes')
             ->where('members.active', 'Yes')
             ->orderBy('viewed_contacts.id', 'asc')
@@ -1274,13 +1274,14 @@ class HomeController extends Controller
 
     public function view_profile($profileId, EmailService $emailService)
     {
-        // dd($profileId);
+
         $data['user_id'] = Auth::guard('member')->user()->id;
-        $profilemain = Member::findOrFail($profileId);
+        $profilemain = Member::where('profile_id', $profileId)->firstOrFail();
         $data['photos'] = $profilemain->photos()->get();
         $data['profile_id'] = $profileId;
+        //dd($data);
         $usr = DB::table('members')
-            ->where('id', $data['profile_id'])
+            ->where('profile_id', $data['profile_id'])
             ->where('profile_hide', '!=', 'yes')
             ->where('active', 'Yes')
             ->first();
@@ -1294,7 +1295,7 @@ class HomeController extends Controller
             ->where('member_id', $data['user_id'])
             ->where('profile_id', $data['profile_id'])
             ->first();
-        dd($profile);
+        //dd($profile);
         // Shortlisted count
         $short = DB::table('short_listed')
             ->where('member_id', $data['user_id'])
@@ -1426,8 +1427,8 @@ class HomeController extends Controller
         $usr->age_years  = $diff->y;
         $usr->age_months = $diff->m;
 
-        dd($usr);
-        return view('dashboard.view_profile', compact('usr', 'data', 'wallet'));
+        //dd($usr);
+        return view('dashboard.profile.view-profile', compact('usr', 'data', 'wallet'));
     }
 
     public function send_interest(Request $request, EmailService $emailservice, NimbusSmsService $messageService, $id)
