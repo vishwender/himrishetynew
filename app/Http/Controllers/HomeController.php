@@ -1502,7 +1502,7 @@ class HomeController extends Controller
     public function referral()
     {
 
-        return view('dashboard.referral');
+        return view('dashboard.referral.referral');
     }
 
     public function success_stories()
