@@ -60,57 +60,93 @@
 
     <!-- ===================== HERO / PHOTO CAROUSEL ===================== -->
     <section class="pd-hero">
+
         <div class="pd-hero-carousel" id="heroCarousel">
-            <!-- Slides injected by JS or static placeholders -->
-            <div class="pd-slide active" style="background: linear-gradient(135deg, #fde8f0 0%, #f4adc7 100%);">
-                <div class="pd-slide-placeholder">
-                    <i data-lucide="user" width="64" height="64"></i>
-                </div>
+
+            {{-- Main Profile Photo --}}
+            @if(!empty($profile->photo))
+            <div class="pd-slide active">
+                <img
+                    src="{{ $profile->photo }}"
+                    class="pd-slide-image"
+                    alt="{{ $profile->full_name }}"
+                    loading="lazy">
             </div>
-            <div class="pd-slide" style="background: linear-gradient(135deg, #f5f0ff 0%, #c8b0ff 100%);">
-                <div class="pd-slide-placeholder">
-                    <i data-lucide="image" width="64" height="64"></i>
-                </div>
-            </div>
-            <div class="pd-slide" style="background: linear-gradient(135deg, #fff4ec 0%, #ffc399 100%);">
-                <div class="pd-slide-placeholder">
-                    <i data-lucide="image" width="64" height="64"></i>
-                </div>
+            @endif
+
+            {{-- Gallery Photos --}}
+            @foreach($profilegallery as $photo)
+
+            <div class="pd-slide">
+
+                <img
+                    src="{{ asset('uploads/gallery/'.$photo->photo) }}"
+                    class="pd-slide-image"
+                    alt="{{ $profile->full_name }}"
+                    loading="lazy">
+
             </div>
 
-            <!-- Slide indicators -->
+            @endforeach
+
+            {{-- Fallback if no images exist --}}
+            @if(empty($profile->photo) && count($profilegallery) == 0)
+
+            <div class="pd-slide active">
+
+                <div class="pd-slide-placeholder">
+                    <i data-lucide="user" width="70" height="70"></i>
+                </div>
+
+            </div>
+
+            @endif
+
+            <!-- Indicators -->
             <div class="pd-slide-dots" id="slideDots"></div>
 
             <!-- Prev / Next -->
-            <button class="pd-slide-nav pd-slide-prev" id="slidePrev" aria-label="Previous photo">
+            <button class="pd-slide-nav pd-slide-prev" id="slidePrev">
                 <i data-lucide="chevron-left" width="22" height="22"></i>
             </button>
-            <button class="pd-slide-nav pd-slide-next" id="slideNext" aria-label="Next photo">
+
+            <button class="pd-slide-nav pd-slide-next" id="slideNext">
                 <i data-lucide="chevron-right" width="22" height="22"></i>
             </button>
 
-            <!-- Hero overlay info -->
+            <!-- Overlay -->
             <div class="pd-hero-overlay">
+
                 <div class="pd-hero-meta">
-                    <p class="pd-hero-age">{{$profile->age_years}} | 5'7" ft</p>
-                    <h1 class="pd-hero-name">{{ $profile->full_name }}<span class="pd-hero-id">|{{$profile->profile_id}}</span></h1>
-                    <p class="pd-hero-location">
-                        <i data-lucide="map-pin" width="14" height="14"></i>
-                        {{$profile->city_living_in}}, {{$profile->state_living_in}}
+
+                    <p class="pd-hero-age">
+                        {{ $profile->age_years }}
+                        |
+                        {{ $profile->height }}
                     </p>
+
+                    <h1 class="pd-hero-name">
+                        {{ $profile->full_name }}
+
+                        <span class="pd-hero-id">
+                            | {{ $profile->profile_id }}
+                        </span>
+                    </h1>
+
+                    <p class="pd-hero-location">
+                        <i data-lucide="map-pin" width="14"></i>
+
+                        {{ $profile->city_living_in }},
+                        {{ $profile->state_living_in }}
+
+                    </p>
+
                 </div>
 
-                <!-- Right side action buttons (like / save) -->
-                <!-- <div class="pd-hero-actions">
-                    <button class="pd-hero-fab" id="likeBtn" aria-label="Like profile" title="Like">
-                        <i data-lucide="heart" width="20" height="20"></i>
-                    </button>
-                    <button class="pd-hero-fab" id="shortlistBtn" aria-label="Shortlist profile" title="Shortlist">
-                        <i data-lucide="bookmark" width="20" height="20"></i>
-                    </button>
-                </div> -->
             </div>
+
         </div>
+
     </section>
 
     <!-- ===================== MAIN CONTENT ===================== -->
@@ -455,29 +491,52 @@
     </main>
 
     <!-- ===================== GALLERY LIGHTBOX ===================== -->
-    <div class="pd-gallery-overlay" id="galleryOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Profile Gallery">
+    <div class="pd-gallery-overlay" id="galleryOverlay"
+        aria-hidden="true"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Profile Gallery">
+
         <div class="pd-gallery-modal">
-            <button class="pd-gallery-close" id="galleryClose" aria-label="Close gallery">
+
+            <button class="pd-gallery-close"
+                id="galleryClose"
+                aria-label="Close gallery">
                 <i data-lucide="x" width="22" height="22"></i>
             </button>
+
             <div class="pd-gallery-grid" id="galleryGrid">
+
+                @forelse($profilegallery as $photo)
+
                 <div class="pd-gallery-item">
-                    <div class="pd-gallery-placeholder">
-                        <i data-lucide="user" width="40" height="40"></i>
-                    </div>
+
+                    <img
+                        src="{{ asset('uploads/gallery/'.$photo->photo) }}"
+                        alt="Profile Photo"
+                        class="pd-gallery-image"
+                        loading="lazy">
+
                 </div>
-                <div class="pd-gallery-item">
-                    <div class="pd-gallery-placeholder">
-                        <i data-lucide="image" width="40" height="40"></i>
-                    </div>
+
+                @empty
+
+                <div class="pd-gallery-empty">
+
+                    <i data-lucide="image-off" width="48" height="48"></i>
+
+                    <h5>No Photos Available</h5>
+
+                    <p>This member hasn't uploaded any gallery photos yet.</p>
+
                 </div>
-                <div class="pd-gallery-item">
-                    <div class="pd-gallery-placeholder">
-                        <i data-lucide="image" width="40" height="40"></i>
-                    </div>
-                </div>
+
+                @endforelse
+
             </div>
+
         </div>
+
     </div>
 
     <!-- ===================== UNLOCK MODAL ===================== -->

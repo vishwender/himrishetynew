@@ -13,9 +13,15 @@
         </ol>
     </nav>
     <div class="page-header-actions">
-        <a href="#" class="btn-primary-sm">
-            <i data-lucide="plus" width="15" height="15"></i> Add Photos
-        </a>
+        <button
+            type="button"
+            class="btn-primary-sm"
+            id="openPhotoUpload">
+
+            <i data-lucide="plus" width="15"></i>
+            Add Photos
+
+        </button>
         <a href="#" class="btn-outline-sm">
             <i data-lucide="search" width="15" height="15"></i> Search Profiles
         </a>
@@ -217,9 +223,71 @@
             <p>See who liked you, view contact numbers, and get priority matching with a premium plan.</p>
         </div>
         <div class="upgrade-banner-actions">
-            <a href="#" class="btn-upgrade">View Plans</a>
+            <a href="{{route('memberships')}}" class="btn-upgrade">View Plans</a>
         </div>
     </div>
 </section>
 
+<!-- Upload Photos Modal -->
+<div id="photoUploadModal" class="photo-modal-overlay" aria-hidden="true">
+
+    <div class="photo-modal-box">
+
+        <button id="closePhotoModal" class="photo-close-btn" type="button">
+            <i data-lucide="x"></i>
+        </button>
+
+        <div class="photo-modal-header">
+
+            <div class="photo-icon">
+                <i data-lucide="images"></i>
+            </div>
+
+            <h2>Upload Photos</h2>
+
+            <p>
+                Upload clear, recent photos to make your profile more attractive.
+            </p>
+
+        </div>
+
+        <label for="photoInput" class="photo-upload-area">
+
+            <input
+                type="file"
+                id="photoInput"
+                multiple
+                accept="image/*"
+                hidden>
+
+            <i data-lucide="upload-cloud" class="upload-icon"></i>
+
+            <h4>Choose Photos</h4>
+
+            <span>
+                Click here to browse your photos
+            </span>
+
+            <small>
+                JPG, PNG, WEBP • Maximum 5 MB each
+            </small>
+
+        </label>
+
+        <div id="photoPreview" class="photo-preview-grid">
+            <!-- JS previews -->
+        </div>
+
+        <button class="btn-primary upload-photo-btn" id="uploadPhotos" type="button">
+            <i data-lucide="upload"></i>
+            Upload Photos
+        </button>
+
+    </div>
+
+</div>
+<script>
+    const uploadPhotosUrl = "{{ route('upload-photos') }}";
+</script>
+<script src="{{asset('assets/js/upload-photos.js')}}"></script>
 @endsection

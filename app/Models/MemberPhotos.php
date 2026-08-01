@@ -9,4 +9,13 @@ class MemberPhotos extends Model
 {
     public $timestamps = false;
     use HasFactory;
+
+    protected $table = 'member_photos';
+
+    protected $fillable = [
+        'member_id',
+        'photo',
+        'photo_approved',
+        'photo_privacy',
+    ];
 }

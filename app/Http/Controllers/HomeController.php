@@ -1208,7 +1208,6 @@ class HomeController extends Controller
         $ageDiff   = $birthDate->diff(Carbon::today());
         $profile->age_years  = $ageDiff->y;
         $profile->age_months = $ageDiff->m;
-        //dd($profile);
         return view('dashboard.profile.view-my-profile', compact('profile', 'profilegallery'));
     }
 
@@ -1798,5 +1797,37 @@ class HomeController extends Controller
         );
 
         return $response;
+    }
+
+    public function uploadPhotos(Request $request)
+    {
+        $request->validate([
+            'photos.*' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+        ]);
+
+        $user = Auth::guard('member')->user();
+        $uploadedPhotos = [];
+
+        foreach ($request->file('photos') as $photo) {
+            $imageName = 'photo_' . time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $destination = public_path('uploads/gallery');
+
+            if (!File::exists($destination)) {
+                File::makeDirectory($destination, 0755, true);
+            }
+
+            $photo->move($destination, $imageName);
+
+            // Save photo record in the database
+            $user->photos()->create(['photo' => $imageName]);
+
+            $uploadedPhotos[] = 'https://himrishtey.com/uploads/gallery/' . $imageName;
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Photos uploaded successfully.',
+            'photos' => $uploadedPhotos
+        ]);
     }
 }
