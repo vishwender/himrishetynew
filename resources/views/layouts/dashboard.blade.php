@@ -150,7 +150,7 @@
             <span class="pqv-info-label">Wallet Balance</span>
             <strong class="pqv-info-value">₹{{ Auth::user()->wallet_balance ?? '0' }}</strong>
           </div>
-          <a href="#" class="pqv-link-btn">View Wallet</a>
+          <a href="{{route('wallet.index')}}" class="pqv-link-btn">View Wallet</a>
         </div>
       </div>
 
@@ -167,16 +167,16 @@
             <span class="pqv-info-label">Plan name</span>
             <strong class="pqv-info-value">Gold</strong>
           </div>
-          <a href="#" class="pqv-link-btn">View Membership Plans</a>
+          <a href="{{route('memberships')}}" class="pqv-link-btn">View Membership Plans</a>
         </div>
       </div>
 
       <hr class="pqv-divider" />
 
       <div class="pqv-footer-links">
-        <a href="#">Terms and Conditions</a>
+        <a href="{{route('terms-and-conditions')}}">Terms and Conditions</a>
         <span aria-hidden="true">•</span>
-        <a href="#">Privacy Policy</a>
+        <a href="{{route('privacy-policy')}}">Privacy Policy</a>
       </div>
     </div>
   </div>
@@ -194,10 +194,10 @@
         <p class="footer-tagline">Connecting hearts across Himachal Pradesh &amp; beyond.</p>
       </div>
       <div class="footer-links">
-        <a href="#">Terms &amp; Conditions</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Refund Policy</a>
-        <a href="#">Contact Us</a>
+        <a href="{{route('terms-and-conditions')}}">Terms &amp; Conditions</a>
+        <a href="{{route('privacy-policy')}}">Privacy Policy</a>
+        <a href="{{route('refund-policy')}}">Refund Policy</a>
+        <a href="{{route('contact-us')}}">Contact Us</a>
       </div>
       <p class="footer-copy">© 2026 HimRishtey. All rights reserved.</p>
     </div>
