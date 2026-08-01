@@ -5,7 +5,7 @@
             <h2 class="section-title">Matching Profiles</h2>
             <span class="section-badge primary">For You</span>
         </div>
-        <a href="#" class="section-view-all">View All <i data-lucide="arrow-right" width="14" height="14"></i></a>
+        <a href="{{ route('recent-profiles', ['profile' => 'matching']) }}" class="section-view-all">View All <i data-lucide="arrow-right" width="14" height="14"></i></a>
     </div>
     <div class="profile-scroll-track" role="list">
 
@@ -17,18 +17,24 @@
         ])
 
         @empty
+        <div class="profile-empty-state">
 
-        <article class="profile-card" role="listitem">
-            <div class="profile-card-body">
-                <h3 class="profile-card-name">
-                    No matching profiles found.
-                </h3>
-
-                <p class="profile-card-meta">
-                    Try updating your partner preferences to see more matches.
-                </p>
+            <div class="profile-empty-icon">
+                <i data-lucide="users" width="48" height="48"></i>
             </div>
-        </article>
+
+            <h3>No matching profiles yet</h3>
+
+            <p>
+                No profiles match your criteria.
+                Try updating your preferences to see more matches.
+            </p>
+
+            <a href="{{ route('edit-profile') }}" class="btn btn-primary">
+                Complete Profile
+            </a>
+
+        </div>
 
         @endforelse
 

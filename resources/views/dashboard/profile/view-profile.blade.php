@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Profile Detail – HimRishtey</title>
 
     <!-- Google Fonts -->
@@ -28,19 +29,19 @@
     <!-- ===================== NAVBAR ===================== -->
     <nav class="pd-navbar">
         <div class="pd-navbar-inner">
-            <a href="index.html" class="pd-back-btn" aria-label="Go back">
+            <a href="{{route('home')}}" class="pd-back-btn" aria-label="Go back">
                 <i data-lucide="arrow-left" width="20" height="20"></i>
                 <span>Back</span>
             </a>
 
-            <a href="index.html" class="pd-brand" aria-label="HimRishtey Home">
+            <a href="{{route('home')}}" class="pd-brand" aria-label="HimRishtey Home">
                 <!-- <svg width="28" height="28" viewBox="0 0 36 36" fill="none" aria-hidden="true">
         <circle cx="18" cy="18" r="18" fill="#D92768"/>
         <path d="M18 8 C13 8 9 12 9 17 C9 22 14 26 18 29 C22 26 27 22 27 17 C27 12 23 8 18 8Z" fill="white" opacity="0.92"/>
         <path d="M14 17 C14 15 16 13 18 13 C20 13 22 15 22 17" stroke="#D92768" stroke-width="2" stroke-linecap="round" fill="none"/>
       </svg>
       <span>Him<span class="text-primary-accent">Rishtey</span></span> -->
-                <img src="assets/images/logo.png" alt="Himrishtey Logo" class="navbar-logo">
+                <img src="{{asset('assets/images/logo.png')}}" alt="Himrishtey Logo" class="navbar-logo">
             </a>
 
             <div class="pd-navbar-actions">
@@ -92,11 +93,11 @@
             <!-- Hero overlay info -->
             <div class="pd-hero-overlay">
                 <div class="pd-hero-meta">
-                    <p class="pd-hero-age">28y | 5'7" ft</p>
-                    <h1 class="pd-hero-name">Rahul Thakur <span class="pd-hero-id">| HR-20489</span></h1>
+                    <p class="pd-hero-age">{{$usr->age_years}} | 5'7" ft</p>
+                    <h1 class="pd-hero-name">{{ $usr->full_name }}<span class="pd-hero-id">|{{$usr->profile_id}}</span></h1>
                     <p class="pd-hero-location">
                         <i data-lucide="map-pin" width="14" height="14"></i>
-                        Mandi, Himachal Pradesh
+                        {{$usr->city_living_in}}, {{$usr->state_living_in}}
                     </p>
                 </div>
 
@@ -143,13 +144,13 @@
                     </div>
                     <div class="pd-section-body">
                         <p class="pd-about-text">
-                            I am a 28-year-old professional from Mandi, Himachal Pradesh. I am looking for a compatible life partner who shares similar values and family background.
+                            {{ $usr->about_me }}
                         </p>
                         <p class="pd-meta-line">
-                            Created by <strong>Self</strong> &nbsp;·&nbsp; 28 years &nbsp;·&nbsp; Profile ID: <strong>HR-20489</strong> &nbsp;·&nbsp; Hindu &nbsp;·&nbsp; Rajput &nbsp;·&nbsp; Mandi
+                            Created by <strong>{{$usr->profile_created_for}}</strong> &nbsp;·&nbsp; {{$usr->age_years}} years &nbsp;·&nbsp; Profile ID: <strong>{{$usr->profile_id }}</strong> &nbsp;·&nbsp; {{$usr->religion }} &nbsp;·&nbsp; {{$usr->cast}} &nbsp;·&nbsp; {{$usr->city_living_in}}
                         </p>
                         <div class="pd-tags">
-                            <span class="pd-tag">Never Married</span>
+                            <span class="pd-tag">{{$usr->marital_status}}</span>
                         </div>
                     </div>
                 </div>
@@ -206,23 +207,23 @@
                         <div class="pd-info-grid">
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Community</span>
-                                <span class="pd-info-value">Rajput</span>
+                                <span class="pd-info-value">{{$usr->cast}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Sub Community</span>
-                                <span class="pd-info-value">N/A</span>
+                                <span class="pd-info-value">{{$usr->sub_cast}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Gotra</span>
-                                <span class="pd-info-value">Kashyap</span>
+                                <span class="pd-info-value">{{$usr->gotra}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Native Place</span>
-                                <span class="pd-info-value">Mandi, HP</span>
+                                <span class="pd-info-value">{{$usr->native_place}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Mother Tongue</span>
-                                <span class="pd-info-value">Hindi / Pahadi</span>
+                                <span class="pd-info-value">{{$usr->mother_tongue}}</span>
                             </div>
                         </div>
                     </div>
@@ -287,35 +288,35 @@
                         <div class="pd-info-grid">
                             <div class="pd-info-row pd-info-row--full">
                                 <span class="pd-info-label">About Education & Career</span>
-                                <span class="pd-info-value">Completed B.Tech in Computer Science | Working as Software Engineer</span>
+                                <span class="pd-info-value">{{$usr->about_my_education}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Education</span>
-                                <span class="pd-info-value">B.Tech – Computer Science</span>
+                                <span class="pd-info-value">{{$usr->education}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Other Qualification</span>
-                                <span class="pd-info-value">N/A</span>
+                                <span class="pd-info-value">{{$usr->any_other_qualifications}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Employed In</span>
-                                <span class="pd-info-value">Private Sector</span>
+                                <span class="pd-info-value">{{$usr->employed_in}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Occupation</span>
-                                <span class="pd-info-value">Software Engineer</span>
+                                <span class="pd-info-value">{{$usr->occupation}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Currently Working At</span>
-                                <span class="pd-info-value">Tech Company, Bangalore</span>
+                                <span class="pd-info-value">{{$usr->organization_name}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Job Location</span>
-                                <span class="pd-info-value">Bengaluru, Karnataka</span>
+                                <span class="pd-info-value">{{$usr->job_location}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Annual Income</span>
-                                <span class="pd-info-value">8 – 10 Lacs</span>
+                                <span class="pd-info-value">{{$usr->annual_income}}</span>
                             </div>
                         </div>
                     </div>
@@ -333,31 +334,31 @@
                         <div class="pd-info-grid">
                             <div class="pd-info-row pd-info-row--full">
                                 <span class="pd-info-label">About My Family</span>
-                                <span class="pd-info-value">We are a close-knit, traditional Himachali family living in Mandi.</span>
+                                <span class="pd-info-value">{{$usr->about_family}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Father's Occupation</span>
-                                <span class="pd-info-value">Government Employee (Retired)</span>
+                                <span class="pd-info-value">{{$usr->father_occupation}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Mother's Occupation</span>
-                                <span class="pd-info-value">Homemaker</span>
+                                <span class="pd-info-value">{{$usr->mother_occupation}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Brothers</span>
-                                <span class="pd-info-value">1 (Married)</span>
+                                <span class="pd-info-value">{{$usr->no_of_brothers}} ({{ $usr->married_brothers }} Married)</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Sisters</span>
-                                <span class="pd-info-value">1 (Married)</span>
+                                <span class="pd-info-value">{{$usr->no_of_sisters}} ({{ $usr->married_sisters }} Married)</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Native Place</span>
-                                <span class="pd-info-value">Mandi, Himachal Pradesh</span>
+                                <span class="pd-info-value">{{$usr->native_place}},{{$usr->state_living_in}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Family Type</span>
-                                <span class="pd-info-value">Nuclear Family</span>
+                                <span class="pd-info-value">{{$usr->family_type}}</span>
                             </div>
                         </div>
                     </div>
@@ -377,28 +378,28 @@
                                 <i data-lucide="utensils" width="16" height="16"></i>
                                 <div>
                                     <span class="pd-lc-label">Diet</span>
-                                    <span class="pd-lc-value">Vegetarian</span>
+                                    <span class="pd-lc-value">{{$usr->diet}}</span>
                                 </div>
                             </div>
                             <div class="pd-lifestyle-chip">
                                 <i data-lucide="cigarette-off" width="16" height="16"></i>
                                 <div>
                                     <span class="pd-lc-label">Smoking</span>
-                                    <span class="pd-lc-value">Non-Smoker</span>
+                                    <span class="pd-lc-value">{{$usr->is_smoking}}</span>
                                 </div>
                             </div>
                             <div class="pd-lifestyle-chip">
                                 <i data-lucide="wine-off" width="16" height="16"></i>
                                 <div>
                                     <span class="pd-lc-label">Drinking</span>
-                                    <span class="pd-lc-value">Non-Drinker</span>
+                                    <span class="pd-lc-value">{{$usr->is_drinking}}</span>
                                 </div>
                             </div>
                             <div class="pd-lifestyle-chip">
                                 <i data-lucide="accessibility" width="16" height="16"></i>
                                 <div>
                                     <span class="pd-lc-label">Disability</span>
-                                    <span class="pd-lc-value">No</span>
+                                    <span class="pd-lc-value">{{$usr->any_disability}}</span>
                                 </div>
                             </div>
                         </div>
@@ -417,43 +418,43 @@
                         <div class="pd-info-grid">
                             <div class="pd-info-row pd-info-row--full">
                                 <span class="pd-info-label">About My Partner</span>
-                                <span class="pd-info-value">Looking for a well-educated, family-oriented and caring partner from Himachal Pradesh.</span>
+                                <span class="pd-info-value">{{$usr->about_my_partner}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Age Range</span>
-                                <span class="pd-info-value">23 – 28 years</span>
+                                <span class="pd-info-value">{{$usr->partner_age_from}} - {{$usr->partner_age_to}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Height Range</span>
-                                <span class="pd-info-value">5'1" – 5'6"</span>
+                                <span class="pd-info-value">{{$usr->partner_height_from}} - {{$usr->partner_height_to}}"</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Marital Status</span>
-                                <span class="pd-info-value">Never Married</span>
+                                <span class="pd-info-value">{{$usr->looking_for}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Religion & Mother Tongue</span>
-                                <span class="pd-info-value">Hindu | Hindi / Pahadi</span>
+                                <span class="pd-info-value">{{$usr->partner_religion}} | {{$usr->partner_mothertongue}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Community</span>
-                                <span class="pd-info-value">Any Himachali</span>
+                                <span class="pd-info-value">{{$usr->partner_cast}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Is Manglik</span>
-                                <span class="pd-info-value">Doesn't matter</span>
+                                <span class="pd-info-value">{{$usr->is_partner_manglik}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Highest Qualification</span>
-                                <span class="pd-info-value">Graduate and above</span>
+                                <span class="pd-info-value">{{$usr->partner_education}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Partner Occupation</span>
-                                <span class="pd-info-value">N/A</span>
+                                <span class="pd-info-value">{{$usr->partner_occupation}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Annual Income</span>
-                                <span class="pd-info-value">3 – 10 Lacs</span>
+                                <span class="pd-info-value">{{$usr->partner_annual_income_from}} - {{$usr->partner_annual_income_to}}</span>
                             </div>
                         </div>
                     </div>
@@ -469,7 +470,7 @@
                     </div>
                     <div class="pd-section-body">
                         <p class="pd-about-text">
-                            Thank you for visiting my profile. I am 5'7" and 28 years old. I belong to Mandi, Himachal Pradesh. I am looking for a suitable match. If you find my profile suitable, please contact me.
+                            Thank you for visiting my profile. I am {{$usr->height}} and {{$usr->age_years}} years old. I belong to {{$usr->city_living_in}}, {{$usr->state_living_in}}. I am looking for a suitable match. If you find my profile suitable, please contact me.
                         </p>
                     </div>
                 </div>
@@ -492,19 +493,19 @@
                             <i data-lucide="user" width="36" height="36"></i>
                         </div>
                         <div class="pd-action-name">
-                            <strong>Rahul Thakur</strong>
-                            <span>28 yrs · Mandi</span>
+                            <strong>{{$usr->full_name}}</strong>
+                            <span>{{$usr->age_years}} yrs · {{$usr->city_living_in}}</span>
                         </div>
                     </div>
 
                     <div class="pd-action-btns" id="actionBtns">
                         <!-- Send Interest (default state) -->
-                        <button class="pd-btn-interest" id="sendInterestBtn" onclick="handleInterestAction()">
+                        <button class="pd-btn-interest" id="sendInterestBtn" data-profile-id="{{$usr->id}}" onclick="handleInterestAction()">
                             <i data-lucide="send" width="17" height="17"></i>
                             Send Interest
                         </button>
                         <!-- Shortlist -->
-                        <button class="pd-btn-shortlist" id="asideShortlistBtn" onclick="toggleShortlist()">
+                        <button class="pd-btn-shortlist" id="asideShortlistBtn" data-profile-id="{{ $usr->id }}" onclick="toggleShortlist()">
                             <i data-lucide="bookmark" width="17" height="17"></i>
                             Shortlist
                         </button>
@@ -516,27 +517,27 @@
                     <ul class="pd-quick-info" role="list">
                         <li>
                             <i data-lucide="calendar" width="15" height="15"></i>
-                            <span>28 years old</span>
+                            <span>{{$usr->age_years}} years old</span>
                         </li>
                         <li>
                             <i data-lucide="ruler" width="15" height="15"></i>
-                            <span>5'7" ft</span>
+                            <span>{{$usr->height}} ft</span>
                         </li>
                         <li>
                             <i data-lucide="map-pin" width="15" height="15"></i>
-                            <span>Mandi, HP</span>
+                            <span>{{$usr->city_living_in}}, {{$usr->state_living_in}}</span>
                         </li>
                         <li>
                             <i data-lucide="briefcase" width="15" height="15"></i>
-                            <span>Software Engineer</span>
+                            <span>{{$usr->occupation}}</span>
                         </li>
                         <li>
                             <i data-lucide="graduation-cap" width="15" height="15"></i>
-                            <span>B.Tech – CS</span>
+                            <span>{{$usr->education}}</span>
                         </li>
                         <li>
                             <i data-lucide="users" width="15" height="15"></i>
-                            <span>Rajput · Hindu</span>
+                            <span>{{$usr->cast}} · {{$usr->religion}}</span>
                         </li>
                     </ul>
 
@@ -546,7 +547,19 @@
                         <i data-lucide="share-2" width="16" height="16"></i>
                         Share Profile
                     </button>
-                    <button class="pd-btn-whatsapp" onclick="shareToWhatsApp()">
+                    <button class="pd-btn-whatsapp"
+                        data-name="{{ $usr->full_name }}"
+                        data-created="{{ $usr->profile_created_for }}"
+                        data-age="{{ $usr->age_years }}"
+                        data-height="{{ $usr->height }}"
+                        data-profile="{{ $usr->profile_id }}"
+                        data-religion="{{ $usr->religion }}"
+                        data-caste="{{ $usr->cast }}"
+                        data-city="{{ $usr->city_living_in }}"
+                        data-state="{{ $usr->state_living_in }}"
+                        data-about="{{ \Illuminate\Support\Str::limit(strip_tags($usr->about_me ?? 'Interested in finding a suitable life partner through HimRishtey.'),180) }}"
+                        data-url="{{ route('view-profile',$usr->id) }}" onclick="shareToWhatsApp(this)">
+
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                         </svg>
@@ -561,7 +574,7 @@
                     </div>
                     <h3>Activate Membership</h3>
                     <p>Unlock contact details, Kundli info and send interests with a Premium plan.</p>
-                    <a href="membership.html" class="pd-btn-upgrade">
+                    <a href="{{route('memberships')}}" class="pd-btn-upgrade">
                         <i data-lucide="zap" width="15" height="15"></i>
                         View Plans
                     </a>

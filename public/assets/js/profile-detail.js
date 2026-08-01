@@ -133,33 +133,112 @@ function initLikeShortlist() {
 
 /* ── SHORTLIST (aside card) ── */
 function toggleShortlist() {
-  const btn = document.getElementById("asideShortlistBtn");
-  const heroBtn = document.getElementById("shortlistBtn");
-  if (!btn) return;
-  const isSaved = btn.classList.toggle("saved");
-  if (heroBtn) heroBtn.classList.toggle("active", isSaved);
-  btn.innerHTML = isSaved
-    ? `<i data-lucide="bookmark-check" width="17" height="17"></i> Shortlisted`
-    : `<i data-lucide="bookmark" width="17" height="17"></i> Shortlist`;
-  if (window.lucide) window.lucide.createIcons();
-  showToast(isSaved ? "🔖 Shortlisted!" : "Removed from shortlist");
+
+    const btn = document.getElementById("asideShortlistBtn");
+
+    if (!btn) return;
+
+    const profileId = btn.dataset.profileId;
+
+    btn.disabled = true;
+
+    fetch("/short-profile", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+        },
+        body: JSON.stringify({
+            id: profileId
+        })
+    })
+    .then(async response => {
+
+        const data = await response.json();
+
+        btn.disabled = false;
+
+        if (!response.ok) {
+            showToast(data.message || "Something went wrong.");
+            return;
+        }
+
+        showToast(data.message);
+
+        btn.classList.add("active");
+        btn.innerHTML = `
+            <i data-lucide="bookmark-check" width="17" height="17"></i>
+            Shortlisted
+        `;
+
+        lucide.createIcons();
+
+    })
+    .catch(err => {
+
+        btn.disabled = false;
+        console.error(err);
+        showToast("Something went wrong.");
+
+    });
+
 }
 
 /* ── INTEREST ACTIONS ── */
 let interestState = "none"; // none | sent | received | matched | rejected
 
 function handleInterestAction() {
-  if (interestState === "none") {
-    interestState = "sent";
-    updateInterestUI();
-    showToast("✅ Interest sent!");
-  } else if (interestState === "sent") {
-    if (confirm("Delete the interest you sent?")) {
-      interestState = "none";
-      updateInterestUI();
-      showToast("Interest deleted");
+
+    if (interestState === "none") {
+
+        const profileId = document.getElementById("sendInterestBtn").dataset.profileId;
+        console.log(profileId);
+
+        fetch(`/send-interest/${profileId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+            },
+            body: JSON.stringify({
+                status: 0
+            })
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(res => {
+
+            if (res.status === 200) {
+
+                interestState = "sent";
+                updateInterestUI();
+                showToast(res.body.message);
+
+            } else {
+
+                showToast(res.body.message);
+
+            }
+
+        })
+        .catch(error => {
+            console.error(error);
+            showToast("Something went wrong. Please try again.");
+        });
+
+    } else if (interestState === "sent") {
+
+        if (confirm("Delete the interest you sent?")) {
+
+            // Call delete interest API here if you have one
+            interestState = "none";
+            updateInterestUI();
+            showToast("Interest deleted");
+
+        }
+
     }
-  }
 }
 
 function handleReject() {
@@ -326,11 +405,27 @@ function shareProfile() {
   }
 }
 
-function shareToWhatsApp() {
-  const text = encodeURIComponent(
-    "*Rahul Thakur* \nCreated by Self\n28 years\nProfile id - HR-20489\nHindu | Rajput | Mandi\n\nAbout: Looking for a suitable Himachali life partner."
-  );
-  window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+function shareToWhatsApp(btn) {
+
+    const text = encodeURIComponent(
+`*${btn.dataset.name}*
+Created by ${btn.dataset.created}
+
+${btn.dataset.age} Years${btn.dataset.height ? ' | ' + btn.dataset.height : ''}
+
+Profile ID - ${btn.dataset.profile}
+
+${btn.dataset.religion}${btn.dataset.caste ? ' | ' + btn.dataset.caste : ''}
+${btn.dataset.city}${btn.dataset.state ? ', ' + btn.dataset.state : ''}
+
+About:
+${btn.dataset.about}
+
+View Profile:
+${btn.dataset.url}`
+    );
+
+    window.open(`https://wa.me/?text=${text}`, "_blank");
 }
 
 /* ── TOAST ── */

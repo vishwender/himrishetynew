@@ -78,7 +78,7 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/destroy', [App\Http\Controllers\MyMemberController::class, 'destroy'])->name('destroy');
     Route::get('change-password', [App\Http\Controllers\MemberController::class, 'changePassword'])->name('change-password');
     Route::post('update-password', [App\Http\Controllers\MemberController::class, 'updatePassword'])->name('update-password');
-    Route::get('send-interest/{id}', [App\Http\Controllers\HomeController::class, 'send_interest'])->name('send-interest');
+    Route::post('send-interest/{id}', [App\Http\Controllers\HomeController::class, 'send_interest'])->name('send-interest');
     Route::post('like-profile', [App\Http\Controllers\HomeController::class, 'like_profile'])->name('like-profile');
     Route::get('/membership/checkout/{planId}', [App\Http\Controllers\MembershipController::class, 'buyPlan'])->name('membership.checkout');
     Route::post('/membership/verify', [App\Http\Controllers\MembershipController::class, 'verifyPayment'])->name('membership.verify');

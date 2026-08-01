@@ -1427,7 +1427,7 @@ class HomeController extends Controller
         $usr->age_years  = $diff->y;
         $usr->age_months = $diff->m;
 
-        //dd($usr);
+        //dd($wallet);
         return view('dashboard.profile.view-profile', compact('usr', 'data', 'wallet'));
     }
 

@@ -43,7 +43,7 @@ class ProfileController extends Controller
             return [];
         }
         $gender = $loggedInUser->gender;
-        if($profileFor == 'recent'){
+        if ($profileFor == 'recent') {
             $recents = Member::where('gender', '!=', $gender)
                 ->where('id', '!=', $id)
                 ->where('profile_hide', '!=', 'yes')
@@ -51,35 +51,35 @@ class ProfileController extends Controller
                 ->orderBy('activation_number', 'desc')
                 ->limit(30)
                 ->get();
-        }elseif($profileFor == 'verified'){
+        } elseif ($profileFor == 'verified') {
             $recents = Member::where('gender', '!=', $gender)
-            ->where('id', '!=', $id)
-            ->where('profile_hide', '!=', 'yes')
-            ->where('member_type', 'Verified')
-            ->where('active', 'Yes')
-            ->orderBy('activation_number', 'desc')
-            ->limit(30)
-            ->get();
-        }elseif($profileFor == 'viewed'){
+                ->where('id', '!=', $id)
+                ->where('profile_hide', '!=', 'yes')
+                ->where('member_type', 'Verified')
+                ->where('active', 'Yes')
+                ->orderBy('activation_number', 'desc')
+                ->limit(30)
+                ->get();
+        } elseif ($profileFor == 'viewed') {
             $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
-            ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
-            ->where('members.id', $id)
-            ->where('members.active', 'Yes')
-            ->where('members.profile_hide', '!=', 'yes')
-            ->orderBy('profile_viewed.id', 'desc')
-            ->limit(30)
-            ->get();
-        }elseif($profileFor == 'shortlist'){
+                ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
+                ->where('members.id', $id)
+                ->where('members.active', 'Yes')
+                ->where('members.profile_hide', '!=', 'yes')
+                ->orderBy('profile_viewed.id', 'desc')
+                ->limit(30)
+                ->get();
+        } elseif ($profileFor == 'shortlist') {
             $recents = Member::whereIn('id', function ($query) use ($id) {
                 $query->select('profile_id')
-                      ->from('short_listed')
-                      ->where('member_id', $id);
-                })
-            ->where('active', 'Yes')
-            ->where('profile_hide', '!=', 'yes')
-            ->orderBy('activation_number', 'desc')
-            ->get();
-        }else{
+                    ->from('short_listed')
+                    ->where('member_id', $id);
+            })
+                ->where('active', 'Yes')
+                ->where('profile_hide', '!=', 'yes')
+                ->orderBy('activation_number', 'desc')
+                ->get();
+        } else {
             $partner_country    = explode(',', $member->partner_country ?? '');
             $partner_religion   = explode(',', $member->partner_religion ?? '');
             $partner_education  = explode(',', $member->partner_education ?? '');
@@ -97,8 +97,13 @@ class ProfileController extends Controller
                 ->where('id', '!=', $id)
                 ->get()
                 ->filter(function ($profile) use (
-                    $member, $today,
-                    $partner_country, $partner_religion, $partner_cast, $partner_education, $partner_mothertongue
+                    $member,
+                    $today,
+                    $partner_country,
+                    $partner_religion,
+                    $partner_cast,
+                    $partner_education,
+                    $partner_mothertongue
                 ) {
                     $age = Carbon::parse($profile->birth_date_time)->diffInYears($today);
 
@@ -110,8 +115,7 @@ class ProfileController extends Controller
                         in_array($profile->country_living_in, $partner_country) &&
                         in_array($profile->cast, $partner_cast) &&
                         in_array($profile->education, $partner_education) &&
-                        in_array($profile->mother_tongue, $partner_mothertongue)
-                        ;
+                        in_array($profile->mother_tongue, $partner_mothertongue);
                 });
         }
 
@@ -123,7 +127,7 @@ class ProfileController extends Controller
             $users[$key]['age_years']  = $diff->y;
             $users[$key]['age_months'] = $diff->m;
             if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $users[$key]['photo'] = "https://himrishtey.com/photos/photo/".$recent->photo;
+                $users[$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
             } elseif ($recent->gender === "Male") {
                 $users[$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
             } elseif ($recent->gender === "Female") {
@@ -143,7 +147,8 @@ class ProfileController extends Controller
             $users[$key] = array_merge($recent->toArray(), $users[$key]);
         }
         $stats = "";
-        return view('dashboard.view_all_profiles', compact(['users','profileFor','stats']));
+        //dd($users);
+        return view('dashboard.profile.view-all-profiles', compact(['users', 'profileFor', 'stats']));
     }
 
     public function all_recent_profiles(Request $request)
@@ -160,7 +165,7 @@ class ProfileController extends Controller
         $offset = $request->input('offset', 0);
         $limit  = 30;
 
-        if($profileFor == 'recent'){
+        if ($profileFor == 'recent') {
             $recents = Member::where('gender', '!=', $gender)
                 ->where('id', '!=', $id)
                 ->where('profile_hide', '!=', 'yes')
@@ -169,39 +174,39 @@ class ProfileController extends Controller
                 ->skip($offset)
                 ->take($limit)
                 ->get();
-        }elseif($profileFor == 'verified'){
+        } elseif ($profileFor == 'verified') {
             $recents = Member::where('gender', '!=', $gender)
-            ->where('id', '!=', $id)
-            ->where('profile_hide', '!=', 'yes')
-            ->where('member_type', 'Verified')
-            ->where('active', 'Yes')
-            ->orderBy('activation_number', 'desc')
-            ->skip($offset)
-            ->take($limit)
-            ->get();
-        }elseif($profileFor == 'viewed'){
+                ->where('id', '!=', $id)
+                ->where('profile_hide', '!=', 'yes')
+                ->where('member_type', 'Verified')
+                ->where('active', 'Yes')
+                ->orderBy('activation_number', 'desc')
+                ->skip($offset)
+                ->take($limit)
+                ->get();
+        } elseif ($profileFor == 'viewed') {
             $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
-            ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
-            ->where('members.id', $id)
-            ->where('members.active', 'Yes')
-            ->where('members.profile_hide', '!=', 'yes')
-            ->orderBy('profile_viewed.id', 'desc')
-            ->skip($offset)
-            ->take($limit)
-            ->get();
-        }elseif($profileFor == 'shortlist'){
+                ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
+                ->where('members.id', $id)
+                ->where('members.active', 'Yes')
+                ->where('members.profile_hide', '!=', 'yes')
+                ->orderBy('profile_viewed.id', 'desc')
+                ->skip($offset)
+                ->take($limit)
+                ->get();
+        } elseif ($profileFor == 'shortlist') {
             $recents = Member::whereIn('id', function ($query) use ($id) {
                 $query->select('profile_id')
-                      ->from('short_listed')
-                      ->where('member_id', $id);
-                })
-            ->where('active', 'Yes')
-            ->where('profile_hide', '!=', 'yes')
-            ->orderBy('activation_number', 'desc')
-            ->skip($offset)
-            ->take($limit)
-            ->get();
-        }else{
+                    ->from('short_listed')
+                    ->where('member_id', $id);
+            })
+                ->where('active', 'Yes')
+                ->where('profile_hide', '!=', 'yes')
+                ->orderBy('activation_number', 'desc')
+                ->skip($offset)
+                ->take($limit)
+                ->get();
+        } else {
             $partner_country    = explode(',', $member->partner_country ?? '');
             $partner_religion   = explode(',', $member->partner_religion ?? '');
             $partner_education  = explode(',', $member->partner_education ?? '');
@@ -221,8 +226,13 @@ class ProfileController extends Controller
                 ->take($limit)
                 ->get()
                 ->filter(function ($profile) use (
-                    $member, $today,
-                    $partner_country, $partner_religion, $partner_cast, $partner_education, $partner_mothertongue
+                    $member,
+                    $today,
+                    $partner_country,
+                    $partner_religion,
+                    $partner_cast,
+                    $partner_education,
+                    $partner_mothertongue
                 ) {
                     $age = Carbon::parse($profile->birth_date_time)->diffInYears($today);
 
@@ -234,8 +244,7 @@ class ProfileController extends Controller
                         in_array($profile->country_living_in, $partner_country) &&
                         in_array($profile->cast, $partner_cast) &&
                         in_array($profile->education, $partner_education) &&
-                        in_array($profile->mother_tongue, $partner_mothertongue)
-                        ;
+                        in_array($profile->mother_tongue, $partner_mothertongue);
                 });
         }
 
@@ -274,11 +283,10 @@ class ProfileController extends Controller
 
         // 👉 If request is AJAX, return JSON
         if ($request->ajax() && $request->has('view')) {
-            return view('dashboard.view_all_profiles', compact(['users','profileFor']));
-        }else{
+            return view('dashboard.view_all_profiles', compact(['users', 'profileFor']));
+        } else {
             return response()->json(['users' => $users]);
         }
-       
     }
 
     public function stats_profiles(Request $request)
@@ -291,7 +299,7 @@ class ProfileController extends Controller
             return [];
         }
         $gender = $loggedInUser->gender;
-        if($profileFor == 'profile_viewed'){
+        if ($profileFor == 'profile_viewed') {
             $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
                 ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
                 ->where('profile_viewed.viewed_profile_id', $id)
@@ -300,7 +308,7 @@ class ProfileController extends Controller
                 ->orderBy('profile_viewed.id', 'desc')
                 ->limit(30)
                 ->get();
-        }elseif($profileFor == 'likes'){
+        } elseif ($profileFor == 'likes') {
             $recents = Member::select('members.*', 'profile_like.like_profile_id')
                 ->join('profile_like', 'members.id', '=', 'profile_like.user_id')
                 ->where('profile_like.like_profile_id', $id)
@@ -309,7 +317,7 @@ class ProfileController extends Controller
                 ->orderBy('profile_like.id', 'desc')
                 ->limit(30)
                 ->get();
-        }elseif($profileFor == 'contacts'){
+        } elseif ($profileFor == 'contacts') {
             $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
                 ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
                 ->where('profile_viewed.member_id', $id)
@@ -318,7 +326,7 @@ class ProfileController extends Controller
                 ->orderBy('profile_viewed.id', 'desc')
                 ->limit(30)
                 ->get();
-        }else{
+        } else {
             $recents = [];
         }
 
@@ -330,7 +338,7 @@ class ProfileController extends Controller
             $users[$key]['age_years']  = $diff->y;
             $users[$key]['age_months'] = $diff->m;
             if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $users[$key]['photo'] = "https://himrishtey.com/photos/photo/".$recent->photo;
+                $users[$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
             } elseif ($recent->gender === "Male") {
                 $users[$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
             } elseif ($recent->gender === "Female") {
@@ -350,10 +358,10 @@ class ProfileController extends Controller
             $users[$key] = array_merge($recent->toArray(), $users[$key]);
         }
         $stats = "stats";
-        if($profileFor == 'interest'){
+        if ($profileFor == 'interest') {
             return response()->json(['redirect' => url('interest-box')]);
-        }else{
-            return view('dashboard.view_all_profiles', compact(['users','profileFor','stats']));
+        } else {
+            return view('dashboard.view_all_profiles', compact(['users', 'profileFor', 'stats']));
         }
     }
 
@@ -371,7 +379,7 @@ class ProfileController extends Controller
         $offset = $request->input('offset', 0);
         $limit  = 30;
 
-        if($profileFor == 'profile_viewed'){
+        if ($profileFor == 'profile_viewed') {
             $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
                 ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
                 ->where('profile_viewed.viewed_profile_id', $id)
@@ -381,7 +389,7 @@ class ProfileController extends Controller
                 ->skip($offset)
                 ->limit($limit)
                 ->get();
-        }elseif($profileFor == 'likes'){
+        } elseif ($profileFor == 'likes') {
             $recents = Member::select('members.*', 'profile_like.like_profile_id')
                 ->join('profile_like', 'members.id', '=', 'profile_like.user_id')
                 ->where('profile_like.like_profile_id', $id)
@@ -391,7 +399,7 @@ class ProfileController extends Controller
                 ->skip($offset)
                 ->take($limit)
                 ->get();
-        }else{
+        } else {
             $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
                 ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
                 ->where('profile_viewed.member_id', $id)
@@ -438,10 +446,9 @@ class ProfileController extends Controller
 
         // 👉 If request is AJAX, return JSON
         if ($request->ajax() && $request->has('view')) {
-            return view('dashboard.view_all_profiles', compact(['users','profileFor']));
-        }else{
+            return view('dashboard.view_all_profiles', compact(['users', 'profileFor']));
+        } else {
             return response()->json(['users' => $users]);
         }
-       
     }
 }
