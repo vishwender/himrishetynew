@@ -167,6 +167,3 @@
 @section('scripts')
 <script src="{{ asset('assets/js/wallet.js') }}"></script>
 @endsection
-</body>
-
-</html>
