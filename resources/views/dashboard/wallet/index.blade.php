@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ asset('assets/css/wallet.css') }}">
 @endsection
 
+
 @section('content')
 <!-- ========== MAIN ========== -->
 <main class="wlt-main" id="main-content">
@@ -165,5 +166,12 @@
 @endsection
 <!-- Scripts -->
 @section('scripts')
+<script>
+    window.walletData = {
+        wallet_balance: @json($balance),
+        wallet_transactions: @json($transactions),
+        wallet_offers: @json($offers)
+    };
+</script>
 <script src="{{ asset('assets/js/wallet.js') }}"></script>
 @endsection

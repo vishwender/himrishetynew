@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Razorpay\Api\Api;
 use App\Models\MemberWallet;
+use App\Models\WalletOffer;
 use DB;
 use Auth;
 use Exception;
@@ -16,12 +17,16 @@ class WalletController extends Controller
         $memberId = Auth::guard('member')->id();
 
         $transactions = MemberWallet::where('member_id', $memberId)
-            ->latest('created_at')
+            ->latest()
             ->get();
 
-        $balance = $transactions->first()->wallet_balance ?? 0;
+        $balance = MemberWallet::where('member_id', $memberId)
+            ->latest()
+            ->value('wallet_balance') ?? 0;
 
-        return view('dashboard.wallet.index', compact('balance', 'transactions'));
+        $offers = WalletOffer::all();
+
+        return view('dashboard.wallet.index', compact('balance', 'transactions', 'offers'));
     }
 
     public function createOrder(Request $request)
@@ -73,19 +78,21 @@ class WalletController extends Controller
                 'remarks'      => 'Razorpay',
             ]);
 
-            $wallet = MemberWallet::where('member_id', $userId)
+            $lastWallet = MemberWallet::where('member_id', $userId)
                 ->latest('id')
                 ->first();
 
-            if ($wallet) {
-                $wallet->wallet_balance = $wallet->wallet_balance + $amount;
-                $wallet->save();
-            } else {
-                $wallet = MemberWallet::create([
-                    'member_id'      => $userId,
-                    'wallet_balance' => $amount
-                ]);
-            }
+            $currentBalance = $lastWallet ? $lastWallet->wallet_balance : 0;
+
+            $newBalance = $currentBalance + $amount;
+
+            $wallet = MemberWallet::create([
+                'member_id'        => $userId,
+                'amount_added'     => $amount,
+                'amount_deducted'  => 0,
+                'wallet_balance'   => $newBalance,
+
+            ]);
 
             session(['wallet_balance' => $wallet->wallet_balance]);
 
