@@ -137,7 +137,7 @@
 
       <div class="pqv-user-row">
         <div class="pqv-avatar-wrap">
-          <img src="https://picsum.photos/seed/bride1/60/60" alt="{{ Auth::user()->name ?? 'User' }}" width="60" height="60" loading="lazy" class="pqv-avatar" />
+          <img src="{{Auth::user()->photo ? asset('images/profile_photos/' . Auth::user()->photo) : asset('images/default-avatar.png')}}" alt="{{ Auth::user()->name ?? 'User' }}" width="60" height="60" loading="lazy" class="pqv-avatar" />
           <span class="pqv-avatar-camera" aria-hidden="true"><i data-lucide="camera" width="11" height="11"></i></span>
         </div>
         <div class="pqv-user-text">
