@@ -30,16 +30,27 @@
 
   <!-- SIDEBAR OVERLAY -->
   <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
-
   <!-- SIDEBAR / SIDE DRAWER -->
   <aside class="sidebar" id="sidebar" role="complementary" aria-label="Navigation menu">
     <div class="sidebar-header">
       <div class="sidebar-profile-card" onclick="window.location='#'">
         <div class="sidebar-avatar-wrap">
-          <img src="https://picsum.photos/seed/bride1/80/80" alt="{{ Auth::user()->name ?? 'User' }}" width="80" height="80" loading="lazy" class="sidebar-avatar" />
+          <img
+            src="{{Auth::user()->photo ? asset('images/profile_photos/' . Auth::user()->photo) : asset('images/default-avatar.png')}}"
+            alt="{{ Auth::user()->name ?? 'User' }}"
+            width="80"
+            height="80"
+            loading="lazy"
+            class="sidebar-avatar"
+            id="profileAvatar" />
           <span class="sidebar-avatar-badge" aria-hidden="true">
             <i data-lucide="camera" width="12" height="12"></i>
           </span>
+          <input
+            type="file"
+            id="profilePhotoInput"
+            accept="image/*"
+            hidden>
         </div>
         <div class="sidebar-user-info">
           <h2 class="sidebar-user-name">{{ Auth::user()->full_name ?? 'User' }}</h2>
@@ -109,7 +120,7 @@
           <i data-lucide="moon" width="18" height="18"></i>
         </button>
         <button class="profile-avatar-btn" id="profileQuickViewBtn" aria-label="Open profile quick view" aria-expanded="false" aria-controls="profileQuickView">
-          <img src="https://picsum.photos/seed/bride1/40/40" alt="{{ Auth::user()->name ?? 'User' }}" width="40" height="40" class="navbar-avatar" loading="lazy" />
+          <img src="{{Auth::user()->photo ? asset('images/profile_photos/' . Auth::user()->photo) : asset('images/default-avatar.png')}}" alt="{{ Auth::user()->name ?? 'User' }}" width="40" height="40" class="navbar-avatar" loading="lazy" />
           <span class="online-dot" aria-hidden="true"></span>
         </button>
       </div>
@@ -238,7 +249,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Custom JS -->
   <script src="{{ asset('assets/js/script.js') }}"></script>
-
+  <script>
+    const uploadProfilePhotosUrl = "{{ route('profile.photo.update') }}";
+  </script>
+  <script src="{{ asset('assets/js/profile-photo.js') }}"></script>
   @yield('scripts')
 </body>
 

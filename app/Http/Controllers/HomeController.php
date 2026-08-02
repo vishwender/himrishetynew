@@ -316,6 +316,7 @@ class HomeController extends Controller
                     in_array($profile->education, $partner_education) &&
                     in_array($profile->mother_tongue, $partner_mothertongue);
             });
+        //dd($data['matching_profiles']);
         return view('dashboard/home', compact(['member', 'data', 'completion', 'steps', 'strokeOffset']));
     }
 
@@ -1827,6 +1828,38 @@ class HomeController extends Controller
             'status' => 'success',
             'message' => 'Photos uploaded successfully.',
             'photos' => $uploadedPhotos
+        ]);
+    }
+
+    public function updatePhoto(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $user = Auth::user();
+
+        // Delete old photo
+        if ($user->photo) {
+            $oldPhoto = public_path('images/profile_photos/' . $user->profile_photo);
+
+            if (File::exists($oldPhoto)) {
+                File::delete($oldPhoto);
+            }
+        }
+
+        // Upload new photo
+        $file = $request->file('photo');
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        $file->move(public_path('images/profile_photos'), $filename);
+
+        $user->photo = $filename;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'photo_url' => asset('images/profile_photos/' . $filename),
         ]);
     }
 }

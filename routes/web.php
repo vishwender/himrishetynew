@@ -103,6 +103,7 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/save-subscription', [App\Http\Controllers\PushSubscriptionController::class, 'store']);
     Route::post('/send-notification', [App\Http\Controllers\PushSubscriptionController::class, 'sendBrowserNotification']);
     Route::post('/upload-photos', [App\Http\Controllers\HomeController::class, 'uploadPhotos'])->name('upload-photos');
+    Route::post('/profile/photo', [App\Http\Controllers\HomeController::class, 'updatePhoto'])->name('profile.photo.update');
 });
 
 Route::prefix('member')->name('member.')->group(function () {

@@ -45,7 +45,8 @@
     <div class="pc-card">
         <div class="pc-left">
             <div class="pc-avatar-ring" style="--progress: {{ $completion }}%;">
-                <img src="{{ asset('images/default-avatar.png') }}"
+                <img
+                    src="{{ !empty($member?->photo) ? asset('images/profile_photos/' . $member->photo) : asset('images/default-avatar.png') }}"
                     alt="{{ $member->fullname }}"
                     class="pc-avatar">
 
