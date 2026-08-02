@@ -61,14 +61,16 @@ class ProfileController extends Controller
                 ->limit(30)
                 ->get();
         } elseif ($profileFor == 'viewed') {
+
             $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
                 ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
-                ->where('members.id', $id)
+                ->where('profile_viewed.viewed_profile_id', $id)
                 ->where('members.active', 'Yes')
                 ->where('members.profile_hide', '!=', 'yes')
                 ->orderBy('profile_viewed.id', 'desc')
                 ->limit(30)
                 ->get();
+            //dd($recents);
         } elseif ($profileFor == 'shortlist') {
             $recents = Member::whereIn('id', function ($query) use ($id) {
                 $query->select('profile_id')
