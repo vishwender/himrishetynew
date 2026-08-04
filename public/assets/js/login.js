@@ -141,8 +141,10 @@
   const loginForm       = document.getElementById('loginForm');
   const loginField      =  document.getElementById('loginField');
   //const loginMobileInput  = document.getElementById('loginMobile');
+  const loginCaptchaInput = document.getElementById('loginCaptcha');
   const loginPasswordInput = document.getElementById('loginPassword');
-  const loginMobileError  = document.getElementById('loginMobileError');
+  //const loginMobileError  = document.getElementById('loginMobileError');
+  const loginCaptchaError = document.getElementById('loginCaptchaError');
   const loginPasswordError = document.getElementById('loginPasswordError');
   const loginSubmitBtn  = document.getElementById('loginSubmitBtn');
   
@@ -155,7 +157,7 @@
 
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
-      alert('form submitted');
+      //alert('form submitted');
       e.preventDefault();
       let valid = true;
 
@@ -189,6 +191,24 @@
         markSuccess(loginPasswordInput);
       }
 
+      // Validate captcha
+      if (!loginCaptchaInput || loginCaptchaInput.value.trim() === '') {
+
+          showError(loginCaptchaInput, loginCaptchaError, 'Please enter the captcha.');
+          valid = false;
+
+      } else if (isNaN(loginCaptchaInput.value.trim())) {
+
+          showError(loginCaptchaInput, loginCaptchaError, 'Captcha must be a number.');
+          valid = false;
+
+      } else {
+
+          clearError(loginCaptchaInput, loginCaptchaError);
+          markSuccess(loginCaptchaInput);
+
+      }
+
       if (!valid) return;
 
       // Show loading state
@@ -207,7 +227,8 @@
           },
           body: JSON.stringify({
               username: loginField.value.trim(),
-              password: loginPasswordInput.value
+              password: loginPasswordInput.value,
+              captcha: loginCaptchaInput.value.trim()
           })
       })
       .then(async response => {
@@ -219,7 +240,12 @@
           if (response.ok) {
               window.location.href = data.redirect || '/';
           } else {
-              alert(data.message || 'Invalid mobile number or password.');
+               if (data.captcha) {
+                  document.getElementById('captchaQuestion').textContent = data.captcha;
+                  loginCaptchaInput.value = '';
+                  showError(loginCaptchaInput, loginCaptchaError, 'Incorrect captcha. Please try again.');
+                }
+                alert(data.message || 'Invalid mobile number or password.');
           }
       })
       .catch(error => {
@@ -364,6 +390,7 @@
       });
     });
   }
+  
 
 
   /* ---- LUCIDE ICONS ---- */

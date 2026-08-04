@@ -51,34 +51,6 @@ class MemberController extends Controller
         return redirect()->route('home')->with('success', 'Registration successful!');
     }
 
-    public function login(Request $request)
-    {
-        $login = $request->username;
-        $password = $request->password;
-
-        $member = Member::where('email', $login)
-            ->orWhere('mobile_number', $login)
-            ->orWhere('profile_id', $login)
-            ->first();
-        if ($member && $password) {
-            Auth::guard('member')->login($member);
-            $request->session()->regenerate();
-            // $test = session()->regenerate();
-            // dd($test);
-            return response()->json(['success' => true, 'message' => 'Logged In successfully', 'redirect' => route('home')]);
-        }
-
-        return response()->json([
-            'message' => 'Invalid username or password.'
-        ], 401);
-    }
-
-    public function logout()
-    {
-        Auth::guard('member')->logout();
-        return redirect()->route('login');
-    }
-
     public function memberDashboard()
     {
         dd(session());

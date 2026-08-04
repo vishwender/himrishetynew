@@ -48,7 +48,6 @@ class HomeController extends Controller
     {
         $member = Auth::guard('member')->user();
         $id = $member->id;
-
         //complete your profile section
         $steps = [
             [

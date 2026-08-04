@@ -38,8 +38,8 @@ Route::get('/pricing', [App\Http\Controllers\WelcomeController::class, 'pricing'
 
 Route::post('initial-register', [App\Http\Controllers\MemberController::class, 'initial_registor'])->name('initial-register');
 Route::post('checkMemberExist', [App\Http\Controllers\MemberController::class, 'checkMemberExist'])->name('checkMemberExist');
-Route::post('member-login', [App\Http\Controllers\MemberController::class, 'login'])->name('member-login');
-Route::post('member-logout', [App\Http\Controllers\MemberController::class, 'logout'])->name('member-logout')->middleware('auth:member');
+Route::post('member-login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('member-login');
+Route::post('member-logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('member-logout')->middleware('auth:member');
 Route::post('/send-otp', [App\Http\Controllers\OtpController::class, 'sendOtp'])->name('send-otp');
 Route::post('/verify-otp', [App\Http\Controllers\OtpController::class, 'verifyOtp'])->name('verify-otp');
 Route::post('/login-with-otp', [App\Http\Controllers\OtpController::class, 'login_otp'])->name('login-with-otp');

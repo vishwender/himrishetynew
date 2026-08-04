@@ -3,38 +3,66 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Carbon\Carbon;
 
-
-class Member extends \Illuminate\Foundation\Auth\User
+class Member extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'members';   // your custom table
+    protected $table = 'members';
+
     protected $guarded = [];
+
     public $timestamps = false;
 
-    // protected $hidden = ['password', 'remember_token'];
-    protected $dates = ['birth_date_time'];
+    protected $dates = [
+        'birth_date_time'
+    ];
 
-    // Accessor to calculate age
-    public function getAgeAttribute()
-    {
-        return Carbon::parse($this->birth_date_time)->age;
-    }
+    // Automatically include these attributes
+    protected $appends = [
+        'age',
+        'profile_completion',
+        'wallet_balance'
+    ];
 
-    // Relationship with photos
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function photos()
     {
         return $this->hasMany(MemberPhotos::class, 'member_id');
     }
 
-    public function getProfileCompletion()
+    public function wallet()
     {
-        $totalFields = 10;
+        return $this->hasOne(MemberWallet::class, 'member_id')
+            ->latestOfMany(); // Latest wallet record
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getAgeAttribute()
+    {
+        if (empty($this->birth_date_time)) {
+            return null;
+        }
+
+        return Carbon::parse($this->birth_date_time)->age;
+    }
+
+    public function getProfileCompletionAttribute()
+    {
+        $totalFields = 13;
         $completed = 0;
 
         $fields = [
@@ -50,7 +78,7 @@ class Member extends \Illuminate\Foundation\Auth\User
             $this->family_type,
             $this->family_status,
             $this->father_name,
-            $this->father_occupation
+            $this->father_occupation,
         ];
 
         foreach ($fields as $field) {
@@ -60,5 +88,10 @@ class Member extends \Illuminate\Foundation\Auth\User
         }
 
         return round(($completed / $totalFields) * 100);
+    }
+
+    public function getWalletBalanceAttribute()
+    {
+        return optional($this->wallet)->wallet_balance ?? 0;
     }
 }
