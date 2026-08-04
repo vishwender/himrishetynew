@@ -86,7 +86,62 @@ class MyMemberController extends Controller
                 'mother_tongue' => $member->mother_tongue
             ];
         });
-        return view('dashboard.search_member', compact('data'));
+
+        return response()->json($data);
+        //return view('dashboard.search_member', compact('data'));
+    }
+
+    public function search_home_profile(Request $request)
+    {
+        $member = Auth::guard('member')->user();
+
+        $keyword = trim($request->keyword);
+
+        if (strlen($keyword) < 2) {
+            return response()->json([]);
+        }
+
+        $profiles = Member::where(function ($query) use ($keyword) {
+
+            $query->where('full_name', 'LIKE', "%{$keyword}%")
+                ->orWhere('profile_id', 'LIKE', "%{$keyword}%");
+        })
+            ->where('id', '!=', $member->id)
+            ->where('gender', '!=', $member->gender)
+            ->where('active', 'Yes')
+            ->limit(20)
+            ->get();
+
+        $result = [];
+
+        // dd($profiles);
+
+        foreach ($profiles as $profile) {
+
+            if (!empty($profile->photo) && $profile->photo_approved == 'Yes') {
+
+                $photo = asset('photos/photo/' . $profile->photo);
+            } else {
+
+                $photo = $profile->gender == 'Male'
+                    ? asset('img/boy.jpg')
+                    : asset('img/girl.jpg');
+            }
+
+            $result[] = [
+                'id'         => $profile->id,
+                'profile_id' => $profile->profile_id,
+                'full_name'  => $profile->full_name,
+                'gender'     => $profile->gender,
+                'age'        => Carbon::parse($profile->birth_date_time)->age,
+                'city'       => $profile->city_living_in,
+                'state'      => $profile->state_living_in,
+                'photo'      => $photo,
+                'verified'   => $profile->member_type == 'Verified',
+            ];
+        }
+
+        return response()->json($result);
     }
 
     public function myProfile()

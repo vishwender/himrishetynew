@@ -51,6 +51,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::middleware('auth:member')->group(function () {
     Route::get('search-home-member', [App\Http\Controllers\MyMemberController::class, 'search_home_member'])->name('search-home-member');
+    Route::get('search-home-profile', [App\Http\Controllers\MyMemberController::class, 'search_home_profile'])->name('search-home-profile');
     Route::get('quick-search', [App\Http\Controllers\HomeController::class, 'quick_search'])->name('quick-search');
     Route::get('search-results', [App\Http\Controllers\HomeController::class, 'searchResults'])->name('search-results');
     Route::get('search-by-profile-id', [App\Http\Controllers\HomeController::class, 'search_by_profile_id'])->name('search-by-profile-id');

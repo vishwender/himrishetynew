@@ -22,8 +22,9 @@
             Add Photos
 
         </button>
-        <a href="#" class="btn-outline-sm">
-            <i data-lucide="search" width="15" height="15"></i> Search Profiles
+        <a href="javascript:void(0);" id="openProfileSearch" class="btn-outline-sm">
+            <i data-lucide="search" width="15" height="15"></i>
+            Search Profiles
         </a>
     </div>
 </div>
@@ -287,8 +288,43 @@
     </div>
 
 </div>
+
+<!-- Search Profiles Modal -->
+<div id="profileSearchModal" class="search-modal">
+
+    <div class="search-modal-content">
+
+        <button class="search-close" id="closeProfileSearch">
+            <i data-lucide="x"></i>
+        </button>
+
+        <h3>Search Profiles</h3>
+
+        <div class="search-input-wrapper">
+
+            <i data-lucide="search"></i>
+
+            <input
+                type="text"
+                id="profileSearchInput"
+                placeholder="Search by Name or Profile ID">
+
+        </div>
+
+        <div id="profileSearchResults">
+
+            <div class="search-empty">
+                Start typing to search profiles...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 <script>
     const uploadPhotosUrl = "{{ route('upload-photos') }}";
 </script>
 <script src="{{asset('assets/js/upload-photos.js')}}"></script>
+<script src="{{asset('assets/js/search-home-member.js')}}"></script>
 @endsection
