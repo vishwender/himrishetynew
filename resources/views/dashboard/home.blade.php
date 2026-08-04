@@ -102,7 +102,7 @@
                 @endforeach
             </div>
         </div>
-        <a href="#" class="pc-cta-btn">
+        <a href="{{route('edit-profile')}}" class="pc-cta-btn">
             @if($completion == 100)
             View Profile
             @else

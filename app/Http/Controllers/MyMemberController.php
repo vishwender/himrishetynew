@@ -405,52 +405,93 @@ class MyMemberController extends Controller
 
     public function edit_profile()
     {
+
         $member = Auth::guard('member')->user();
+        //dd($member);
         $steps = [
             [
-                'title' => 'Basic Info',
-                'completed' => !empty($member->full_name)
-                    && !empty($member->gender)
+                'Basic Info' => !empty($member->about_me)
+                    && !empty($member->profile_created_for)
                     && !empty($member->height)
+                    && !empty($member->birth_date_time)
+                    && !empty($member->religion)
+                    && !empty($member->cast)
+                    && !empty($member->marital_status)
+                    && !empty($member->country_living_in)
+                    && !empty($member->state_living_in)
+                    && !empty($member->city_living_in)
             ],
             [
-                'title' => 'Religion',
-                'completed' => !empty($member->religion)
+                'Astro & Kundali' => !empty($member->manglik)
+                    && !empty($member->birth_place)
             ],
             [
-                'title' => 'Horoscope',
-                'completed' => !empty($member->horoscope_needed)
+                'Education & Career' => !empty($member->education)
+                    && !empty($member->any_other_qualifications)
+                    && !empty($member->about_my_career)
+                    && !empty($member->employed_in)
+                    && !empty($member->organization_name)
+                    && !empty($member->job_location)
+                    && !empty($member->occupation)
+                    && !empty($member->annual_income)
             ],
             [
-                'title' => 'Contact',
-                'completed' => ''
-            ],
-
-            [
-                'title' => 'Education',
-                'completed' => !empty($member->education) && !empty($member->about_my_education)
-            ],
-            [
-                'title' => 'Family',
-                'completed' => !empty($member->family_status) && !empty($member->father_name)
-            ],
-            [
-                'title' => 'Lifestyle',
-                'completed' => ''
+                'Family' => !empty($member->family_status)
+                    && !empty($member->native_place)
+                    && !empty($member->family_type)
+                    && !empty($member->father_occupation)
+                    && !empty($member->father_name)
+                    && !empty($member->mother_name)
+                    && !empty($member->mother_occupation)
+                    && !empty($member->no_of_brothers)
+                    && !empty($member->no_of_sisters)
+                    && !empty($member->married_brothers)
+                    && !empty($member->married_sisters)
+                    && !empty($member->about_my_family)
+                    && !empty($member->family_income)
             ],
             [
-                'title' => 'Partner',
-                'completed' => ''
+                'Lifestyle' => !empty($member->diet)
+                    && !empty($member->is_smoking)
+                    && !empty($member->is_drinking)
+                    && !empty($member->any_disability)
+            ],
+            [
+                'Religion' => !empty($member->gotra)
+                    && !empty($member->sub_cast)
+            ],
+            [
+                'Partner Preference' => !empty($member->looking_for)
+                    && !empty($member->partner_age_from)
+                    && !empty($member->partner_age_to)
+                    && !empty($member->partner_height_from)
+                    && !empty($member->partner_height_to)
+                    && !empty($member->partner_marital_status)
+                    && !empty($member->partner_religion)
+                    && !empty($member->partner_cast)
+                    && !empty($member->partner_mother_tongue)
+                    && !empty($member->partner_education)
+                    && !empty($member->partner_occupation)
+                    && !empty($member->partner_annual_income_from)
+                    && !empty($member->partner_annual_income_to)
+                    && !empty($member->partner_country)
+                    && !empty($member->partner_state)
+                    && !empty($member->partner_city)
+                    && !empty($member->partner_diet)
+                    && !empty($member->partner_is_smoking)
+                    && !empty($member->partner_is_drinking)
+                    && !empty($member->is_partner_manglik)
+                    && !empty($member->partner_religion)
+            ],
+            [
+                'Contact' => !empty($member->alternate_number)
+                    && !empty($member->whatsapp_number)
+                    && !empty($member->email)
+                    && !empty($member->mobile_number)
             ],
         ];
 
-        $completedSteps = 0;
-
-        foreach ($steps as $step) {
-            if ($step['completed']) {
-                $completedSteps++;
-            }
-        }
+        $completedSteps = collect($steps)->filter()->count();
 
         $profilePercent = round(($completedSteps / count($steps)) * 100);
         //dd($profileCompletion);
