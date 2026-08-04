@@ -19,7 +19,7 @@
 
         @foreach($users as $member)
 
-        <a href="#" class="vc-card">
+        <a href="{{ route('view-profile', $member['profile_id']) }}" class="vc-card">
 
             <div class="vc-image-wrap">
 
