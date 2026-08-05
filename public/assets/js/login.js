@@ -350,6 +350,7 @@
 
       // Simulate API call — replace with real fetch
       const csrf = document.querySelector('meta[name="csrf-token"]').content;
+      console.log('CSRF Token:', csrf); // Debugging line to check CSRF token value
 
       fetch('/initial-register', {
           method: 'POST',
@@ -370,13 +371,15 @@
       })
       .then(async response => {
           const data = await response.json();
+          console.log('Response data:', data); // Debugging line to check response data
 
           registerSubmitBtn.classList.remove('loading');
           registerSubmitBtn.disabled = false;
 
           if (response.ok) {
+            alert(data.message);
               // Registration successful
-              window.location.href = "/dashboard";
+              window.location.href = data.redirect;
           } else {
               alert(data.message || "Registration failed.");
           }

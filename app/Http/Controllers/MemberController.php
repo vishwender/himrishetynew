@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 use App\Services\EmailService;
 use Illuminate\Testing\Fluent\Concerns\Has;
@@ -35,10 +36,12 @@ class MemberController extends Controller
             'password' => $request->password,
             'profile_created_for' => $request->profile_created_for,
             'gender' => $request->gender,
+            'birth_date_time' => $request->birth_date,
             'registration_date' => now(),
             'profile_id' => 'NA',
             'profile_completed' => '15%'
         ];
+
 
         $data = array_filter($data, fn($value) => !is_null($value));
         //dd($data);
@@ -47,8 +50,101 @@ class MemberController extends Controller
         $profile_id = 10000 + $member->id;
         $member->update(['profile_id' => 'HIM' . $profile_id]);
         Auth::guard('member')->login($member);
-        $emailService->sendRegisterEmail($member);
-        return redirect()->route('home')->with('success', 'Registration successful!');
+        $request->session()->regenerate();
+        //$emailService->sendRegisterEmail($member);
+        return response()->json(['success' => true, 'redirect' => 'complete-profile', 'message' => 'Registration successful!']);
+        //return redirect()->route('home')->with('success', 'Registration successful!');
+    }
+
+    public function completeProfile(Request $request)
+    {
+        // Show page
+        if ($request->isMethod('get')) {
+            return view('dashboard.profile.complete-profile');
+        }
+
+        // Update profile
+        $member = Auth::guard('member')->user();
+        $id = Auth::guard('member')->id();
+
+        if (!$member) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        // Allowed fields
+        $allowedFields = [
+            'birth_date_time',
+            'height',
+            'cast',
+            'religion',
+            'marital_status',
+            'no_of_child',
+            'city_living_in',
+            'state_living_in',
+            'country_living_in',
+            'birth_place',
+            'manglik',
+            'cast',
+            'horoscope_needed',
+            'gotra',
+            'education',
+            'employed_in',
+            'organization_name',
+            'job_location',
+            'occupation',
+            'annual_income',
+            'profile_completed',
+        ];
+
+        $data = $request->only($allowedFields);
+
+        if ($request->filled('time_of_birth')) {
+
+            // Get existing date
+            $date = Carbon::parse($member->birth_date_time)->format('Y-m-d');
+
+            // Combine with new time
+            $member->birth_date_time = $date . ' ' . $request->time_of_birth;
+        }
+
+        //upload profile photo if exists in request/
+
+        if ($request->hasFile('photo')) {
+
+            $request->validate([
+                'photo' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+            ]);
+
+            $file = $request->file('photo');
+
+            $filename = time() . '_' . $member->id . '.' . $file->getClientOriginalExtension();
+
+            $destination = public_path('images/profile-photos');
+
+            // Delete old photo
+            if (
+                !empty($member->photo) &&
+                file_exists($destination . '/' . $member->photo)
+            ) {
+                unlink($destination . '/' . $member->photo);
+            }
+
+            // Save new photo
+            $file->move($destination, $filename);
+
+            $data['photo'] = $filename;
+            $data['photo_approved'] = 'No';
+        }
+
+        $member->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully.'
+        ]);
     }
 
     public function memberDashboard()
