@@ -18,42 +18,29 @@ class MemberController extends Controller
 
     public function checkMemberExist(Request $request)
     {
-        if (Member::where('email', $request->email)->exists()) {
-            echo 1; // email exists
-        } elseif (Member::where('mobile_number', $request->mobile_number)->exists()) {
-            echo 2; // mobile number exists
-        } else {
-            echo 0;
+        if ($request->filled('email')) {
+            if (Member::where('email', $request->email)->exists()) {
+                return response()->json([
+                    'exists' => true,
+                    'field' => 'email',
+                    'message' => 'Email already registered.'
+                ]);
+            }
         }
-    }
 
-    public function initial_registor(Request $request, EmailService $emailService)
-    {
-        $data = [
-            'full_name' => $request->full_name,
-            'email' => $request->email,
-            'mobile_number' => $request->mobile_number,
-            'password' => $request->password,
-            'profile_created_for' => $request->profile_created_for,
-            'gender' => $request->gender,
-            'birth_date_time' => $request->birth_date,
-            'registration_date' => now(),
-            'profile_id' => 'NA',
-            'profile_completed' => '15%'
-        ];
+        if ($request->filled('mobile_number')) {
+            if (Member::where('mobile_number', $request->mobile_number)->exists()) {
+                return response()->json([
+                    'exists' => true,
+                    'field' => 'mobile_number',
+                    'message' => 'Mobile number already registered.'
+                ]);
+            }
+        }
 
-
-        $data = array_filter($data, fn($value) => !is_null($value));
-        //dd($data);
-        $member = Member::create($data);
-        //  dd($member->toArray());
-        $profile_id = 10000 + $member->id;
-        $member->update(['profile_id' => 'HIM' . $profile_id]);
-        Auth::guard('member')->login($member);
-        $request->session()->regenerate();
-        //$emailService->sendRegisterEmail($member);
-        return response()->json(['success' => true, 'redirect' => 'complete-profile', 'message' => 'Registration successful!']);
-        //return redirect()->route('home')->with('success', 'Registration successful!');
+        return response()->json([
+            'exists' => false
+        ]);
     }
 
     public function completeProfile(Request $request)

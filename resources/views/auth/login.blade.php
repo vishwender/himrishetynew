@@ -118,14 +118,17 @@
                   Security Check
                 </label>
 
-                <!-- Captcha Question -->
-                <div class="captcha-box">
-                  <span id="captchaQuestion" class="captcha-question">
-                    {{$captcha}}
-                  </span>
+                <div class="captcha-container">
+                  <div class="captcha-box">
+                    <span id="captchaQuestion">{{ $captcha }} =</span>
+                  </div>
+
+                  <!-- Optional Refresh Button
+                  <button type="button" id="refreshCaptcha" class="captcha-refresh" title="Refresh Captcha">
+                    <i data-lucide="refresh-cw" width="18" height="18"></i>
+                  </button> -->
                 </div>
 
-                <!-- Captcha Input -->
                 <div class="input-wrap">
                   <input
                     type="number"
@@ -134,10 +137,10 @@
                     class="form-input"
                     placeholder="Enter your answer"
                     autocomplete="off"
-                    required />
+                    required>
                 </div>
 
-                <span class="form-error" id="loginCaptchaError" role="alert"></span>
+                <span class="form-error" id="loginCaptchaError"></span>
               </div>
 
               <!-- Remember + Forgot -->
@@ -368,6 +371,24 @@
                   <span class="password-strength-label" id="passwordStrengthLabel"></span>
                 </div>
                 <span class="form-error" id="regPasswordError" role="alert"></span>
+              </div>
+              <!-- captcha -->
+              <div class="form-group">
+                <i data-lucide="shield-check" width="14" height="14"></i>
+                <label class="form-label">Security Check</label>
+                <div class="captcha-container">
+                  <div class="captcha-box">
+                    <span id="registerCaptchaQuestion">{{ $captcha }} = </span>
+                  </div>
+                </div>
+
+                <input
+                  type="number"
+                  id="regCaptcha"
+                  class="form-input"
+                  placeholder="Enter your answer">
+
+                <span class="form-error" id="regCaptchaError"></span>
               </div>
 
               <!-- Terms -->
