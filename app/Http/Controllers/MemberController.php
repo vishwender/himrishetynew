@@ -62,7 +62,6 @@ class MemberController extends Controller
         if ($request->isMethod('get')) {
             return view('dashboard.profile.complete-profile');
         }
-
         // Update profile
         $member = Auth::guard('member')->user();
         $id = Auth::guard('member')->id();
@@ -73,7 +72,6 @@ class MemberController extends Controller
                 'message' => 'Unauthorized'
             ], 401);
         }
-
         // Allowed fields
         $allowedFields = [
             'birth_date_time',
@@ -98,14 +96,10 @@ class MemberController extends Controller
             'annual_income',
             'profile_completed',
         ];
-
         $data = $request->only($allowedFields);
-
         if ($request->filled('time_of_birth')) {
-
             // Get existing date
             $date = Carbon::parse($member->birth_date_time)->format('Y-m-d');
-
             // Combine with new time
             $member->birth_date_time = $date . ' ' . $request->time_of_birth;
         }
@@ -119,11 +113,8 @@ class MemberController extends Controller
             ]);
 
             $file = $request->file('photo');
-
             $filename = time() . '_' . $member->id . '.' . $file->getClientOriginalExtension();
-
             $destination = public_path('images/profile_photos');
-
             // Delete old photo
             if (
                 !empty($member->photo) &&
@@ -131,16 +122,12 @@ class MemberController extends Controller
             ) {
                 unlink($destination . '/' . $member->photo);
             }
-
             // Save new photo
             $file->move($destination, $filename);
-
             $data['photo'] = $filename;
             $data['photo_approved'] = 'No';
         }
-
         $member->update($data);
-
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully.'

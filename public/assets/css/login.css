@@ -2,7 +2,11 @@
    LOGIN PAGE — HimRishtey
    Extends style.css variables. No overrides to base tokens.
    ============================================================ */
-
+:root {
+  --color-error: #dc2626;
+  /* Red */
+  --text-xs: 12px;
+}
 /* ---- BODY ---- */
 body.login-body {
   height: 100dvh;
