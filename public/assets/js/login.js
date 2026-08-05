@@ -134,15 +134,76 @@
     return mobile.test(value) ||
            email.test(value) ||
            profile.test(value);}
+  function updateCaptcha(question) {
+    const captchaBox = document.getElementById('regCaptcha');
+
+    if (captchaBox && question) {
+        captchaBox.textContent = question;
+    }
+
+    regCaptchaInput.value = "";
+  }
+
+  const csrf = document.querySelector('meta[name="csrf-token"]').content;
+  let emailExists = false;
+  let mobileExists = false;
+
+  async function checkMemberExist(type, value) {
+
+      if (!value) return;
+      
+      
+      try {
+
+          const response = await fetch('/checkMemberExist', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-TOKEN': csrf,
+                  'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                [type]: value
+              })
+          });
+
+          const data = await response.json();
+
+          if (data.exists) {
+
+              if (type === 'email') {
+                  emailExists = true;
+                  showError(regEmailInput, regEmailError, data.message);
+              } else {
+                  mobileExists = true;
+                  showError(regMobileInput, regMobileError, data.message);
+              }
+            } else {
+
+            if (type === 'email') { 
+                emailExists = false;
+                clearError(regEmailInput, regEmailError);
+                markSuccess(regEmailInput);
+            } else {
+                mobileExists = false;
+                clearError(regMobileInput, regMobileError);
+                markSuccess(regMobileInput);
+            }
+        }
+    } catch (e) {
+        console.error(e);
+    }
+  }
 
 
 
   /* ---- LOGIN FORM ---- */
   const loginForm       = document.getElementById('loginForm');
   const loginField      =  document.getElementById('loginField');
-  //const loginMobileInput  = document.getElementById('loginMobile');
-  const loginCaptchaInput = document.getElementById('loginCaptcha');
   const loginPasswordInput = document.getElementById('loginPassword');
+  const loginCaptchaInput = document.getElementById('loginCaptcha');
+  //const loginMobileInput  = document.getElementById('loginMobile');
+
   //const loginMobileError  = document.getElementById('loginMobileError');
   const loginCaptchaError = document.getElementById('loginCaptchaError');
   const loginPasswordError = document.getElementById('loginPasswordError');
@@ -209,6 +270,7 @@
 
       }
 
+
       if (!valid) return;
 
       // Show loading state
@@ -267,6 +329,7 @@
   const regDOBInput     = document.getElementById('regDOB');
   const regPasswordInput2 = document.getElementById('regPassword');
   const regTermsInput   = document.getElementById('regTerms');
+  const regCaptchaInput = document.getElementById('regCaptcha');
 
   const regNameError    = document.getElementById('regNameError');
   const regEmailError   = document.getElementById('regEmailError');
@@ -275,6 +338,7 @@
   const regDOBError     = document.getElementById('regDOBError');
   const regPasswordError = document.getElementById('regPasswordError');
   const regTermsError   = document.getElementById('regTermsError');
+  const regCaptchaError = document.getElementById('regCaptchaError');
   const registerSubmitBtn = document.getElementById('registerSubmitBtn');
 
   if (regMobileInput) {
@@ -287,6 +351,18 @@
       }
     });
   }
+
+  regEmailInput.addEventListener('blur', function () {
+    if (isValidEmail(this.value)) {
+        checkMemberExist('email', this.value);
+    }
+  });
+
+  regMobileInput.addEventListener('blur', function () {
+    if (this.value.length === 10) {
+        checkMemberExist('mobile_number', this.value);
+    }
+  });
 
   if (registerForm) {
     registerForm.addEventListener('submit', (e) => {
@@ -332,10 +408,40 @@
         valid = false;
       } else { clearError(regPasswordInput2, regPasswordError); markSuccess(regPasswordInput2); }
 
+      // Validate captcha
+      if (!regCaptchaInput || regCaptchaInput.value.trim() === '') {
+
+          showError(regCaptchaInput, regCaptchaError, 'Please enter the captcha.');
+          valid = false;
+
+      } else if (isNaN(regCaptchaInput.value.trim())) {
+
+          showError(regCaptchaInput, regCaptchaError, 'Captcha must be a number.');
+          valid = false;
+
+      } else {
+
+          clearError(regCaptchaInput, regCaptchaError);
+          markSuccess(regCaptchaInput);
+      }
+
       if (!regTermsInput.checked) {
         showError(null, regTermsError, 'You must agree to the Terms & Conditions');
         valid = false;
       } else { clearError(null, regTermsError); }
+
+      // Double check email/mobile before submitting
+      if (isValidEmail(regEmailInput.value)) {
+           checkMemberExist('email', regEmailInput.value);
+      }
+
+      if (isValidMobile(regMobileInput.value)) {
+         checkMemberExist('mobile_number', regMobileInput.value);
+      }
+
+      if (emailExists || mobileExists) {
+        valid = false;
+      }
 
       if (!valid) return;
 
@@ -366,7 +472,8 @@
               mobile_number: regMobileInput.value,
               gender: regGenderInput.value,
               birth_date: regDOBInput.value,
-              password: regPasswordInput2.value
+              password: regPasswordInput2.value,
+              captcha: regCaptchaInput.value
           })
       })
       .then(async response => {
@@ -375,6 +482,10 @@
 
           registerSubmitBtn.classList.remove('loading');
           registerSubmitBtn.disabled = false;
+
+          if (data.captcha) {
+            updateCaptcha(data.captcha);
+          }
 
           if (response.ok) {
             alert(data.message);

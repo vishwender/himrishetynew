@@ -279,8 +279,6 @@
                                 <option value="Nurse">Nurse</option>
                                 <option value="Architect">Architect</option>
                                 <option value="Other">Other</option>
-                            </select>
-                            <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
                         </div>
                         <span class="form-error" id="occupationError" role="alert"></span>
                     </div>

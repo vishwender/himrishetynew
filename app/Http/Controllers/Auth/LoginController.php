@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Services\EmailService;
+use Illuminate\Testing\Fluent\Concerns\Has;
 
 class LoginController extends Controller
 {
@@ -43,15 +45,25 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        $captcha = $this->genetateCaptcha();
+        $captcha = $this->generateCaptcha();
         return view('auth.login', compact('captcha'));
     }
 
     public function login(Request $request)
     {
-        $login    = $request->username;
+        $login    = trim($request->username);
         $password = $request->password;
-        $captcha = $request->captcha;
+        $captcha  = (int) $request->captcha;
+
+        // Validate captcha first
+        if ($captcha !== (int) session('captcha_answer')) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid captcha.',
+                'captcha' => $this->generateCaptcha()
+            ], 422);
+        }
 
         // Find member
         $member = Member::where('email', $login)
@@ -59,36 +71,23 @@ class LoginController extends Controller
             ->orWhere('profile_id', $login)
             ->first();
 
-        // Check member exists and password matches
+        // Validate credentials
         if (!$member || $member->password !== $password) {
-
-            session(['captcha' => rand(100000, 999999)]);
-
-            return response()->json([
-                'message' => 'Invalid username or password.'
-            ], 401);
-        }
-
-        // Validate captcha
-        if ($captcha != session('captcha')) {
-
-            // Generate a new captcha
-            session(['captcha' => rand(100000, 999999)]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid captcha.',
-                'captcha' => $this->genetateCaptcha()
-            ], 422);
+                'message' => 'Invalid username or password.',
+                'captcha' => $this->generateCaptcha()
+            ], 401);
         }
 
-        // Login user
+        // Login
         Auth::guard('member')->login($member);
 
         $request->session()->regenerate();
 
-        // Generate new captcha for next login attempt
-        session(['captcha' => rand(100000, 999999)]);
+        // Generate new captcha for next login
+        $this->generateCaptcha();
 
         return response()->json([
             'success'  => true,
@@ -97,16 +96,60 @@ class LoginController extends Controller
         ]);
     }
 
+    public function initial_registor(Request $request, EmailService $emailService)
+    {
+
+        if ((int)$request->captcha !== (int)session('captcha_answer')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid captcha.',
+                'captcha' => $this->generateCaptcha()
+            ], 422);
+        }
+
+        $data = [
+            'full_name' => $request->full_name,
+            'email' => $request->email,
+            'mobile_number' => $request->mobile_number,
+            'password' => $request->password,
+            'profile_created_for' => $request->profile_created_for,
+            'gender' => $request->gender,
+            'birth_date_time' => $request->birth_date,
+            'registration_date' => now(),
+            'profile_id' => 'NA',
+            'profile_completed' => '15%'
+        ];
+
+
+        $data = array_filter($data, fn($value) => !is_null($value));
+        //dd($data);
+        $member = Member::create($data);
+        //  dd($member->toArray());
+        $profile_id = 10000 + $member->id;
+        $member->update(['profile_id' => 'HIM' . $profile_id]);
+        Auth::guard('member')->login($member);
+        $request->session()->regenerate();
+        $this->generateCaptcha();
+        //$emailService->sendRegisterEmail($member);
+        return response()->json(['success' => true, 'redirect' => 'complete-profile', 'message' => 'Registration successful!']);
+        //return redirect()->route('home')->with('success', 'Registration successful!');
+    }
+
     public function logout()
     {
         Auth::guard('member')->logout();
         return redirect()->route('login');
     }
 
-    private function genetateCaptcha()
+    public function generateCaptcha()
     {
-        $captcha = rand(100000, 999999);
-        session(['captcha' => $captcha]);
-        return $captcha;
+        $num1 = rand(1, 9);
+        $num2 = rand(1, 9);
+
+        session([
+            'captcha_answer' => $num1 + $num2
+        ]);
+
+        return "{$num1} + {$num2}";
     }
 }

@@ -36,7 +36,7 @@ Route::get('/terms-and-conditions', [App\Http\Controllers\WelcomeController::cla
 Route::get('/child-safety-standard', [App\Http\Controllers\WelcomeController::class, 'child_safety'])->name('child-safety-standard');
 Route::get('/pricing', [App\Http\Controllers\WelcomeController::class, 'pricing'])->name('pricing');
 
-Route::post('initial-register', [App\Http\Controllers\MemberController::class, 'initial_registor'])->name('initial-register');
+Route::post('initial-register', [App\Http\Controllers\Auth\LoginController::class, 'initial_registor'])->name('initial-register');
 Route::post('checkMemberExist', [App\Http\Controllers\MemberController::class, 'checkMemberExist'])->name('checkMemberExist');
 Route::match(['GET', 'POST'], '/complete-profile', [App\Http\Controllers\MemberController::class, 'completeProfile'])->name('complete-profile');
 Route::post('member-login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('member-login');
