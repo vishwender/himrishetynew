@@ -122,7 +122,7 @@ class MemberController extends Controller
 
             $filename = time() . '_' . $member->id . '.' . $file->getClientOriginalExtension();
 
-            $destination = public_path('images/profile-photos');
+            $destination = public_path('images/profile_photos');
 
             // Delete old photo
             if (

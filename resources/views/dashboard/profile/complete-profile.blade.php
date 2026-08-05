@@ -92,30 +92,30 @@
                             <div class="input-wrap select-wrap">
                                 <select id="height" name="height" class="form-input form-select" required>
                                     <option value="" disabled selected>Select height</option>
-                                    <option value="4'6&quot; (137 cm)">4'6" (137 cm)</option>
-                                    <option value="4'7&quot; (140 cm)">4'7" (140 cm)</option>
-                                    <option value="4'8&quot; (142 cm)">4'8" (142 cm)</option>
-                                    <option value="4'9&quot; (145 cm)">4'9" (145 cm)</option>
-                                    <option value="4'10&quot; (147 cm)">4'10" (147 cm)</option>
-                                    <option value="4'11&quot; (150 cm)">4'11" (150 cm)</option>
-                                    <option value="5'0&quot; (152 cm)">5'0" (152 cm)</option>
-                                    <option value="5'1&quot; (155 cm)">5'1" (155 cm)</option>
-                                    <option value="5'2&quot; (157 cm)">5'2" (157 cm)</option>
-                                    <option value="5'3&quot; (160 cm)">5'3" (160 cm)</option>
-                                    <option value="5'4&quot; (163 cm)">5'4" (163 cm)</option>
-                                    <option value="5'5&quot; (165 cm)">5'5" (165 cm)</option>
-                                    <option value="5'6&quot; (168 cm)">5'6" (168 cm)</option>
-                                    <option value="5'7&quot; (170 cm)">5'7" (170 cm)</option>
-                                    <option value="5'8&quot; (173 cm)">5'8" (173 cm)</option>
-                                    <option value="5'9&quot; (175 cm)">5'9" (175 cm)</option>
-                                    <option value="5'10&quot; (178 cm)">5'10" (178 cm)</option>
-                                    <option value="5'11&quot; (180 cm)">5'11" (180 cm)</option>
-                                    <option value="6'0&quot; (183 cm)">6'0" (183 cm)</option>
-                                    <option value="6'1&quot; (185 cm)">6'1" (185 cm)</option>
-                                    <option value="6'2&quot; (188 cm)">6'2" (188 cm)</option>
-                                    <option value="6'3&quot; (191 cm)">6'3" (191 cm)</option>
-                                    <option value="6'4&quot; (193 cm)">6'4" (193 cm)</option>
-                                    <option value="6'5&quot; (196 cm)">6'5" (196 cm)</option>
+                                    <option value="4'6">4'6" (137 cm)</option>
+                                    <option value="4'7">4'7" (140 cm)</option>
+                                    <option value="4'8">4'8" (142 cm)</option>
+                                    <option value="4'9">4'9" (145 cm)</option>
+                                    <option value="4'10">4'10" (147 cm)</option>
+                                    <option value="4'11">4'11" (150 cm)</option>
+                                    <option value="5'0">5'0" (152 cm)</option>
+                                    <option value="5'1">5'1" (155 cm)</option>
+                                    <option value="5'2">5'2" (157 cm)</option>
+                                    <option value="5'3">5'3" (160 cm)</option>
+                                    <option value="5'4">5'4" (163 cm)</option>
+                                    <option value="5'5">5'5" (165 cm)</option>
+                                    <option value="5'6">5'6" (168 cm)</option>
+                                    <option value="5'7">5'7" (170 cm)</option>
+                                    <option value="5'8">5'8" (173 cm)</option>
+                                    <option value="5'9">5'9" (175 cm)</option>
+                                    <option value="5'10">5'10" (178 cm)</option>
+                                    <option value="5'11">5'11" (180 cm)</option>
+                                    <option value="6'0">6'0" (183 cm)</option>
+                                    <option value="6'1">6'1" (185 cm)</option>
+                                    <option value="6'2">6'2" (188 cm)</option>
+                                    <option value="6'3">6'3" (191 cm)</option>
+                                    <option value="6'4">6'4" (193 cm)</option>
+                                    <option value="6'5">6'5" (196 cm)</option>
                                 </select>
                                 <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
                             </div>
@@ -212,16 +212,22 @@
                         <div class="input-wrap select-wrap">
                             <select id="education" name="education" class="form-input form-select" required>
                                 <option value="" disabled selected>Select education</option>
-                                <option value="high school">High School</option>
-                                <option value="diploma">Diploma</option>
-                                <option value="bachelor">Bachelor's Degree</option>
-                                <option value="master">Master's Degree</option>
-                                <option value="mba">MBA / PGDM</option>
-                                <option value="engineering">Engineering (B.Tech / B.E.)</option>
-                                <option value="medical">Medical (MBBS / BDS / MD)</option>
-                                <option value="law">Law (LLB / LLM)</option>
-                                <option value="ca">Chartered Accountant (CA)</option>
-                                <option value="doctorate">Doctorate (Ph.D.)</option>
+                                <option value="10">10th</option>
+                                <option value="12">12th</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="B.A">B.A</option>
+                                <option value="B.Sc.">B.Sc.</option>
+                                <option value="B.Com">B.Com</option>
+                                <option value="B.Tech / B.E.">B.Tech / B.E.</option>
+                                <option value="BBA">BBA</option>
+                                <option value="BCA">BCA</option>
+                                <option value="M.A.">M.A.</option>
+                                <option value="M.Sc.">M.Sc.</option>
+                                <option value="M.Com">M.Com</option>
+                                <option value="M.Tech.">M.Tech / M.E.</option>
+                                <option value="MBA">MBA</option>
+                                <option value="MCA">MCA</option>
+                                <option value="Ph.D.">Doctorate (Ph.D.)</option>
                                 <option value="other">Other</option>
                             </select>
                             <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
@@ -237,11 +243,11 @@
                         <div class="input-wrap select-wrap">
                             <select id="employedIn" name="employedIn" class="form-input form-select" required>
                                 <option value="" disabled selected>Select employment type</option>
-                                <option value="private">Private Sector</option>
-                                <option value="government">Government / PSU</option>
-                                <option value="business">Business / Self Employed</option>
-                                <option value="defence">Defence Services</option>
-                                <option value="not-employed">Not Employed in</option>
+                                <option value="Government">Government / PSU</option>
+                                <option value="Private">Private Sector</option>
+                                <option value="Business">Business / Self Employed</option>
+                                <option value="Defense">Defence Services</option>
+                                <option value="Not Working">Not Working</option>
                             </select>
                             <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
                         </div>
@@ -253,14 +259,28 @@
                             <i data-lucide="id-card" width="14" height="14"></i>
                             Occupation
                         </label>
-                        <div class="input-wrap">
-                            <input
+                        <div class="input-wrap select-wrap">
+                            <!-- <input
                                 type="text"
                                 id="occupation"
                                 name="occupation"
                                 class="form-input"
                                 placeholder="e.g. Software Engineer, Teacher, Doctor"
-                                required />
+                                required /> -->
+                            <select id="occupation" name="occupation" class="form-input form-select" required>
+                                <option value="">Select</option>
+                                <option value="Software Engineer">Software Engineer</option>
+                                <option value="Doctor">Doctor</option>
+                                <option value="Teacher">Teacher</option>
+                                <option value="Lawyer">Lawyer</option>
+                                <option value="Banker">Banker</option>
+                                <option value="Businessman">Businessman</option>
+                                <option value="Farmer">Farmer</option>
+                                <option value="Nurse">Nurse</option>
+                                <option value="Architect">Architect</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
                         </div>
                         <span class="form-error" id="occupationError" role="alert"></span>
                     </div>
@@ -273,14 +293,17 @@
                         <div class="input-wrap select-wrap">
                             <select id="income" name="income" class="form-input form-select" required>
                                 <option value="" disabled selected>Select annual income</option>
-                                <option value="no-income">No Income</option>
-                                <option value="below-2-lakh">Below ₹2 Lakh</option>
-                                <option value="2-5-lakh">₹2 – 5 Lakh</option>
-                                <option value="5-10-lakh">₹5 – 10 Lakh</option>
-                                <option value="10-20-lakh">₹10 – 20 Lakh</option>
-                                <option value="20-50-lakh">₹20 – 50 Lakh</option>
-                                <option value="50-lakh-above">₹50 Lakh &amp; Above</option>
-                                <option value="prefer-not-to-say">Prefer not to say</option>
+                                <option value="Below 1 LPA">Below 1 LPA</option>
+                                <option value="1–2 LPA">1–2 LPA</option>
+                                <option value="2–3 LPA">2–3 LPA</option>
+                                <option value="3–5 LPA">3–5 LPA</option>
+                                <option value="5–7 LPA">5–7 LPA</option>
+                                <option value="7–10 LPA">7–10 LPA</option>
+                                <option value="10–15 LPA">10–15 LPA</option>
+                                <option value="15–20 LPA">15–20 LPA</option>
+                                <option value="20–30 LPA">20–30 LPA</option>
+                                <option value="30–50 LPA">30–50 LPA</option>
+                                <option value="50 LPA+">50 LPA+</option>
                             </select>
                             <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
                         </div>
@@ -314,10 +337,10 @@
                         <div class="input-wrap select-wrap">
                             <select id="marital" name="marital" class="form-input form-select" required>
                                 <option value="" disabled selected>Select marital status</option>
-                                <option value="never-married">Never Married</option>
-                                <option value="divorced">Divorced</option>
-                                <option value="widowed">Widowed</option>
-                                <option value="awaiting-divorce">Awaiting Divorce</option>
+                                <option value="Never Married">Never Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                                <option value="Awaiting Divorce">Awaiting Divorce</option>
                             </select>
                             <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
                         </div>
@@ -352,13 +375,13 @@
                             <div class="input-wrap select-wrap">
                                 <select id="tongue" name="tongue" class="form-input form-select" required>
                                     <option value="" disabled selected>Select</option>
-                                    <option value="hindi">Hindi</option>
-                                    <option value="punjabi">Punjabi</option>
-                                    <option value="pahari-himachali">Pahari / Himachali</option>
-                                    <option value="dogri">Dogri</option>
-                                    <option value="gaddi">Gaddi</option>
-                                    <option value="kinnauri">Kinnauri</option>
-                                    <option value="english">English</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="Punjabi">Punjabi</option>
+                                    <option value="Pahari / Himachali">Pahari / Himachali</option>
+                                    <option value="Dogri">Dogri</option>
+                                    <option value="Gaddi">Gaddi</option>
+                                    <option value="Kinnauri">Kinnauri</option>
+                                    <option value="English">English</option>
                                     <option value="other">Other</option>
                                 </select>
                                 <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
@@ -374,13 +397,13 @@
                             <div class="input-wrap select-wrap">
                                 <select id="religion" name="religion" class="form-input form-select" required>
                                     <option value="" disabled selected>Select</option>
-                                    <option value="hindu">Hindu</option>
-                                    <option value="sikh">Sikh</option>
-                                    <option value="muslim">Muslim</option>
-                                    <option value="christian">Christian</option>
-                                    <option value="buddhist">Buddhist</option>
-                                    <option value="jain">Jain</option>
-                                    <option value="other">Other</option>
+                                    <option value="Hindu">Hindu</option>
+                                    <option value="Sikh">Sikh</option>
+                                    <option value="Muslim">Muslim</option>
+                                    <option value="Christian">Christian</option>
+                                    <option value="Buddhist">Buddhist</option>
+                                    <option value="Jain">Jain</option>
+                                    <option value="Other">Other</option>
                                 </select>
                                 <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
                             </div>
@@ -396,16 +419,16 @@
                         <div class="input-wrap select-wrap">
                             <select id="cast" name="cast" class="form-input form-select" required>
                                 <option value="" disabled selected>Select cast</option>
-                                <option value="rajput">Rajput</option>
-                                <option value="brahmin">Brahmin</option>
-                                <option value="thakur">Thakur</option>
-                                <option value="kanet">Kanet</option>
-                                <option value="koli">Koli</option>
-                                <option value="rathi">Rathi</option>
-                                <option value="saini">Saini</option>
-                                <option value="khatri">Khatri</option>
-                                <option value="baniya">Baniya</option>
-                                <option value="other">Other</option>
+                                <option value="Rajput">Rajput</option>
+                                <option value="Brahmin">Brahmin</option>
+                                <option value="Thakur">Thakur</option>
+                                <option value="Kanet">Kanet</option>
+                                <option value="Koli">Koli</option>
+                                <option value="Rathi">Rathi</option>
+                                <option value="Saini">Saini</option>
+                                <option value="Khatri">Khatri</option>
+                                <option value="Baniya">Baniya</option>
+                                <option value="Other">Other</option>
                             </select>
                             <i data-lucide="chevron-down" width="14" height="14" class="select-icon" aria-hidden="true"></i>
                         </div>

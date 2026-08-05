@@ -450,7 +450,7 @@
                 mother_tongue: tongueInput.value,
                 religion: religionInput.value,
                 cast: castInput.value,
-                is_manglik: manglikChecked ? manglikChecked.value : '',
+                manglik: manglikChecked ? manglikChecked.value : '',
                 horoscope_needed: horoscopeChecked ? horoscopeChecked.value : '',
                 profile_completed: '60%'
             })
