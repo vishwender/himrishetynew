@@ -18,8 +18,7 @@ class ForgotPasswordController extends Controller
 
     public function showLinkRequestForm()
     {
-        return view('auth.passwords.email');
+        // Use the shared auth.passwords.email view but point its form to member route
+        return view('auth.passwords.email', ['route' => 'member.password.email']);
     }
 }
-
-?>

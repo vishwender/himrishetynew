@@ -1,45 +1,74 @@
 <?php
+
 namespace App\Http\Controllers\MemberAuth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\SendsPasswordResetLinks;
+use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
-use Password;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 
-class ForgotPasswordController extends Controller
+class ResetPasswordController extends Controller
 {
-    use SendsPasswordResetLinks;
+    /*
+    |--------------------------------------------------------------------------
+    | Password Reset Controller (for members)
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles password resets for members. It uses the
+    | ResetsPasswords trait while specifying the members broker and guard.
+    |
+    */
 
+    use ResetsPasswords;
+
+    /**
+     * Where to redirect members after resetting their password.
+     *
+     * @var string
+     */
+    protected $redirectTo = '/home';
+
+    public function __construct()
+    {
+        $this->middleware('guest:member');
+    }
+
+    /**
+     * Get the broker to be used during password reset.
+     *
+     * @return \Illuminate\Contracts\Auth\PasswordBroker
+     */
     public function broker()
     {
         return Password::broker('members');
     }
 
-    public function showLinkRequestForm()
+    /**
+     * Get the guard to be used during password reset.
+     *
+     * @return \Illuminate\Contracts\Auth\Guard
+     */
+    protected function guard()
     {
-        return view('member.auth.passwords.email');
+        return Auth::guard('member');
     }
 
-    public function sendResetLinkEmail(Request $request)
+    /**
+     * Show the password reset form for members.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string|null  $token
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function showResetForm(Request $request, $token = null)
     {
-        $this->validateEmail($request);
-
-        $response = $this->broker()->sendResetLink(
-            $this->credentials($request)
-        );
-
-        return $response == Password::RESET_LINK_SENT
-            ? back()->with('status', trans($response))
-            : back()->withErrors(['email' => trans($response)]);
-    }
-
-    protected function validateEmail(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-    }
-
-    protected function credentials(Request $request)
-    {
-        return $request->only('email');
+        // Use the shared auth.passwords.reset view but ensure the form posts
+        // to the member password update route name.
+        return view('auth.passwords.reset', [
+            'token' => $token,
+            'email' => $request->email,
+            'route' => 'member.password.update'
+        ]);
     }
 }
