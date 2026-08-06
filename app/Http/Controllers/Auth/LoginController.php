@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Services\EmailService;
 use Illuminate\Testing\Fluent\Concerns\Has;
+use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
@@ -133,6 +134,48 @@ class LoginController extends Controller
         //$emailService->sendRegisterEmail($member);
         return response()->json(['success' => true, 'redirect' => 'complete-profile', 'message' => 'Registration successful!']);
         //return redirect()->route('home')->with('success', 'Registration successful!');
+    }
+
+    public function google_signup()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function google_signup_callback()
+    {
+        $googleUser = Socialite::driver('google')->user();
+
+
+        $member = Member::where('email', $googleUser->email)
+            ->first();
+
+
+        if (!$member) {
+            $member = Member::create([
+                'full_name' => $googleUser->name,
+                'email' => $googleUser->email,
+                'password' => null,
+                'profile_id' => 'NA',
+                'registration_date' => now(),
+                'profile_completed' => '15%'
+            ]);
+
+
+            $profile_id = 10000 + $member->id;
+
+            $member->update([
+                'profile_id' => 'HIM' . $profile_id
+            ]);
+        }
+
+
+        Auth::guard('member')->login($member);
+
+
+        request()->session()->regenerate();
+
+
+        return redirect()->route('home');
     }
 
     public function logout()

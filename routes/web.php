@@ -41,6 +41,8 @@ Route::post('checkMemberExist', [App\Http\Controllers\MemberController::class, '
 Route::match(['GET', 'POST'], '/complete-profile', [App\Http\Controllers\MemberController::class, 'completeProfile'])->name('complete-profile');
 Route::post('member-login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('member-login');
 Route::post('member-logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('member-logout')->middleware('auth:member');
+Route::get('google-signup', [App\Http\Controllers\Auth\LoginController::class, 'google_signup'])->name('google-signup');
+Route::get('google-signup-callback', [App\Http\Controllers\Auth\LoginController::class, 'google_signup_callback'])->name('google-signup-callback');
 Route::post('/send-otp', [App\Http\Controllers\OtpController::class, 'sendOtp'])->name('send-otp');
 Route::post('/verify-otp', [App\Http\Controllers\OtpController::class, 'verifyOtp'])->name('verify-otp');
 Route::post('/login-with-otp', [App\Http\Controllers\OtpController::class, 'login_otp'])->name('login-with-otp');
