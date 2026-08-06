@@ -501,186 +501,128 @@ class MyMemberController extends Controller
     public function update_profile(Request $request)
     {
         $member = Auth::guard('member')->user();
-        $user = Member::where('id', $member->id)->first();
-        if ($request->has('about_me')) {
-            $user->about_me = $request->about_me;
+        $user = Member::findOrFail($member->id);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Simple fields (string/int)
+    |--------------------------------------------------------------------------
+    */
+
+        $fields = [
+            'about_me',
+            'profile_created_for',
+            'height',
+            'cast',
+            'religion',
+            'marital_status',
+            'no_of_child',
+            'city_living_in',
+            'state_living_in',
+            'country_living_in',
+            'birth_place',
+            'manglik',
+            'alternate_number',
+            'whatsapp_number',
+            'sub_cast',
+            'gotra',
+            'diet',
+            'is_smoking',
+            'is_drinking',
+            'any_disability',
+            'about_family' => 'about_my_family',
+            'family_status',
+            'native_place',
+            'no_of_brothers',
+            'no_of_sisters',
+            'married_brothers',
+            'married_sisters',
+            'father_name',
+            'father_occupation',
+            'mother_name',
+            'mother_occupation',
+            'about_my_education',
+            'education',
+            'any_other_qualifications',
+            'employed_in',
+            'organization_name',
+            'job_location',
+            'occupation',
+            'annual_income',
+            'is_partner_smoking',
+            'is_partner_drinking',
+            'partner_diet',
+            'is_partner_manglik',
+            'about_my_partner',
+            'partner_height_from',
+            'partner_height_to',
+            'partner_age_from',
+            'partner_age_to',
+            'partner_annual_income_from',
+            'partner_annual_income_to',
+        ];
+
+        foreach ($fields as $dbField => $requestField) {
+
+            if (is_numeric($dbField)) {
+                $dbField = $requestField;
+            }
+
+            if ($request->filled($requestField)) {
+                $user->$dbField = $request->$requestField;
+            }
         }
-        if ($request->has('profile_created_for')) {
-            $user->profile_created_for = $request->profile_created_for;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Birth Date + Time
+    |--------------------------------------------------------------------------
+    */
+
+        if ($request->filled('date_of_birth') || $request->filled('time_of_birth')) {
+
+            $user->birth_date_time = trim(
+                $request->date_of_birth . ' ' . $request->time_of_birth
+            );
         }
-        if ($request->has('date_of_birth') || $request->has('time_of_birth')) {
-            $user->birth_date_time = $request->date_of_birth . ' ' . $request->time_of_birth;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Multi Select Fields
+    |--------------------------------------------------------------------------
+    */
+
+        $multiFields = [
+            'partner_employed_in'      => 'partner_occupation',
+            'partner_education',
+            'partner_cast',
+            'partner_religion',
+            'looking_for',
+            'partner_mother_tongue',
+        ];
+
+        foreach ($multiFields as $requestField => $dbField) {
+
+            if (is_numeric($requestField)) {
+                $requestField = $dbField;
+            }
+
+            if ($request->filled($requestField)) {
+
+                $value = $request->$requestField;
+
+                $user->$dbField = is_array($value)
+                    ? implode(',', $value)
+                    : $value;
+            }
         }
-        if ($request->has('height')) {
-            $user->height = $request->height;
-        }
-        if ($request->has('cast')) {
-            $user->cast = $request->cast;
-        }
-        if ($request->has('religion')) {
-            $user->religion = $request->religion;
-        }
-        if ($request->has('marital_status')) {
-            $user->marital_status = $request->marital_status;
-        }
-        if ($request->has('no_of_child')) {
-            $user->no_of_child = $request->no_of_child;
-        }
-        if ($request->has('city_living_in')) {
-            $user->city_living_in = $request->city_living_in;
-        }
-        if ($request->has('state_living_in')) {
-            $user->state_living_in = $request->state_living_in;
-        }
-        if ($request->has('country_living_in')) {
-            $user->country_living_in = $request->country_living_in;
-        }
-        if ($request->has('birth_place')) {
-            $user->birth_place = $request->birth_place;
-        }
-        if ($request->has('manglik')) {
-            $user->manglik = $request->manglik;
-        }
-        if ($request->has('alternate_number')) {
-            $user->alternate_number = $request->alternate_number;
-        }
-        if ($request->has('whatsapp_number')) {
-            $user->whatsapp_number = $request->whatsapp_number;
-        }
-        if ($request->has('cast')) {
-            $user->cast = $request->cast;
-        }
-        if ($request->has('sub_cast')) {
-            $user->sub_cast = $request->sub_cast;
-        }
-        if ($request->has('gotra')) {
-            $user->gotra = $request->gotra;
-        }
-        if ($request->has('diet')) {
-            $user->diet = $request->diet;
-        }
-        if ($request->has('is_smoking')) {
-            $user->is_smoking = $request->is_smoking;
-        }
-        if ($request->has('is_drinking')) {
-            $user->is_drinking = $request->is_drinking;
-        }
-        if ($request->has('any_disability')) {
-            $user->any_disability = $request->any_disability;
-        }
-        if ($request->has('about_my_family')) {
-            $user->about_family = $request->about_my_family;
-        }
-        if ($request->has('family_status')) {
-            $user->family_status = $request->family_status;
-        }
-        if ($request->has('native_place')) {
-            $user->native_place = $request->native_place;
-        }
-        if ($request->has('no_of_brothers')) {
-            $user->no_of_brothers = $request->no_of_brothers;
-        }
-        if ($request->has('no_of_sisters')) {
-            $user->no_of_sisters = $request->no_of_sisters;
-        }
-        if ($request->has('married_brothers')) {
-            $user->married_brothers = $request->married_brothers;
-        }
-        if ($request->has('married_sisters')) {
-            $user->married_sisters = $request->married_sisters;
-        }
-        if ($request->has('father_name')) {
-            $user->father_name = $request->father_name;
-        }
-        if ($request->has('father_occupation')) {
-            $user->father_occupation = $request->father_occupation;
-        }
-        if ($request->has('mother_name')) {
-            $user->mother_name = $request->mother_name;
-        }
-        if ($request->has('mother_occupation')) {
-            $user->mother_occupation = $request->mother_occupation;
-        }
-        if ($request->has('about_my_education')) {
-            $user->about_my_education = $request->about_my_education;
-        }
-        if ($request->has('education')) {
-            $user->education = $request->education;
-        }
-        if ($request->has('any_other_qualifications')) {
-            $user->any_other_qualifications = $request->any_other_qualifications;
-        }
-        if ($request->has('employed_in')) {
-            $user->employed_in = $request->employed_in;
-        }
-        if ($request->has('employed_in')) {
-            $user->employed_in = $request->employed_in;
-        }
-        if ($request->has('organization_name')) {
-            $user->organization_name = $request->organization_name;
-        }
-        if ($request->has('job_location')) {
-            $user->job_location = $request->job_location;
-        }
-        if ($request->has('occupation')) {
-            $user->occupation = $request->occupation;
-        }
-        if ($request->has('annual_income')) {
-            echo $user->annual_income = $request->annual_income;
-        }
-        if ($request->has('is_partner_smoking')) {
-            $user->is_partner_smoking = $request->is_partner_smoking;
-        }
-        if ($request->has('is_partner_drinking')) {
-            $user->is_partner_drinking = $request->is_partner_drinking;
-        }
-        if ($request->has('partner_diet')) {
-            $user->partner_diet = $request->partner_diet;
-        }
-        if ($request->has('partner_employed_in')) {
-            $user->partner_occupation = implode(',', $request->partner_employed_in);
-        }
-        if ($request->has('partner_education')) {
-            $user->partner_education = implode(',', $request->partner_education);
-        }
-        if ($request->has('is_partner_manglik')) {
-            $user->is_partner_manglik = $request->is_partner_manglik;
-        }
-        if ($request->has('partner_cast')) {
-            $user->partner_cast = implode(',', $request->partner_cast);
-        }
-        if ($request->has('partner_religion')) {
-            $user->partner_religion = implode(',', $request->partner_religion);
-        }
-        if ($request->has('looking_for')) {
-            $user->looking_for = implode(',', $request->looking_for);
-        }
-        if ($request->has('about_my_partner')) {
-            $user->about_my_partner = $request->about_my_partner;
-        }
-        if ($request->has('partner_height_from')) {
-            $user->partner_height_from = $request->partner_height_from;
-        }
-        if ($request->has('partner_height_to')) {
-            $user->partner_height_to = $request->partner_height_to;
-        }
-        if ($request->has('partner_mother_tongue')) {
-            $user->partner_mother_tongue = implode(',', $request->partner_mother_tongue);
-        }
-        if ($request->has('partner_age_from')) {
-            $user->partner_age_from = $request->partner_age_from;
-        }
-        if ($request->has('partner_age_to')) {
-            $user->partner_age_to = $request->partner_age_to;
-        }
-        if ($request->has('partner_annual_income_from')) {
-            $user->partner_annual_income_from = $request->partner_annual_income_from;
-        }
-        if ($request->has('partner_annual_income_to')) {
-            $user->partner_annual_income_to = $request->partner_annual_income_to;
-        }
+
         $user->save();
-        return response()->json(['success' => true, 'message' => 'Profile Updated Successfully']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile Updated Successfully'
+        ]);
     }
 
     public function delete_profile()

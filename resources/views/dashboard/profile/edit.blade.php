@@ -971,7 +971,7 @@ $birthDate = $member->birth_date_time
 <!-- ===== SUCCESS TOAST ===== -->
 <div class="ep-toast" id="epSuccessToast" role="status" aria-live="polite">
     <i data-lucide="check-circle-2" width="18" height="18"></i>
-    <span id="epToastMsg">Profile Updated Successfully!</span>
+    <span id="epToastMsg"></span>
 </div>
 
 @section('scripts')
