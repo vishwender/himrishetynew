@@ -40,7 +40,7 @@
         <li><a href="{{route('welcome')}}#features">Features</a></li>
         <li><a href="{{route('welcome')}}#communities">Communities</a></li>
         <li><a href="{{route('welcome')}}#testimonials">Success Stories</a></li>
-        <li><a href="{{ route('welcome) }}#contact">Contact</a></li>
+        <li><a href="{{ route('welcome') }}#contact">Contact</a></li>
       </ul>
 
       <div class="nav-actions">
