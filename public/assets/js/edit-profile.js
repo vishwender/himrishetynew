@@ -1127,13 +1127,22 @@ const RangeSliderManager = {
             label.textContent =
                 `${config.formatter(min)} – ${config.formatter(max)}`;
 
-            this.markDirty(from);
+            // Do NOT mark dirty on initial render. Marking should only occur
+            // when the user interacts with the range inputs.
 
         };
 
-        from.addEventListener("input", update);
-        to.addEventListener("input", update);
+        from.addEventListener("input", () => {
+            update();
+            this.markDirty(from);
+        });
 
+        to.addEventListener("input", () => {
+            update();
+            this.markDirty(to);
+        });
+
+        // Initialize display without marking the form dirty
         update();
 
     },
@@ -1226,12 +1235,16 @@ const ConditionManager = {
 
             }
 
-            this.markDirty(maritalStatus);
+            // Do not mark dirty on initial setup. Only mark when user changes value.
 
         };
 
-        maritalStatus.addEventListener("change", update);
+        maritalStatus.addEventListener("change", () => {
+            update();
+            this.markDirty(maritalStatus);
+        });
 
+        // Initialize state without marking dirty
         update();
 
     },
@@ -1266,12 +1279,16 @@ const ConditionManager = {
 
             }
 
-            this.markDirty(disability);
+            // Do not mark dirty on initial setup; only mark on user interaction
 
         };
 
-        disability.addEventListener("change", update);
+        disability.addEventListener("change", () => {
+            update();
+            this.markDirty(disability);
+        });
 
+        // Initialize state without marking dirty
         update();
 
     },
