@@ -1,10 +1,12 @@
-/* ============================================================
-   Validation Helpers
-============================================================ */
+
 (() => {
     'use strict';
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
+/* ============================================================
+   Validation Helpers
+============================================================ */
+    
 function showError(input, errorElement, message) {
 
     if (input) {
