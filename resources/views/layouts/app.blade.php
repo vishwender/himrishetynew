@@ -140,6 +140,7 @@
         <h4>Support</h4>
         <ul role="list">
           <li><a href="#contact">Contact Us</a></li>
+          <li><a href="{{route('about-us')}}">About Us</a></li>
           <li><a href="{{route('privacy-policy')}}">Privacy Policy</a></li>
           <li><a href="{{route('terms-and-conditions')}}">Terms & Conditions</a></li>
           <li><a href="#">Help Center</a></li>

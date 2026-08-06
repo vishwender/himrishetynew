@@ -25,7 +25,7 @@ class WelcomeController extends Controller
     public function about()
     {
         $aboutUs = Page::where('id', 1)->value('about_us');
-        return view('about', compact('aboutUs'));
+        return view('about-us', compact('aboutUs'));
     }
 
     public function success_stories()
