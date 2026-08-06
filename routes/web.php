@@ -27,15 +27,15 @@ use App\Http\Controllers\MemberAuth\ResetPasswordController;
 |
 */
 
-Route::get('/clear-cache', function () {
-    Artisan::call('optimize:clear');   // clears config, route, view, and cache
-    Artisan::call('config:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-    Artisan::call('cache:clear');
+// Route::get('/clear-cache', function () {
+//     Artisan::call('optimize:clear');   // clears config, route, view, and cache
+//     Artisan::call('config:clear');
+//     Artisan::call('route:clear');
+//     Artisan::call('view:clear');
+//     Artisan::call('cache:clear');
 
-    return "Application cache cleared!";
-});
+//     return "Application cache cleared!";
+// });
 
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -131,7 +131,7 @@ Route::prefix('member')->name('member.')->group(function () {
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
-Route::get('/test-notify', function () {
-    (new \App\Http\Controllers\PushSubscriptionController)->sendBrowserNotification();
-    return 'Notification triggered!';
-});
+// Route::get('/test-notify', function () {
+//     (new \App\Http\Controllers\PushSubscriptionController)->sendBrowserNotification();
+//     return 'Notification triggered!';
+// });
