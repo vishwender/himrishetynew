@@ -537,13 +537,23 @@ const FormManager = {
 
             const section = form.dataset.section;
 
-            // Mark dirty
+            // Mark dirty and refresh completion status when the user changes input
+            const refreshStatus = () => {
+                const status = StatusManager.isComplete(form)
+                    ? "complete"
+                    : "incomplete";
+
+                StatusManager.update(section, status);
+            };
+
             form.addEventListener("input", () => {
                 TabManager.markDirty(section);
+                refreshStatus();
             });
 
             form.addEventListener("change", () => {
                 TabManager.markDirty(section);
+                refreshStatus();
             });
 
             // Submit
@@ -659,9 +669,11 @@ const FormManager = {
 
         TabManager.clearDirty(section);
 
-        StatusManager.update(section, "complete");
+        const form = document.querySelector(`.ep-form[data-section="${section}"]`);
+        const nextStatus = StatusManager.isComplete(form) ? "complete" : "incomplete";
+        StatusManager.update(section, nextStatus);
 
-        ToastManager.success(response.message || 'Profile updated sucessfully.');
+        ToastManager.success(response.message || 'Profile updated successfully.');
 
         setTimeout(() => {
 
@@ -710,7 +722,49 @@ const FormManager = {
 
 const StatusManager = {
 
-    update(section, status = "complete") {
+    init() {
+        this.refreshAll();
+    },
+
+    refreshAll() {
+        DOM.forms.forEach(form => {
+            const section = form.dataset.section;
+            this.update(section, this.isComplete(form) ? "complete" : "incomplete", false);
+        });
+
+        this.updateOverall();
+    },
+
+    isComplete(form) {
+        if (!form) return false;
+
+        const fields = [
+            ...form.querySelectorAll(
+                "input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled])"
+            )
+        ];
+
+        if (fields.length === 0) {
+            return false;
+        }
+
+        return fields.every(field => {
+            const panel = field.closest(".ep-tab-panel");
+            const hiddenParent = field.closest("[hidden]");
+
+            if (hiddenParent && hiddenParent !== panel) {
+                return true;
+            }
+
+            if (field.type === "checkbox" || field.type === "radio") {
+                return field.checked || field.value.trim() !== "";
+            }
+
+            return field.value.trim() !== "";
+        });
+    },
+
+    update(section, status = "complete", updateOverall = true) {
 
         const tab = document.querySelector(
             `.ep-tab-btn[data-tab="${section}"]`
@@ -733,7 +787,9 @@ const StatusManager = {
 
         createIcons();
 
-        this.updateOverall();
+        if (updateOverall) {
+            this.updateOverall();
+        }
 
     },
 
@@ -1336,7 +1392,7 @@ function init() {
 
     ConditionManager.init();
 
-    StatusManager.updateOverall();
+    StatusManager.init();
 
     TabManager.switch('basic-info');
 
