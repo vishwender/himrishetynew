@@ -22,7 +22,7 @@
       </p>
 
       <div class="hero-actions">
-        <a href="{{ route('login') }}#register" class="btn-hero-primary">
+        <a href="{{ route('login-form') }}#register" class="btn-hero-primary">
           <i data-lucide="user-plus" width="18" height="18"></i>
           Create Your Profile
         </a>
@@ -164,7 +164,7 @@
           Him Rishtey brings profile discovery, advanced search, offline support, profile verification,
           shortlist features, interest management and matrimonial support services together in one place.
         </p>
-        <a href="{{ route('login') }}#register" class="btn-feature-cta">
+        <a href="{{ route('login-form') }}#register" class="btn-feature-cta">
           Get Started Free
           <i data-lucide="arrow-right" width="16" height="16"></i>
         </a>
@@ -440,7 +440,7 @@
       <p>Create your profile now and begin your matrimonial journey with HimRishtey.</p>
     </div>
     <div class="cta-actions reveal">
-      <a href="{{ route('login') }}#register" class="btn-cta-primary">Create Free Profile</a>
+      <a href="{{ route('login-form') }}#register" class="btn-cta-primary">Create Free Profile</a>
       <a href="#" class="btn-cta-secondary">Go to Dashboard</a>
     </div>
   </div>

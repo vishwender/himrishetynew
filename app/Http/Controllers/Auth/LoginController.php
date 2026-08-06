@@ -193,7 +193,7 @@ class LoginController extends Controller
     public function logout()
     {
         Auth::guard('member')->logout();
-        return redirect()->route('login');
+        return redirect()->route('login-form');
     }
 
     public function generateCaptcha()

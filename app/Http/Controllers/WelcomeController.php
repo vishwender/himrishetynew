@@ -16,22 +16,22 @@ class WelcomeController extends Controller
 {
     public function index()
     {
-        $data["maleProfile"] = Member::where('gender','Male')->where('is_trusted','trusted')->where('active','Yes')->orderby('id','desc')->first();
-        $data["femaleProfile"] = Member::where('gender','Female')->where('member_type','Verified')->where('active','Yes')->orderby('id','desc')->first();
+        $data["maleProfile"] = Member::where('gender', 'Male')->where('is_trusted', 'trusted')->where('active', 'Yes')->orderby('id', 'desc')->first();
+        $data["femaleProfile"] = Member::where('gender', 'Female')->where('member_type', 'Verified')->where('active', 'Yes')->orderby('id', 'desc')->first();
         $data['totalprofiles'] = Member::count();
-        return view('welcome',compact('data'));
+        return view('welcome', compact('data'));
     }
 
     public function about()
     {
         $aboutUs = Page::where('id', 1)->value('about_us');
-        return view('about',compact('aboutUs'));
+        return view('about', compact('aboutUs'));
     }
 
     public function success_stories()
     {
-        $stories =  SuccessStory::where('status',1)->get();
-        return view('success-stories',compact('stories'));
+        $stories =  SuccessStory::where('status', 1)->get();
+        return view('success-stories', compact('stories'));
     }
 
     public function contact()
@@ -42,19 +42,19 @@ class WelcomeController extends Controller
     public function privacy_policy()
     {
         $data = Page::where('id', 1)->value('privacy_policy');
-        return view('privacy-policy',compact('data'));
+        return view('privacy-policy', compact('data'));
     }
 
     public function refund_policy()
     {
         $data = Page::where('id', 1)->value('refund_policy');
-        return view('refund_policy',compact('data'));
+        return view('refund_policy', compact('data'));
     }
 
     public function terms_and_conditions()
     {
         $data = Page::where('id', 1)->value('terms_and_conditions');
-        return view('terms-and-conditions',compact('data'));
+        return view('terms-and-conditions', compact('data'));
     }
 
     public function child_safety()
@@ -64,7 +64,7 @@ class WelcomeController extends Controller
 
     public function pricing()
     {
-        $pricings = MembershipPlan:: WhereNot('id',0)->get();
-        return view('pricing',compact('pricings'));
+        $pricings = MembershipPlan::WhereNot('id', 0)->get();
+        return view('pricing', compact('pricings'));
     }
 }

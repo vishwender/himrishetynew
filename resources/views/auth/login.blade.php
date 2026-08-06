@@ -150,7 +150,7 @@
                   <span class="checkbox-custom" aria-hidden="true"></span>
                   Remember me
                 </label>
-                <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
+                <a href="{{ route('member.password.request') }}" class="forgot-link">Forgot password?</a>
               </div>
 
               <!-- Submit -->
@@ -396,7 +396,7 @@
                 <label class="checkbox-label">
                   <input type="checkbox" id="regTerms" name="terms" class="checkbox-input" required />
                   <span class="checkbox-custom" aria-hidden="true"></span>
-                  I agree to the <a href="{{Route('terms-and-conditions')}}" class="terms-link">Terms &amp; Conditions</a> and <a href="{{Route('privacy-policy')}}" class="terms-link">Privacy Policy</a>
+                  I agree to the <a href="{{route('terms-and-conditions')}}" class="terms-link">Terms &amp; Conditions</a> and <a href="{{Route('privacy-policy')}}" class="terms-link">Privacy Policy</a>
                 </label>
                 <span class="form-error" id="regTermsError" role="alert"></span>
               </div>

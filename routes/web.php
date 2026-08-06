@@ -77,7 +77,7 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/unlock-contact/{profileId}', [HomeController::class, 'unlock_contact'])->name('unlock.contact');
     Route::get('memberships', [MembershipController::class, 'index'])->name('memberships');
     Route::get('referral', [HomeController::class, 'referral'])->name('referral');
-    Route::get('terms-and-conditions', [PagesController::class, 'terms_conditions'])->name('member.terms-and-conditions');
+    Route::get('members/terms-and-conditions', [PagesController::class, 'terms_conditions'])->name('member.terms-and-conditions');
     Route::get('user-rating', [HomeController::class, 'rating'])->name('user-rating');
     Route::post('user-rate', [HomeController::class, 'rating_store'])->name('user-rate');
     Route::get('success-stories', [HomeController::class, 'success_stories'])->name('member.success-stories');
@@ -109,7 +109,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('/stats-profiles', [ProfileController::class, 'stats_profiles'])->name('stats-profiles');
     Route::get('/all-stats-profiles', [ProfileController::class, 'all_stats_profiles'])->name('all-stats-profiles');
     Route::post('short-profile', [HomeController::class, 'shortlist_profile'])->name('short-profile');
-    Route::get('privacy-policy', [PagesController::class, 'privacy_policy'])->name('member.privacy-policy');
+    Route::get('member/privacy-policy', [PagesController::class, 'privacy_policy'])->name('member.privacy-policy');
     Route::get('refund-policy', [PagesController::class, 'refund'])->name('member.refund-policy');
     Route::post('/interest/update-status', [HomeController::class, 'updateInterestStatus'])->name('interest.update.status');
     Route::get('/membership/success', function () {

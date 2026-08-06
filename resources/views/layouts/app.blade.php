@@ -51,8 +51,8 @@
           <i data-lucide="moon" width="18" height="18"></i>
         </button>
 
-        <a href="{{ route('login') }}" class="btn-nav-login">Login</a>
-        <a href="{{ route('login') }}#register" class="btn-nav-cta">Register Free</a>
+        <a href="{{ route('login-form') }}" class="btn-nav-login">Login</a>
+        <a href="{{ route('login-form') }}#register" class="btn-nav-cta">Register Free</a>
 
         <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
           <i data-lucide="menu" width="22" height="22"></i>
@@ -78,8 +78,8 @@
     </ul>
 
     <div class="drawer-footer">
-      <a href="{{ route('login') }}" class="btn-drawer-login">Login</a>
-      <a href="{{ route('login')}}#register" class="btn-drawer-cta">Register Free</a>
+      <a href="{{ route('login-form') }}" class="btn-drawer-login">Login</a>
+      <a href="{{ route('login-form')}}#register" class="btn-drawer-cta">Register Free</a>
     </div>
   </div>
 
@@ -120,8 +120,8 @@
         <h4>Pages</h4>
         <ul role="list">
           <li><a href="/">Home</a></li>
-          <li><a href="{{route('login')}}">Login</a></li>
-          <li><a href="{{route('login')}}#register">Register</a></li>
+          <li><a href="{{route('login-form')}}">Login</a></li>
+          <li><a href="{{route('login-form')}}#register">Register</a></li>
           <li><a href="#">Dashboard</a></li>
         </ul>
       </div>
