@@ -1,513 +1,745 @@
 /* ============================================================
-   HimRishtey — Login Page Script
-   ============================================================ */
+   Validation Helpers
+============================================================ */
+(() => {
+    'use strict';
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
-(function () {
-  'use strict';
+function showError(input, errorElement, message) {
 
-  /* ---- THEME TOGGLE (same as main) ---- */
-  const html = document.documentElement;
-  const themeToggle = document.querySelector('[data-theme-toggle]');
-
-  let currentTheme = (() => {
-    try { return localStorage.getItem('hr-theme') || 'light'; }
-    catch (e) { return 'light'; }
-  })();
-
-  function applyTheme(theme) {
-    html.setAttribute('data-theme', theme);
-    currentTheme = theme;
-    try { localStorage.setItem('hr-theme', theme); } catch (e) {}
-    if (themeToggle) {
-      const isDark = theme === 'dark';
-      themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-      themeToggle.innerHTML = isDark
-        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`
-        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+    if (input) {
+        input.classList.remove('success');
+        input.classList.add('error');
     }
-  }
 
-  applyTheme(currentTheme);
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => applyTheme(currentTheme === 'dark' ? 'light' : 'dark'));
-  }
+    if (errorElement) {
+        errorElement.textContent = message;
+    }
+}
 
+function clearError(input, errorElement) {
 
-  /* ---- TAB SWITCHER ---- */
-  const tabs        = document.querySelectorAll('.login-tab');
-  const panels      = document.querySelectorAll('.login-tab-panel');
-  const tabSwitcher = document.querySelector('.login-tab-switcher');
+    if (input) {
+        input.classList.remove('error');
+        input.classList.remove('success');
+    }
 
-  function switchTab(tabName) {
-    tabs.forEach(t => {
-      const isActive = t.dataset.tab === tabName;
-      t.classList.toggle('active', isActive);
-      t.setAttribute('aria-selected', isActive);
-    });
-    panels.forEach(p => {
-      const isActive = p.id === `panel-${tabName}`;
-      p.classList.toggle('active', isActive);
-      if (isActive) { p.removeAttribute('hidden'); p.focus && p.focus(); }
-      else p.setAttribute('hidden', '');
-    });
-    if (tabSwitcher) tabSwitcher.setAttribute('data-active', tabName);
-  }
+    if (errorElement) {
+        errorElement.textContent = '';
+    }
+}
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-  });
+function markSuccess(input) {
 
-  // Switch tab from "Create one now" / "Sign in here" links
-  document.querySelectorAll('.switch-tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => switchTab(btn.dataset.switch));
-  });
+    if (!input) return;
 
+    input.classList.remove('error');
+    input.classList.add('success');
+}
 
-  /* ---- PASSWORD VISIBILITY TOGGLE ---- */
-  document.querySelectorAll('.input-toggle-pass').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetId = btn.dataset.target;
-      const input    = document.getElementById(targetId);
-      if (!input) return;
-      const isText = input.type === 'text';
-      input.type   = isText ? 'password' : 'text';
-      btn.setAttribute('aria-label', isText ? 'Show password' : 'Hide password');
-      btn.innerHTML = isText
-        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
-        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
-    });
-  });
+/* ============================================================
+   Validation Functions
+============================================================ */
 
+function isValidName(value) {
+    return value.trim().length >= 2;
+}
 
-  /* ---- PASSWORD STRENGTH INDICATOR ---- */
-  const regPasswordInput    = document.getElementById('regPassword');
-  const psbFill             = document.getElementById('psb-fill');
-  const passwordStrengthLbl = document.getElementById('passwordStrengthLabel');
+function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
 
-  function checkPasswordStrength(val) {
-    if (!val) return { level: '', label: '' };
-    let score = 0;
-    if (val.length >= 6)  score++;
-    if (val.length >= 10) score++;
-    if (/[A-Z]/.test(val))  score++;
-    if (/[0-9]/.test(val))  score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
-    if (score <= 2) return { level: 'weak',   label: 'Weak' };
-    if (score <= 3) return { level: 'medium', label: 'Medium' };
-    return { level: 'strong', label: 'Strong' };
-  }
+function isValidMobile(value) {
+    return /^[6-9]\d{9}$/.test(value.trim());
+}
 
-  if (regPasswordInput && psbFill && passwordStrengthLbl) {
-    regPasswordInput.addEventListener('input', () => {
-      const { level, label } = checkPasswordStrength(regPasswordInput.value);
-      psbFill.className = `psb-fill ${level}`;
-      passwordStrengthLbl.className = `password-strength-label ${level}`;
-      passwordStrengthLbl.textContent = label;
-    });
-  }
+function isValidPassword(value) {
+    return value.length >= 6;
+}
 
+function isValidLoginField(value) {
 
-  /* ---- VALIDATION HELPERS ---- */
-  function showError(inputEl, errorEl, message) {
-    if (inputEl) inputEl.classList.add('error');
-    if (errorEl) errorEl.textContent = message;
-  }
-
-  function clearError(inputEl, errorEl) {
-    if (inputEl) { inputEl.classList.remove('error'); inputEl.classList.remove('success'); }
-    if (errorEl) errorEl.textContent = '';
-  }
-
-  function markSuccess(inputEl) {
-    if (inputEl) { inputEl.classList.remove('error'); inputEl.classList.add('success'); }
-  }
-
-  function isValidMobile(val) { return /^[6-9]\d{9}$/.test(val.trim()); }
-  function isValidPassword(val) { return val.length >= 6; }
-  function isValidName(val) { return val.trim().length >= 2; }
-  function isValidEmail(val) {return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());}
-  function isValidLoginField(value) {
     value = value.trim();
-    const mobile = /^[6-9]\d{9}$/;
-    const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
-    const profile = /^HIM\d+$/i;
-    return mobile.test(value) ||
-           email.test(value) ||
-           profile.test(value);}
-  function updateCaptcha(question) {
-    const captchaBox = document.getElementById('regCaptcha');
 
-    if (captchaBox && question) {
-        captchaBox.textContent = question;
-    }
+    const mobilePattern = /^[6-9]\d{9}$/;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const profilePattern = /^HIM\d+$/i;
 
-    regCaptchaInput.value = "";
-  }
+    return (
+        mobilePattern.test(value) ||
+        emailPattern.test(value) ||
+        profilePattern.test(value)
+    );
+}
 
-  const csrf = document.querySelector('meta[name="csrf-token"]').content;
-  let emailExists = false;
-  let mobileExists = false;
+function initTabs() {
 
-  async function checkMemberExist(type, value) {
+    const tabs = document.querySelectorAll('.login-tab');
+    const panels = document.querySelectorAll('.login-tab-panel');
 
-      if (!value) return;
-      
-      
-      try {
+    tabs.forEach(tab => {
 
-          const response = await fetch('/checkMemberExist', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'X-CSRF-TOKEN': csrf,
-                  'Accept': 'application/json'
-              },
-              body: JSON.stringify({
-                [type]: value
-              })
-          });
+        tab.addEventListener('click', function () {
 
-          const data = await response.json();
+            const tabName = this.dataset.tab;
 
-          if (data.exists) {
+            tabs.forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
 
-              if (type === 'email') {
-                  emailExists = true;
-                  showError(regEmailInput, regEmailError, data.message);
-              } else {
-                  mobileExists = true;
-                  showError(regMobileInput, regMobileError, data.message);
-              }
-            } else {
+            panels.forEach(panel => {
+                panel.classList.remove('active');
+                panel.hidden = true;
+            });
 
-            if (type === 'email') { 
-                emailExists = false;
-                clearError(regEmailInput, regEmailError);
-                markSuccess(regEmailInput);
-            } else {
-                mobileExists = false;
-                clearError(regMobileInput, regMobileError);
-                markSuccess(regMobileInput);
+            this.classList.add('active');
+            this.setAttribute('aria-selected', 'true');
+
+            const panel = document.getElementById(`panel-${tabName}`);
+
+            if (panel) {
+                panel.hidden = false;
+                panel.classList.add('active');
             }
-        }
-    } catch (e) {
-        console.error(e);
-    }
-  }
 
+        });
 
-
-  /* ---- LOGIN FORM ---- */
-  const loginForm       = document.getElementById('loginForm');
-  const loginField      =  document.getElementById('loginField');
-  const loginPasswordInput = document.getElementById('loginPassword');
-  const loginCaptchaInput = document.getElementById('loginCaptcha');
-  //const loginMobileInput  = document.getElementById('loginMobile');
-
-  //const loginMobileError  = document.getElementById('loginMobileError');
-  const loginCaptchaError = document.getElementById('loginCaptchaError');
-  const loginPasswordError = document.getElementById('loginPasswordError');
-  const loginSubmitBtn  = document.getElementById('loginSubmitBtn');
-  
-
-  if (loginPasswordInput) {
-    loginPasswordInput.addEventListener('input', () => {
-      clearError(loginPasswordInput, loginPasswordError);
     });
-  }
 
-  if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
-      //alert('form submitted');
-      e.preventDefault();
-      let valid = true;
+}
 
-      // Validate mobile
-      // if (!loginMobileInput.value || !isValidMobile(loginMobileInput.value)) {
-      //   showError(loginMobileInput, loginMobileError, 'Enter a valid 10-digit mobile number');
-      //   valid = false;
-      // } else {
-      //   clearError(loginMobileInput, loginMobileError);
-      //   markSuccess(loginMobileInput);
-      // }
+document.addEventListener('click', function (e) {
 
-      if (!isValidLoginField(loginField.value)) {
+    const btn = e.target.closest('.input-toggle-pass');
+
+    if (!btn) return;
+
+    const input = document.getElementById(btn.dataset.target);
+
+    if (!input) return;
+
+    const isHidden = input.type === 'password';
+
+    input.type = isHidden ? 'text' : 'password';
+
+    btn.innerHTML = isHidden
+        ? '<i data-lucide="eye-off" width="16" height="16"></i>'
+        : '<i data-lucide="eye" width="16" height="16"></i>';
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+});
+
+const Login = {
+
+    form: document.getElementById('loginForm'),
+
+    field: document.getElementById('loginField'),
+
+    fieldError: document.getElementById('loginFieldError'),
+
+    password: document.getElementById('loginPassword'),
+
+    passwordError: document.getElementById('loginPasswordError'),
+
+    captcha: document.getElementById('loginCaptcha'),
+
+    captchaError: document.getElementById('loginCaptchaError'),
+
+    submit: document.getElementById('loginSubmitBtn'),
+
+    captchaQuestion: document.getElementById('captchaQuestion')
+
+};
+
+function validateLogin() {
+
+    let valid = true;
+
+    if (!isValidLoginField(Login.field.value)) {
+
         showError(
-            loginField,
-            loginFieldError,
+            Login.field,
+            Login.fieldError,
             'Enter a valid Profile ID, Email or Mobile Number'
         );
+
         valid = false;
-      } else {
-        clearError(loginField, loginFieldError);
-        markSuccess(loginField);
-      }
 
-      // Validate password
-      if (!loginPasswordInput.value || !isValidPassword(loginPasswordInput.value)) {
-        showError(loginPasswordInput, loginPasswordError, 'Password must be at least 6 characters');
-        valid = false;
-      } else {
-        clearError(loginPasswordInput, loginPasswordError);
-        markSuccess(loginPasswordInput);
-      }
+    } else {
 
-      // Validate captcha
-      if (!loginCaptchaInput || loginCaptchaInput.value.trim() === '') {
+        clearError(Login.field, Login.fieldError);
 
-          showError(loginCaptchaInput, loginCaptchaError, 'Please enter the captcha.');
-          valid = false;
+        markSuccess(Login.field);
 
-      } else if (isNaN(loginCaptchaInput.value.trim())) {
-
-          showError(loginCaptchaInput, loginCaptchaError, 'Captcha must be a number.');
-          valid = false;
-
-      } else {
-
-          clearError(loginCaptchaInput, loginCaptchaError);
-          markSuccess(loginCaptchaInput);
-
-      }
-
-
-      if (!valid) return;
-
-      // Show loading state
-      loginSubmitBtn.classList.add('loading');
-      loginSubmitBtn.disabled = true;
-
-      // Simulate API call — replace with real fetch
-      const csrf = document.querySelector('meta[name="csrf-token"]').content;
-
-      fetch('/member-login', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'X-CSRF-TOKEN': csrf
-          },
-          body: JSON.stringify({
-              username: loginField.value.trim(),
-              password: loginPasswordInput.value,
-              captcha: loginCaptchaInput.value.trim()
-          })
-      })
-      .then(async response => {
-          const data = await response.json();
-
-          loginSubmitBtn.classList.remove('loading');
-          loginSubmitBtn.disabled = false;
-
-          if (response.ok) {
-              window.location.href = data.redirect || '/';
-          } else {
-               if (data.captcha) {
-                  document.getElementById('captchaQuestion').textContent = data.captcha;
-                  loginCaptchaInput.value = '';
-                  showError(loginCaptchaInput, loginCaptchaError, 'Incorrect captcha. Please try again.');
-                }
-                alert(data.message || 'Invalid mobile number or password.');
-          }
-      })
-      .catch(error => {
-          loginSubmitBtn.classList.remove('loading');
-          loginSubmitBtn.disabled = false;
-          console.error(error);
-          alert('Something went wrong.');
-      });
-    });
-  }
-
-
-  /* ---- REGISTER FORM ---- */
-  const registerForm    = document.getElementById('registerForm');
-  const regNameInput    = document.getElementById('regName');
-  const regEmailInput =   document.getElementById('regEmail');
-  const regMobileInput  = document.getElementById('regMobile');
-  const regGenderInput  = document.getElementById('regGender');
-  const regDOBInput     = document.getElementById('regDOB');
-  const regPasswordInput2 = document.getElementById('regPassword');
-  const regTermsInput   = document.getElementById('regTerms');
-  const regCaptchaInput = document.getElementById('regCaptcha');
-
-  const regNameError    = document.getElementById('regNameError');
-  const regEmailError   = document.getElementById('regEmailError');
-  const regMobileError  = document.getElementById('regMobileError');
-  const regGenderError  = document.getElementById('regGenderError');
-  const regDOBError     = document.getElementById('regDOBError');
-  const regPasswordError = document.getElementById('regPasswordError');
-  const regTermsError   = document.getElementById('regTermsError');
-  const regCaptchaError = document.getElementById('regCaptchaError');
-  const registerSubmitBtn = document.getElementById('registerSubmitBtn');
-
-  if (regMobileInput) {
-    regMobileInput.addEventListener('input', () => {
-      regMobileInput.value = regMobileInput.value.replace(/\D/g, '');
-      clearError(regMobileInput, regMobileError);
-      if (regMobileInput.value.length === 10) {
-        if (isValidMobile(regMobileInput.value)) markSuccess(regMobileInput);
-        else showError(regMobileInput, regMobileError, 'Enter a valid mobile number starting with 6-9');
-      }
-    });
-  }
-
-  regEmailInput.addEventListener('blur', function () {
-    if (isValidEmail(this.value)) {
-        checkMemberExist('email', this.value);
     }
-  });
 
-  regMobileInput.addEventListener('blur', function () {
-    if (this.value.length === 10) {
-        checkMemberExist('mobile_number', this.value);
+    if (!Login.password.value || !isValidPassword(Login.password.value)) {
+
+        showError(
+            Login.password,
+            Login.passwordError,
+            'Password must be at least 6 characters'
+        );
+
+        valid = false;
+
+    } else {
+
+        clearError(Login.password, Login.passwordError);
+
+        markSuccess(Login.password);
+
     }
-  });
 
-  if (registerForm) {
-    registerForm.addEventListener('submit', (e) => {
-       alert('register');
-      e.preventDefault();
-      let valid = true;
+    if (!Login.captcha.value.trim()) {
 
-      if (!regNameInput.value || !isValidName(regNameInput.value)) {
-        showError(regNameInput, regNameError, 'Please enter your full name');
+        showError(
+            Login.captcha,
+            Login.captchaError,
+            'Please enter the captcha.'
+        );
+
         valid = false;
-      } else { clearError(regNameInput, regNameError); markSuccess(regNameInput); }
 
-      if (!regEmailInput.value || !isValidEmail(regEmailInput.value)) {
-        showError(regEmailInput, regEmailError, 'Please enter valid e-mail');
-        valid = false;
-      } else { clearError(regEmailInput, regEmailError); markSuccess(regEmailInput); }
+    } else if (isNaN(Login.captcha.value.trim())) {
 
-      if (!regMobileInput.value || !isValidMobile(regMobileInput.value)) {
-        showError(regMobileInput, regMobileError, 'Enter a valid 10-digit mobile number');
-        valid = false;
-      } else { clearError(regMobileInput, regMobileError); markSuccess(regMobileInput); }
+        showError(
+            Login.captcha,
+            Login.captchaError,
+            'Captcha must be a number.'
+        );
 
-      if (!regGenderInput.value) {
-        showError(regGenderInput, regGenderError, 'Please select your gender');
         valid = false;
-      } else { clearError(regGenderInput, regGenderError); markSuccess(regGenderInput); }
 
-      if (!regDOBInput.value) {
-        showError(regDOBInput, regDOBError, 'Please enter your date of birth');
+    } else {
+
+        clearError(Login.captcha, Login.captchaError);
+
+        markSuccess(Login.captcha);
+
+    }
+
+    return valid;
+
+}
+
+async function loginMember() {
+
+    Login.submit.classList.add('loading');
+
+    Login.submit.disabled = true;
+
+    try {
+
+        const response = await fetch('/member-login', {
+
+            method: 'POST',
+
+            headers: {
+
+                'Content-Type': 'application/json',
+
+                'Accept': 'application/json',
+
+                'X-CSRF-TOKEN': csrf
+
+            },
+
+            body: JSON.stringify({
+
+                username: Login.field.value.trim(),
+
+                password: Login.password.value,
+
+                captcha: Login.captcha.value.trim()
+
+            })
+
+        });
+
+        const data = await response.json();
+
+        Login.submit.classList.remove('loading');
+
+        Login.submit.disabled = false;
+
+        if (response.ok) {
+
+            window.location.href = data.redirect || '/';
+
+            return;
+
+        }
+
+        if (data.captcha && Login.captchaQuestion) {
+
+            Login.captchaQuestion.textContent = data.captcha;
+
+            Login.captcha.value = '';
+
+            showError(
+                Login.captcha,
+                Login.captchaError,
+                'Incorrect captcha. Please try again.'
+            );
+
+        }
+
+        alert(data.message || 'Invalid username or password.');
+
+    }
+
+    catch (e) {
+
+        Login.submit.classList.remove('loading');
+
+        Login.submit.disabled = false;
+
+        console.error(e);
+
+        alert('Something went wrong.');
+
+    }
+
+}
+function initLoginForm() {
+
+    if (!Login.form) return;
+
+    Login.password.addEventListener('input', () => {
+
+        clearError(Login.password, Login.passwordError);
+
+    });
+
+    Login.form.addEventListener('submit', async function (e) {
+
+        e.preventDefault();
+
+        if (!validateLogin()) {
+
+            return;
+
+        }
+
+        await loginMember();
+
+    });
+
+}
+
+//Register
+const Register = {
+
+    form: document.getElementById('registerForm'),
+
+    name: document.getElementById('regName'),
+    email: document.getElementById('regEmail'),
+    mobile: document.getElementById('regMobile'),
+    gender: document.getElementById('regGender'),
+    dob: document.getElementById('regDOB'),
+    password: document.getElementById('regPassword'),
+    captcha: document.getElementById('regCaptcha'),
+    terms: document.getElementById('regTerms'),
+
+    submit: document.getElementById('registerSubmitBtn'),
+
+    errors: {
+
+        name: document.getElementById('regNameError'),
+        email: document.getElementById('regEmailError'),
+        mobile: document.getElementById('regMobileError'),
+        gender: document.getElementById('regGenderError'),
+        dob: document.getElementById('regDOBError'),
+        password: document.getElementById('regPasswordError'),
+        captcha: document.getElementById('regCaptchaError'),
+        terms: document.getElementById('regTermsError')
+
+    }
+
+};
+
+function validateRegister() {
+
+    let valid = true;
+
+    if (!Register.name.value || !isValidName(Register.name.value)) {
+
+        showError(Register.name, Register.errors.name, 'Please enter your full name');
+
         valid = false;
-      } else {
-        // Age check — must be 18+
-        const dob  = new Date(regDOBInput.value);
-        const age  = Math.floor((Date.now() - dob) / 31557600000);
+
+    } else {
+
+        clearError(Register.name, Register.errors.name);
+
+        markSuccess(Register.name);
+
+    }
+
+    if (!Register.email.value || !isValidEmail(Register.email.value)) {
+
+        showError(Register.email, Register.errors.email, 'Please enter a valid email.');
+
+        valid = false;
+
+    } else {
+
+        clearError(Register.email, Register.errors.email);
+
+        markSuccess(Register.email);
+
+    }
+
+    if (!Register.mobile.value || !isValidMobile(Register.mobile.value)) {
+
+        showError(Register.mobile, Register.errors.mobile, 'Enter a valid mobile number.');
+
+        valid = false;
+
+    } else {
+
+        clearError(Register.mobile, Register.errors.mobile);
+
+        markSuccess(Register.mobile);
+
+    }
+
+    if (!Register.gender.value) {
+
+        showError(Register.gender, Register.errors.gender, 'Please select gender.');
+
+        valid = false;
+
+    } else {
+
+        clearError(Register.gender, Register.errors.gender);
+
+        markSuccess(Register.gender);
+
+    }
+
+    if (!Register.dob.value) {
+
+        showError(Register.dob, Register.errors.dob, 'Please select date of birth.');
+
+        valid = false;
+
+    } else {
+
+        const dob = new Date(Register.dob.value);
+
+        const age = Math.floor((Date.now() - dob) / 31557600000);
+
         if (age < 18) {
-          showError(regDOBInput, regDOBError, 'You must be at least 18 years old');
-          valid = false;
-        } else { clearError(regDOBInput, regDOBError); markSuccess(regDOBInput); }
-      }
 
-      if (!regPasswordInput2.value || !isValidPassword(regPasswordInput2.value)) {
-        showError(regPasswordInput2, regPasswordError, 'Password must be at least 6 characters');
+            showError(Register.dob, Register.errors.dob, 'Minimum age is 18.');
+
+            valid = false;
+
+        } else {
+
+            clearError(Register.dob, Register.errors.dob);
+
+            markSuccess(Register.dob);
+
+        }
+
+    }
+
+    if (!Register.password.value || !isValidPassword(Register.password.value)) {
+
+        showError(Register.password, Register.errors.password, 'Password must be at least 6 characters.');
+
         valid = false;
-      } else { clearError(regPasswordInput2, regPasswordError); markSuccess(regPasswordInput2); }
 
-      // Validate captcha
-      if (!regCaptchaInput || regCaptchaInput.value.trim() === '') {
+    } else {
 
-          showError(regCaptchaInput, regCaptchaError, 'Please enter the captcha.');
-          valid = false;
+        clearError(Register.password, Register.errors.password);
 
-      } else if (isNaN(regCaptchaInput.value.trim())) {
+        markSuccess(Register.password);
 
-          showError(regCaptchaInput, regCaptchaError, 'Captcha must be a number.');
-          valid = false;
+    }
 
-      } else {
+    if (!Register.captcha.value.trim()) {
 
-          clearError(regCaptchaInput, regCaptchaError);
-          markSuccess(regCaptchaInput);
-      }
+        showError(Register.captcha, Register.errors.captcha, 'Please enter captcha.');
 
-      if (!regTermsInput.checked) {
-        showError(null, regTermsError, 'You must agree to the Terms & Conditions');
         valid = false;
-      } else { clearError(null, regTermsError); }
 
-      // Double check email/mobile before submitting
-      if (isValidEmail(regEmailInput.value)) {
-           checkMemberExist('email', regEmailInput.value);
-      }
+    } else if (isNaN(Register.captcha.value)) {
 
-      if (isValidMobile(regMobileInput.value)) {
-         checkMemberExist('mobile_number', regMobileInput.value);
-      }
+        showError(Register.captcha, Register.errors.captcha, 'Captcha must be numeric.');
 
-      if (emailExists || mobileExists) {
         valid = false;
-      }
 
-      if (!valid) return;
+    } else {
 
-      registerSubmitBtn.classList.add('loading');
-      registerSubmitBtn.disabled = true;
+        clearError(Register.captcha, Register.errors.captcha);
 
-      const profileCreatedFor = document.querySelector(
+        markSuccess(Register.captcha);
+
+    }
+
+    if (!Register.terms.checked) {
+
+        showError(null, Register.errors.terms, 'Please accept Terms & Conditions.');
+
+        valid = false;
+
+    } else {
+
+        clearError(null, Register.errors.terms);
+
+    }
+
+    return valid;
+
+}
+
+async function registerMember() {
+
+    Register.submit.classList.add('loading');
+
+    Register.submit.disabled = true;
+
+    const profileCreatedFor = document.querySelector(
         'input[name="profileFor"]:checked'
     ).value;
 
-    console.log(profileCreatedFor);
+    try {
 
-      // Simulate API call — replace with real fetch
-      const csrf = document.querySelector('meta[name="csrf-token"]').content;
-      console.log('CSRF Token:', csrf); // Debugging line to check CSRF token value
+        const response = await fetch('/initial-register', {
 
-      fetch('/initial-register', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': csrf,
-              'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-              profile_created_for:profileCreatedFor, 
-              full_name: regNameInput.value,
-              email: regEmailInput.value,
-              mobile_number: regMobileInput.value,
-              gender: regGenderInput.value,
-              birth_date: regDOBInput.value,
-              password: regPasswordInput2.value,
-              captcha: regCaptchaInput.value
-          })
-      })
-      .then(async response => {
-          const data = await response.json();
-          console.log('Response data:', data); // Debugging line to check response data
+            method: 'POST',
 
-          registerSubmitBtn.classList.remove('loading');
-          registerSubmitBtn.disabled = false;
+            headers: {
 
-          if (data.captcha) {
+                'Content-Type':'application/json',
+
+                'Accept':'application/json',
+
+                'X-CSRF-TOKEN':csrf
+
+            },
+
+            body: JSON.stringify({
+
+                profile_created_for: profileCreatedFor,
+
+                full_name: Register.name.value,
+
+                email: Register.email.value,
+
+                mobile_number: Register.mobile.value,
+
+                gender: Register.gender.value,
+
+                birth_date: Register.dob.value,
+
+                password: Register.password.value,
+
+                captcha: Register.captcha.value
+
+            })
+
+        });
+
+        const data = await response.json();
+
+        Register.submit.classList.remove('loading');
+
+        Register.submit.disabled = false;
+
+        if(data.captcha){
+
             updateCaptcha(data.captcha);
-          }
 
-          if (response.ok) {
+        }
+
+        if(response.ok){
+
             alert(data.message);
-              // Registration successful
-              window.location.href = data.redirect;
-          } else {
-              alert(data.message || "Registration failed.");
-          }
-      })
-      .catch(error => {
-          registerSubmitBtn.classList.remove('loading');
-          registerSubmitBtn.disabled = false;
 
-          console.error(error);
-          alert("Something went wrong.");
-      });
+            window.location.href=data.redirect;
+
+            return;
+
+        }
+
+        alert(data.message || 'Registration failed.');
+
+    }
+
+    catch(e){
+
+        Register.submit.classList.remove('loading');
+
+        Register.submit.disabled=false;
+
+        console.error(e);
+
+        alert('Something went wrong.');
+
+    }
+
+}
+
+function initRegisterForm() {
+
+    if (!Register.form) return;
+
+    Register.mobile.addEventListener('input', function () {
+
+        this.value = this.value.replace(/\D/g, '');
+
     });
-  }
-  
 
+    Register.email.addEventListener('blur', () => {
 
-  /* ---- LUCIDE ICONS ---- */
+        if (isValidEmail(Register.email.value)) {
+
+            checkMemberExist('email', Register.email.value);
+
+        }
+
+    });
+
+    Register.mobile.addEventListener('blur', () => {
+
+        if (isValidMobile(Register.mobile.value)) {
+
+            checkMemberExist('mobile_number', Register.mobile.value);
+
+        }
+
+    });
+
+    Register.form.addEventListener('submit', async function (e) {
+
+        e.preventDefault();
+
+        if (!validateRegister()) return;
+
+        if (!(await validateUniqueFields())) return;
+
+        await registerMember();
+
+    });
+
+}
+
+async function checkMemberExist(type, value, input, errorElement) {
+
+    if (!value) {
+        return false;
+    }
+
+    try {
+
+        const response = await fetch('/checkMemberExist', {
+
+            method: 'POST',
+
+            headers: {
+
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrf
+
+            },
+
+            body: JSON.stringify({
+                [type]: value
+            })
+
+        });
+
+        const data = await response.json();
+
+        if (data.exists) {
+
+            showError(input, errorElement, data.message);
+
+            return true;
+
+        }
+
+        clearError(input, errorElement);
+
+        markSuccess(input);
+
+        return false;
+
+    } catch (e) {
+
+        console.error(e);
+
+        return false;
+
+    }
+
+}
+
+Register.email.addEventListener('blur', async () => {
+
+    if (!isValidEmail(Register.email.value)) return;
+
+    await checkMemberExist(
+        'email',
+        Register.email.value,
+        Register.email,
+        Register.errors.email
+    );
+
+});
+
+Register.mobile.addEventListener('blur', async () => {
+
+    if (!isValidMobile(Register.mobile.value)) return;
+
+    await checkMemberExist(
+        'mobile_number',
+        Register.mobile.value,
+        Register.mobile,
+        Register.errors.mobile
+    );
+
+});
+
+async function validateUniqueFields() {
+
+    const emailExists = await checkMemberExist(
+        'email',
+        Register.email.value,
+        Register.email,
+        Register.errors.email
+    );
+
+    const mobileExists = await checkMemberExist(
+        'mobile_number',
+        Register.mobile.value,
+        Register.mobile,
+        Register.errors.mobile
+    );
+
+    return !(emailExists || mobileExists);
+
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    initTabs();
+    initLoginForm();
+    initRegisterForm();
+
+});
+
+/* ---- LUCIDE ICONS ---- */
   if (typeof lucide !== 'undefined') lucide.createIcons();
   else window.addEventListener('load', () => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
 

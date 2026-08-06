@@ -81,6 +81,8 @@ class MemberController extends Controller
             'job_location',
             'occupation',
             'annual_income',
+            'photo',
+            'photo_approved',
             'profile_completed',
         ];
         $data = $request->only($allowedFields);
@@ -112,7 +114,7 @@ class MemberController extends Controller
             // Save new photo
             $file->move($destination, $filename);
             $data['photo'] = $filename;
-            $data['photo_approved'] = 'No';
+            //$data['photo_approved'] = 'No';
         }
         $member->update($data);
         return response()->json([
