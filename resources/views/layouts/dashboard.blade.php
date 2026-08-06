@@ -81,15 +81,15 @@
         <li><a href="{{ route('change-password') }}" class="sidebar-nav-item"><i data-lucide="key-round" width="18" height="18"></i><span>Change Password</span></a></li>
         <li><a href="{{ route('viewed-contacts') }}" class="sidebar-nav-item"><i data-lucide="phone" width="18" height="18"></i><span>Viewed Contact</span></a></li>
         <li><a href="{{ route('referral') }}" class="sidebar-nav-item"><i data-lucide="gift" width="18" height="18"></i><span>Refer &amp; Earn</span></a></li>
-        <li><a href="{{ route('success-stories') }}" class="sidebar-nav-item"><i data-lucide="trophy" width="18" height="18"></i><span>Success Stories</span></a></li>
+        <li><a href="{{ route('member.success-stories') }}" class="sidebar-nav-item"><i data-lucide="trophy" width="18" height="18"></i><span>Success Stories</span></a></li>
         <li><a href="{{ route('delete-profile') }}" class="sidebar-nav-item"><i data-lucide="user-x" width="18" height="18"></i><span>Delete Profile</span></a></li>
-        <li><a href="{{route('refund-policy')}}" class="sidebar-nav-item"><i data-lucide="file-text" width="18" height="18"></i><span>Refund &amp; Cancellation</span></a></li>
-        <li><a href="{{ route('privacy-policy') }}" class="sidebar-nav-item"><i data-lucide="lock" width="18" height="18"></i><span>Privacy Policy</span></a></li>
+        <li><a href="{{route('member.refund-policy')}}" class="sidebar-nav-item"><i data-lucide="file-text" width="18" height="18"></i><span>Refund &amp; Cancellation</span></a></li>
+        <li><a href="{{ route('member.privacy-policy') }}" class="sidebar-nav-item"><i data-lucide="lock" width="18" height="18"></i><span>Privacy Policy</span></a></li>
         <li><a href="javascript:void(0)" class="sidebar-nav-item" id="openRateModal"><i data-lucide="star" width="18" height="18"></i><span>Rate Us</span></a></li>
         <li><a href="tel:9857102002" class="sidebar-nav-item"><i data-lucide="phone-call" width="18" height="18"></i><span>Helpline: 9857102002</span></a></li>
-        <li><a href="{{route('terms-and-conditions')}}" class="sidebar-nav-item"><i data-lucide="scroll-text" width="18" height="18"></i><span>Terms &amp; Conditions</span></a></li>
+        <li><a href="{{route('member.terms-and-conditions')}}" class="sidebar-nav-item"><i data-lucide="scroll-text" width="18" height="18"></i><span>Terms &amp; Conditions</span></a></li>
         <li>
-          <form method="POST" action="{{ route('logout') }}" class="d-inline">
+          <form method="POST" action="{{ route('member-logout') }}" class="d-inline">
             @csrf
             <button type="submit" class="sidebar-nav-item sidebar-logout-btn">
               <i data-lucide="log-out" width="18" height="18"></i><span>Logout</span>
@@ -184,9 +184,9 @@
       <hr class="pqv-divider" />
 
       <div class="pqv-footer-links">
-        <a href="{{route('terms-and-conditions')}}">Terms and Conditions</a>
+        <a href="{{route('member.terms-and-conditions')}}">Terms and Conditions</a>
         <span aria-hidden="true">•</span>
-        <a href="{{route('privacy-policy')}}">Privacy Policy</a>
+        <a href="{{route('member.privacy-policy')}}">Privacy Policy</a>
       </div>
     </div>
   </div>
@@ -204,9 +204,9 @@
         <p class="footer-tagline">Connecting hearts across Himachal Pradesh &amp; beyond.</p>
       </div>
       <div class="footer-links">
-        <a href="{{route('terms-and-conditions')}}">Terms &amp; Conditions</a>
-        <a href="{{route('privacy-policy')}}">Privacy Policy</a>
-        <a href="{{route('refund-policy')}}">Refund Policy</a>
+        <a href="{{route('member.terms-and-conditions')}}">Terms &amp; Conditions</a>
+        <a href="{{route('member.privacy-policy')}}">Privacy Policy</a>
+        <a href="{{route('member.refund-policy')}}">Refund Policy</a>
         <a href="{{route('contact-us')}}">Contact Us</a>
       </div>
       <p class="footer-copy">© 2026 HimRishtey. All rights reserved.</p>
