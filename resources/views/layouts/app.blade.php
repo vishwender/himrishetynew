@@ -36,11 +36,11 @@
       </a>
 
       <ul class="nav-links" role="list">
-        <li><a href="#how-it-works">How It Works</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#communities">Communities</a></li>
-        <li><a href="#testimonials">Success Stories</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li><a href="{{route('welcome')}}#how-it-works">How It Works</a></li>
+        <li><a href="{{route('welcome')}}#features">Features</a></li>
+        <li><a href="{{route('welcome')}}#communities">Communities</a></li>
+        <li><a href="{{route('welcome')}}#testimonials">Success Stories</a></li>
+        <li><a href="{{ route('welcome) }}#contact">Contact</a></li>
       </ul>
 
       <div class="nav-actions">
@@ -70,11 +70,11 @@
     </div>
 
     <ul class="drawer-links" role="list">
-      <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#communities">Communities</a></li>
-      <li><a href="#testimonials">Success Stories</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="{{ route('welcome') }}#how-it-works">How It Work</a></li>
+      <li><a href="{{ route('welcome') }}#features">Features</a></li>
+      <li><a href="{{ route('welcome') }}#communities">Communities</a></li>
+      <li><a href="{{ route('welcome') }}#testimonials">Success Stories</a></li>
+      <li><a href="{{ route('welcome') }}#contact">Contact</a></li>
     </ul>
 
     <div class="drawer-footer">
@@ -129,10 +129,10 @@
       <div class="footer-col">
         <h4>Explore</h4>
         <ul role="list">
-          <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#communities">Communities</a></li>
-          <li><a href="#testimonials">Success Stories</a></li>
+          <li><a href="{{ route('welcome') }}#how-it-works">How It Works</a></li>
+          <li><a href="{{ route('welcome') }}#features">Features</a></li>
+          <li><a href="{{ route('welcome') }}#communities">Communities</a></li>
+          <li><a href="{{ route('welcome') }}#testimonials">Success Stories</a></li>
         </ul>
       </div>
 
