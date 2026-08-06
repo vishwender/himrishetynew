@@ -146,15 +146,18 @@ class LoginController extends Controller
         $googleUser = Socialite::driver('google')->user();
 
 
-        $member = Member::where('email', $googleUser->email)
+        $member = Member::where('google_id', $googleUser->id)
+            ->orWhere('email', $googleUser->email)
             ->first();
 
 
         if (!$member) {
+
             $member = Member::create([
                 'full_name' => $googleUser->name,
                 'email' => $googleUser->email,
-                'password' => null,
+                'google_id' => $googleUser->id,
+                'password' => bcrypt(\Illuminate\Support\Str::random(16)),
                 'profile_id' => 'NA',
                 'registration_date' => now(),
                 'profile_completed' => '15%'
@@ -166,6 +169,15 @@ class LoginController extends Controller
             $member->update([
                 'profile_id' => 'HIM' . $profile_id
             ]);
+        } else {
+
+            // update google id if old account exists
+            if (empty($member->google_id)) {
+
+                $member->update([
+                    'google_id' => $googleUser->id
+                ]);
+            }
         }
 
 
