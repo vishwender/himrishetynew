@@ -319,18 +319,20 @@
 <section class="app-section reveal">
   <div class="container-xl">
     <div class="app-banner">
+
       <div class="app-text">
         <h2>Use HimRishtey on the Go</h2>
         <p>
           Shortlist profiles, browse recent joins, send interests and manage your account through the HimRishtey app experience.
         </p>
-        <a href="#" class="btn-app-download" target="_blank" rel="noopener noreferrer">
+        <a href="https://play.google.com/store/apps/details?id=com.app.himrishtey&hl=en_IN" class="btn-app-download" target="_blank" rel="noopener noreferrer">
           <i data-lucide="smartphone" width="18" height="18"></i>
           Download App
         </a>
       </div>
 
       <div class="app-visual" aria-hidden="true">
+
         <div class="app-phone-mockup">
           <div class="phone-screen">
             <div class="ps-header">Him<span>Rishtey</span></div>
@@ -341,6 +343,7 @@
                 <div></div>
               </div>
             </div>
+
             <div class="ps-profile-row">
               <div class="ps-avatar ps-avatar-2"></div>
               <div class="ps-lines">
@@ -348,6 +351,7 @@
                 <div></div>
               </div>
             </div>
+
             <div class="ps-profile-row">
               <div class="ps-avatar ps-avatar-3"></div>
               <div class="ps-lines">
@@ -387,7 +391,7 @@
           <div class="ci-icon"><i data-lucide="mail" width="20" height="20"></i></div>
           <div>
             <div class="ci-label">Email</div>
-            <a href="mailto:info@himrishtey.com" class="ci-value">rishteyhirishte@gmail.com</a>
+            <a href="mailto:info@himrishtey.com" class="ci-value">rishteyhirishtey@gmail.com</a>
           </div>
         </div>
 
@@ -401,7 +405,7 @@
         </div>
       </div>
 
-      <form class="contact-form reveal" id="contactForm" novalidate>
+      <!-- <form class="contact-form reveal" id="contactForm" novalidate>
         <h3>Send Us a Message</h3>
 
         <div class="form-group">
@@ -428,7 +432,7 @@
           <i data-lucide="check-circle" width="18" height="18"></i>
           Message sent! We will contact you soon.
         </div>
-      </form>
+      </form> -->
     </div>
   </div>
 </section>

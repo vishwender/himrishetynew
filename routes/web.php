@@ -129,7 +129,7 @@ Route::prefix('member')->name('member.')->group(function () {
     Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
-});
+});  
 
 // Route::get('/test-notify', function () {
 //     (new \App\Http\Controllers\PushSubscriptionController)->sendBrowserNotification();

@@ -733,6 +733,261 @@ async function validateUniqueFields() {
 
 }
 
+const loginOtpSubmitBtn = document.getElementById("loginOtpSubmitBtn");
+const loginOtpGroup = document.getElementById("loginOtpGroup");
+const loginOtp = document.getElementById("loginOtp");
+const loginOtpError = document.getElementById("loginOtpError");
+const loginOtpTimer = document.getElementById("loginOtpTimer");
+const resendLoginOtpBtn = document.getElementById("resendLoginOtpBtn");
+
+let loginOtpCountdown = null;
+
+loginOtpSubmitBtn.addEventListener("click", async function () {
+    //alert('ok');
+
+    const loginField = document.getElementById("loginField");
+    const captcha = document.getElementById("loginCaptcha");
+
+    const login = loginField.value.trim();
+    const captchaValue = captcha.value.trim();
+
+    const url = loginOtpSubmitBtn.dataset.url;
+
+    loginOtpError.textContent = "";
+
+    if (!login) {
+        document.getElementById("loginFieldError").textContent =
+            "Please enter your Profile ID, Email or Mobile Number.";
+
+        return;
+    }
+
+    if (!captchaValue) {
+        document.getElementById("loginCaptchaError").textContent =
+            "Please enter the captcha answer.";
+
+        return;
+    }
+
+    const buttonText = loginOtpSubmitBtn.querySelector(".btn-login-text");
+    const loader = loginOtpSubmitBtn.querySelector(".btn-login-loader");
+
+    loginOtpSubmitBtn.disabled = true;
+
+    if (buttonText) {
+        buttonText.textContent = "Sending OTP...";
+    }
+
+    if (loader) {
+        loader.style.display = "inline-block";
+    }
+
+    try {
+
+        const csrfToken = document.querySelector(
+            'meta[name="csrf-token"]'
+        ).getAttribute("content");
+
+        const response = await fetch(url ,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+
+                body: JSON.stringify({
+                    login: login,
+                    captcha: captchaValue
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        console.log("OTP response:", data);
+
+        if (!response.ok || data.status !== "success") {
+            throw new Error(
+                data.message || "Unable to send OTP."
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Show OTP field
+        |--------------------------------------------------------------------------
+        */
+
+        loginOtpGroup.style.display = "block";
+
+        loginOtp.focus();
+
+        buttonText.textContent = "OTP Sent";
+
+        /*
+        |--------------------------------------------------------------------------
+        | Start countdown
+        |--------------------------------------------------------------------------
+        */
+
+        startLoginOtpTimer(60);
+
+    } catch (error) {
+
+        console.error("OTP Error:", error);
+
+        loginOtpError.textContent = error.message;
+
+        buttonText.textContent = "Login with OTP";
+
+    } finally {
+
+        if (loader) {
+            loader.style.display = "none";
+        }
+
+        loginOtpSubmitBtn.disabled = false;
+    }
+});
+
+loginOtp.addEventListener("input", function () {
+
+    this.value = this.value.replace(/\D/g, "");
+    console.log(this.value);
+
+    if (this.value.length === 4) {
+        verifyLoginOtp(this.value);
+    }
+
+});
+
+async function verifyLoginOtp(otp) {
+    console.log(otp);
+
+    loginOtpError.textContent = "";
+
+    const buttonText =
+        loginOtpSubmitBtn.querySelector(".btn-login-text");
+
+    loginOtpSubmitBtn.disabled = true;
+
+    if (buttonText) {
+        buttonText.textContent = "Verifying...";
+    }
+
+    try {
+
+        const csrfToken =
+            document.querySelector(
+                'meta[name="csrf-token"]'
+            ).content;
+
+        const response = await fetch(
+            `verify-login-otp`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+
+                body: JSON.stringify({
+                    otp: otp
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        console.log("Verify OTP:", data);
+
+        if (!response.ok ||
+            data.status !== "success") {
+
+            throw new Error(
+                data.message ||
+                "Invalid OTP."
+            );
+        }
+
+        if (buttonText) {
+            buttonText.textContent =
+                "Login Successful";
+        }
+
+        window.location.href = '/home';
+
+    } catch (error) {
+
+        console.error(error);
+
+        loginOtpError.textContent =
+            error.message;
+
+        loginOtp.value = "";
+
+        loginOtp.focus();
+
+        loginOtpSubmitBtn.disabled = false;
+
+        if (buttonText) {
+            buttonText.textContent =
+                "Login with OTP";
+        }
+    }
+}
+
+function startLoginOtpTimer(seconds) {
+
+    clearInterval(loginOtpCountdown);
+
+    let remaining = seconds;
+
+    const timerElement =
+        document.getElementById("loginOtpTimer");
+
+    const resendButton =
+        document.getElementById("resendLoginOtpBtn");
+
+    if (!timerElement) {
+        return;
+    }
+
+    if (resendButton) {
+        resendButton.style.display = "none";
+    }
+
+    timerElement.textContent =
+        `Resend OTP in ${remaining}s`;
+
+    loginOtpCountdown = setInterval(function () {
+
+        remaining--;
+
+        if (remaining <= 0) {
+
+            clearInterval(loginOtpCountdown);
+
+            timerElement.textContent = "";
+
+            if (resendButton) {
+                resendButton.style.display = "inline-block";
+            }
+
+            return;
+        }
+
+        timerElement.textContent =
+            `Resend OTP in ${remaining}s`;
+
+    }, 1000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     initTabs();

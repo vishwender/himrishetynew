@@ -161,6 +161,47 @@
 
               <!-- Divider -->
               <div class="login-divider">
+                <span>or</span>
+              </div>
+
+              <button type="submit" class="btn-login" id="loginOtpSubmitBtn" data-url="{{ route('login-with-otp') }}">
+                <span class="btn-login-text">Login with OTP</span>
+                <span class="btn-login-loader" aria-hidden="true"></span>
+              </button>
+
+              <div class="form-group" id="loginOtpGroup" style="display: none;">
+                <label class="form-label" for="loginOtp">
+                  <i data-lucide="shield-check" width="14" height="14"></i>
+                  Enter OTP
+                </label>
+
+                <div class="input-wrap">
+                  <input
+                    type="text"
+                    id="loginOtp"
+                    name="otp"
+                    class="form-input"
+                    placeholder="Enter 6-digit OTP"
+                    inputmode="numeric"
+                    maxlength="6"
+                    autocomplete="one-time-code">
+                </div>
+
+                <span class="form-error" id="loginOtpError" role="alert"></span>
+
+                <div style="margin-top: 8px;">
+                  <span id="loginOtpTimer"></span>
+                  <button
+                    type="button"
+                    id="resendLoginOtpBtn"
+                    style="display:none;">
+                    Resend OTP
+                  </button>
+                </div>
+              </div>
+
+              <!-- Divider -->
+              <div class="login-divider">
                 <span>or continue with</span>
               </div>
 

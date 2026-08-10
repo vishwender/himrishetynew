@@ -36,6 +36,7 @@ class ProfileController extends Controller
     public function recent_profiles(Request $request)
     {
         $id      = Auth::guard('member')->user()->id;
+        $member = Member::find($id);
         $today   = Carbon::today()->format('Y-m-d');
         $profileFor = $request->input('profile');
         $loggedInUser = Member::find($id);

@@ -39,8 +39,8 @@ class OtpController extends Controller
 
         if (Session::get('otp') == $request->otp) {
             $opt_mobile = session::get('otp_mobile');
-            $member = Member::where('mobile_number', $opt_mobile )->first();
-            if(!empty($member)){
+            $member = Member::where('mobile_number', $opt_mobile)->first();
+            if (!empty($member)) {
                 $member->password = $request->password;
                 $member->update();
             }
@@ -50,38 +50,95 @@ class OtpController extends Controller
         return response()->json(['message' => 'Invalid OTP'], 422);
     }
 
-    public function update_password(Request $request){
+    public function update_password(Request $request)
+    {
         $opt_mobile = session::get('otp_mobile');
-        $member = Member::where('mobile_number', $opt_mobile )->first();
-        if(!empty($member)){
+        $member = Member::where('mobile_number', $opt_mobile)->first();
+        if (!empty($member)) {
             $member->password = $request->password;
             $member->update();
             return response()->json(['message' => 'Password updated. Please login']);
         }
     }
 
-    public function login_otp(Request $request, NimbusSmsService $messageService)
-    {
+    public function login_otp(
+        Request $request,
+        NimbusSmsService $messageService
+    ) {
         $request->validate([
-            'phone' => 'required|numeric|digits:10',
+            'login' => 'required|string',
         ]);
 
-        $member = Member::where('mobile_number', $request->phone)->first();
+        $login = trim($request->login);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Find member by mobile / email / profile ID
+    |--------------------------------------------------------------------------
+    */
+
+        $member = Member::where('mobile_number', $login)
+            ->orWhere('email', $login)
+            ->orWhere('profile_id', $login)
+            ->first();
 
         if (!$member) {
-            return response()->json(['status' => 'error', 'message' => 'Member not found.']);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No account found with the provided Profile ID, Email or Mobile Number.'
+            ], 404);
         }
 
+        /*
+    |--------------------------------------------------------------------------
+    | Check mobile number
+    |--------------------------------------------------------------------------
+    */
+
+        if (empty($member->mobile_number)) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No mobile number is registered with this account.'
+            ], 422);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Generate OTP
+    |--------------------------------------------------------------------------
+    */
+
         $otp = random_int(1000, 9999);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Store OTP
+    |--------------------------------------------------------------------------
+    */
+
         session([
             'login_otp' => $otp,
-            'otp_mobile' => $request->phone,
-            'otp_expires_at' => now()->addMinutes(10), 
+            'otp_mobile' => $member->mobile_number,
+            'otp_expires_at' => now()->addMinutes(5),
         ]);
 
-        $messageService->send_login_otp($request->phone, $otp);
+        /*
+    |--------------------------------------------------------------------------
+    | Send SMS
+    |--------------------------------------------------------------------------
+    */
 
-        return response()->json(['status' => 'success', 'message' => 'OTP sent successfully.', 'otp' => $otp]);
+        $messageService->send_login_otp(
+            $member->mobile_number,
+            $otp
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'OTP sent successfully.'
+        ]);
     }
 
     public function verifyLoginOtp(Request $request)
@@ -101,7 +158,7 @@ class OtpController extends Controller
                 return response()->json(['status' => 'success', 'message' => 'Login successful.', 'member' => $member]);
             }
         } else {
-            return response()->json(['status' => 'error', 'message' => 'Invalid OTP.','data' => session('login_otp'),'otp' => $request->otp]);
+            return response()->json(['status' => 'error', 'message' => 'Invalid OTP.', 'data' => session('login_otp'), 'otp' => $request->otp]);
         }
     }
 }
