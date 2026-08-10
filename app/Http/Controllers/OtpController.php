@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
 use App\Services\NimbusSmsService;
 use Illuminate\Support\Facades\Session;
 use App\Models\Member; // your Member model
+use App\Models\User;
 
 class OtpController extends Controller
 {
@@ -160,5 +162,95 @@ class OtpController extends Controller
         } else {
             return response()->json(['status' => 'error', 'message' => 'Invalid OTP.', 'data' => session('login_otp'), 'otp' => $request->otp]);
         }
+    }
+
+    public function callbackRequest(
+        Request $request,
+        NimbusSmsService $smsService
+    ) {
+        /*
+    |--------------------------------------------------------------------------
+    | Check member login
+    |--------------------------------------------------------------------------
+    */
+
+        $loggedInUser = Auth::guard('member')->user();
+
+        if (!$loggedInUser) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please login first.'
+            ], 401);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Get logged-in user's name
+    |--------------------------------------------------------------------------
+    */
+
+        $name = $loggedInUser->full_name;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Get Callback Request user
+    |--------------------------------------------------------------------------
+    */
+
+        $callbackUser = User::where(
+            'display_name',
+            'Call Back Request'
+        )->first();
+
+        if (!$callbackUser) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Call Back Request user not found.'
+            ], 404);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Get display name
+    |--------------------------------------------------------------------------
+    */
+
+        $display_name = $callbackUser->display_name;
+        $mobile = $callbackUser->phone;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Send callback SMS
+    |--------------------------------------------------------------------------
+    */
+
+        $result = $smsService->callback_request_msg(
+            $name,
+            $display_name
+        );
+
+        /*
+    |--------------------------------------------------------------------------
+    | Check service result
+    |--------------------------------------------------------------------------
+    */
+
+        if ($result['status'] !== 'success') {
+            return response()->json([
+                'status' => 'error',
+                'message' => $result['message']
+            ], 422);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Success response
+    |--------------------------------------------------------------------------
+    */
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Your callback request has been sent successfully.'
+        ]);
     }
 }

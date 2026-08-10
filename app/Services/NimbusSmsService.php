@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use Auth;
 use Illuminate\Support\Facades\Http;
+use App\Models\User;
 
 class NimbusSmsService
 {
@@ -55,5 +57,79 @@ class NimbusSmsService
             'TemplateID' => env('NIMBUS_TEMPLATE', '1707166088646916717'),
         ]);
         return $response->body();
+    }
+
+    public function callback_request_msg($name, $display_name)
+    {
+        $messageText =
+            "A call request from id " .
+            $name .
+            " regarding membership. Call back immediately " .
+            $display_name .
+            ".HIMRMB";
+
+        $user = User::where(
+            'display_name',
+            'Call Back Request'
+        )->first();
+
+        if (!$user) {
+            return [
+                'status' => 'error',
+                'message' => 'Call Back Request user not found.'
+            ];
+        }
+
+        if (empty($user->phone)) {
+            return [
+                'status' => 'error',
+                'message' => 'Callback mobile number not found.'
+            ];
+        }
+
+        $url = "http://nimbusit.biz/api/SmsApi/SendMultipleApi";
+
+        try {
+
+            $response = Http::get($url, [
+                'UserID' => env(
+                    'NIMBUS_USERNAME',
+                    'himrishteybiz'
+                ),
+
+                'Password' => env(
+                    'NIMBUS_PASSWORD',
+                    'vqbj8362VQ'
+                ),
+
+                'SenderID' => env(
+                    'NIMBUS_SENDER',
+                    'HIMRMB'
+                ),
+
+                'Phno' => $user->phone,
+
+                'Msg' => $messageText,
+
+                'EntityID' => env(
+                    'NIMBUS_ENTITY',
+                    '1701164189692214854'
+                ),
+
+                'TemplateID' => '1707166254945835455',
+            ]);
+
+            return [
+                'status' => 'success',
+                'message' => 'SMS sent successfully.',
+                'response' => $response->body()
+            ];
+        } catch (\Exception $e) {
+
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
+        }
     }
 }

@@ -63,6 +63,10 @@ Route::post('/send-otp', [OtpController::class, 'sendOtp'])->name('send-otp');
 Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->name('verify-otp');
 Route::post('/login-with-otp', [OtpController::class, 'login_otp'])->name('login-with-otp');
 Route::post('/verify-login-otp', [OtpController::class, 'verifyLoginOtp'])->name('verify-login-otp');
+Route::post('/callback-request', [
+    OtpController::class,
+    'callbackRequest'
+])->name('callback.request');
 
 
 Route::middleware('auth:member')->group(function () {

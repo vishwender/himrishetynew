@@ -37,7 +37,7 @@
             </p>
         </div>
 
-        <button id="callbackBtn" class="callback-btn">
+        <button id="callbackBtn" class="callback-btn" data-url="{{ route('callback.request') }}">
             Request a Callback
         </button>
 

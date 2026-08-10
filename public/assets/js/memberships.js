@@ -1,47 +1,125 @@
 const callbackBtn = document.getElementById('callbackBtn');
 const timer = document.getElementById('timer');
 
-let countdown;
+let countdown = null;
 
-callbackBtn.addEventListener('click', function () {
+callbackBtn.addEventListener('click', async function () {
 
-    if (countdown) return;
+    // Prevent multiple requests while timer is running
+    if (countdown) {
+        return;
+    }
 
-    let timeLeft = 10 * 60; // 10 minutes
+    const button = this;
+    const url = button.dataset.url;
 
-    callbackBtn.disabled = true;
-    callbackBtn.innerHTML = 'Callback Requested';
+    const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+    )?.getAttribute('content');
 
-    updateTimer();
+    // Disable button while API request is being made
+    button.disabled = true;
+    button.innerHTML = 'Sending...';
 
-    countdown = setInterval(function () {
+    try {
 
-        timeLeft--;
+        /*
+        |--------------------------------------------------------------------------
+        | Send callback request to Laravel
+        |--------------------------------------------------------------------------
+        */
+
+        const response = await fetch(url, {
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+
+        const data = await response.json();
+
+        console.log('Callback API response:', data);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check API response
+        |--------------------------------------------------------------------------
+        */
+
+        if (!response.ok || data.status !== 'success') {
+            throw new Error(
+                data.message || 'Unable to send callback request.'
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | API successful
+        | Start 10 minute timer
+        |--------------------------------------------------------------------------
+        */
+
+        alert(data.message);
+
+        button.innerHTML = 'Callback Requested';
+
+        let timeLeft = 10 * 60; // 10 minutes
 
         updateTimer();
 
-        if (timeLeft <= 0) {
+        countdown = setInterval(function () {
 
-            clearInterval(countdown);
+            timeLeft--;
 
-            countdown = null;
+            updateTimer();
 
-            callbackBtn.disabled = false;
-            callbackBtn.innerHTML = 'Request a Callback';
+            if (timeLeft <= 0) {
 
-            timer.innerHTML = "00:00";
+                clearInterval(countdown);
+
+                countdown = null;
+
+                button.disabled = false;
+                button.innerHTML = 'Request a Callback';
+
+                timer.innerHTML = '00:00';
+            }
+
+        }, 1000);
+
+
+        function updateTimer() {
+
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+
+            timer.innerHTML =
+                String(minutes).padStart(2, '0') + ':' +
+                String(seconds).padStart(2, '0');
         }
 
-    }, 1000);
+    } catch (error) {
 
-    function updateTimer(){
+        /*
+        |--------------------------------------------------------------------------
+        | API failed
+        |--------------------------------------------------------------------------
+        */
 
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
+        console.error('Callback request error:', error);
 
-        timer.innerHTML =
-            String(minutes).padStart(2,'0') + ":" +
-            String(seconds).padStart(2,'0');
+        alert(
+            error.message ||
+            'Unable to request callback.'
+        );
+
+        // Allow user to try again
+        button.disabled = false;
+        button.innerHTML = 'Request a Callback';
+
     }
 
 });
