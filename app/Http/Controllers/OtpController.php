@@ -8,6 +8,7 @@ use App\Services\NimbusSmsService;
 use Illuminate\Support\Facades\Session;
 use App\Models\Member; // your Member model
 use App\Models\User;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class OtpController extends Controller
 {
@@ -164,16 +165,13 @@ class OtpController extends Controller
         }
     }
 
-    public function callbackRequest(
-        Request $request,
-        NimbusSmsService $smsService
-    ) {
+    public function callbackRequest(Request $request, NimbusSmsService $smsService)
+    {
         /*
     |--------------------------------------------------------------------------
     | Check member login
     |--------------------------------------------------------------------------
     */
-
         $loggedInUser = Auth::guard('member')->user();
 
         if (!$loggedInUser) {
@@ -189,7 +187,7 @@ class OtpController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        $name = $loggedInUser->full_name;
+        $profileId = $loggedInUser->profile_id;
 
         /*
     |--------------------------------------------------------------------------
@@ -197,10 +195,7 @@ class OtpController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        $callbackUser = User::where(
-            'display_name',
-            'Call Back Request'
-        )->first();
+        $callbackUser = User::where('display_name', 'Call Back Request')->first();
 
         if (!$callbackUser) {
             return response()->json([
@@ -215,8 +210,8 @@ class OtpController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        $display_name = $callbackUser->display_name;
-        $mobile = $callbackUser->phone;
+        $username = $callbackUser->username;
+        $phone = $callbackUser->phone;
 
         /*
     |--------------------------------------------------------------------------
@@ -224,10 +219,7 @@ class OtpController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        $result = $smsService->callback_request_msg(
-            $name,
-            $display_name
-        );
+        $result = $smsService->callback_request_msg($profileId, $username, $phone);
 
         /*
     |--------------------------------------------------------------------------
