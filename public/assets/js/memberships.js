@@ -1,35 +1,140 @@
 const callbackBtn = document.getElementById('callbackBtn');
 const timer = document.getElementById('timer');
 
+const callbackUrl = callbackBtn.dataset.url;
+const callbackStatusUrl = callbackBtn.dataset.statusUrl;
+
 let countdown = null;
+
+
+/*
+|--------------------------------------------------------------------------
+| Start countdown
+|--------------------------------------------------------------------------
+*/
+
+function startCallbackTimer(timeLeft) {
+
+    // Prevent duplicate timers
+    if (countdown) {
+        clearInterval(countdown);
+        countdown = null;
+    }
+
+    callbackBtn.disabled = true;
+    callbackBtn.innerHTML = 'Callback Requested';
+
+    updateTimer(timeLeft);
+
+    countdown = setInterval(function () {
+
+        timeLeft--;
+
+        updateTimer(timeLeft);
+
+        if (timeLeft <= 0) {
+
+            clearInterval(countdown);
+
+            countdown = null;
+
+            callbackBtn.disabled = false;
+            callbackBtn.innerHTML = 'Request a Callback';
+
+            timer.innerHTML = '00:00';
+        }
+
+    }, 1000);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Update timer
+|--------------------------------------------------------------------------
+*/
+
+function updateTimer(timeLeft) {
+
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+
+    timer.innerHTML =
+        String(minutes).padStart(2, '0') +
+        ':' +
+        String(seconds).padStart(2, '0');
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Check callback status when page loads
+|--------------------------------------------------------------------------
+*/
+
+async function checkCallbackStatus() {
+
+    try {
+
+        const response = await fetch(callbackStatusUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        console.log('Callback status:', data);
+
+        if (
+            data.status === 'cooldown' &&
+            data.remaining > 0
+        ) {
+            startCallbackTimer(data.remaining);
+        } else {
+            callbackBtn.disabled = false;
+            callbackBtn.innerHTML = 'Request a Callback';
+            timer.innerHTML = '00:00';
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Unable to check callback status:',
+            error
+        );
+
+    }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Callback button
+|--------------------------------------------------------------------------
+*/
 
 callbackBtn.addEventListener('click', async function () {
 
-    // Prevent multiple requests while timer is running
     if (countdown) {
         return;
     }
 
     const button = this;
-    const url = button.dataset.url;
+    
 
     const csrfToken = document.querySelector(
         'meta[name="csrf-token"]'
     )?.getAttribute('content');
 
-    // Disable button while API request is being made
     button.disabled = true;
     button.innerHTML = 'Sending...';
 
     try {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Send callback request to Laravel
-        |--------------------------------------------------------------------------
-        */
+        const response = await fetch(callbackStatusUrl, {
 
-        const response = await fetch(url, {
             method: 'POST',
 
             headers: {
@@ -41,85 +146,78 @@ callbackBtn.addEventListener('click', async function () {
 
         const data = await response.json();
 
-        console.log('Callback API response:', data);
+        console.log(
+            'Callback API response:',
+            data
+        );
+
 
         /*
         |--------------------------------------------------------------------------
-        | Check API response
+        | API failed / cooldown already active
         |--------------------------------------------------------------------------
         */
 
-        if (!response.ok || data.status !== 'success') {
+        if (
+            !response.ok ||
+            data.status !== 'success'
+        ) {
+
+            // If server says cooldown is still active
+            if (
+                data.remaining &&
+                data.remaining > 0
+            ) {
+
+                startCallbackTimer(
+                    data.remaining
+                );
+
+                return;
+            }
+
             throw new Error(
-                data.message || 'Unable to send callback request.'
+                data.message ||
+                'Unable to send callback request.'
             );
         }
 
+
         /*
         |--------------------------------------------------------------------------
-        | API successful
-        | Start 10 minute timer
+        | SMS successfully sent
         |--------------------------------------------------------------------------
         */
 
         alert(data.message);
 
-        button.innerHTML = 'Callback Requested';
-
-        let timeLeft = 10 * 60; // 10 minutes
-
-        updateTimer();
-
-        countdown = setInterval(function () {
-
-            timeLeft--;
-
-            updateTimer();
-
-            if (timeLeft <= 0) {
-
-                clearInterval(countdown);
-
-                countdown = null;
-
-                button.disabled = false;
-                button.innerHTML = 'Request a Callback';
-
-                timer.innerHTML = '00:00';
-            }
-
-        }, 1000);
-
-
-        function updateTimer() {
-
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-
-            timer.innerHTML =
-                String(minutes).padStart(2, '0') + ':' +
-                String(seconds).padStart(2, '0');
-        }
+        startCallbackTimer(
+            data.remaining || 600
+        );
 
     } catch (error) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | API failed
-        |--------------------------------------------------------------------------
-        */
-
-        console.error('Callback request error:', error);
+        console.error(
+            'Callback request error:',
+            error
+        );
 
         alert(
             error.message ||
             'Unable to request callback.'
         );
 
-        // Allow user to try again
         button.disabled = false;
         button.innerHTML = 'Request a Callback';
-
     }
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Check status immediately when page loads
+|--------------------------------------------------------------------------
+*/
+
+checkCallbackStatus();

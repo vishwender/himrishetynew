@@ -649,4 +649,13 @@ class MyMemberController extends Controller
             'message' => 'Your profile deletion request has been sent to the administrator.'
         ]);
     }
+
+    public function verify_account()
+    {
+        $member = Auth::guard('member')->user();
+        $user = Member::findOrFail($member->id);
+        $member_mobile = $user->mobile_number;
+
+        return view('dashboard.verify_account.verify-account', compact('member_mobile'));
+    }
 }

@@ -87,4 +87,33 @@ class NimbusSmsService
             'response' => $response->body()
         ];
     }
+
+    public function verify_account($phone, $otp)
+    {
+        $messageText = $otp . " is the OTP to verify your mobile number for your himrishtey account";
+        $url = "http://nimbusit.biz/api/SmsApi/SendMultipleApi";
+
+        $response = Http::get($url, [
+            'UserID'    => env('NIMBUS_USERNAME', 'himrishteybiz'),
+            'Password'  => env('NIMBUS_PASSWORD', 'vqbj8362VQ'),
+            'SenderID'  => env('NIMBUS_SENDER', 'HIMRMB'),
+            'Phno'      => $phone,
+            'Msg'       => $messageText,
+            'EntityID'  => env('NIMBUS_ENTITY', '1701164189692214854'),
+            'TemplateID' => env('NIMBUS_TEMPLATE', '1707166036743902118'),
+        ]);
+        if ($response->successful()) {
+            return [
+                'status' => 'success',
+                'message' => 'SMS sent successfully.',
+                'response' => $response->body()
+            ];
+        }
+
+        return [
+            'status' => 'error',
+            'message' => 'SMS API returned an error.',
+            'response' => $response->body()
+        ];
+    }
 }

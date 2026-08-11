@@ -233,16 +233,69 @@ class OtpController extends Controller
                 'message' => $result['message']
             ], 422);
         }
+        /*
+        |--------------------------------------------------------------------------
+        | Start 10 minute cooldown
+        |--------------------------------------------------------------------------
+        */
+
+        $expiresAt = now()->addMinutes(10);
+
+        session()->put(
+            'callback_expires_at',
+            $expiresAt
+        );
 
         /*
-    |--------------------------------------------------------------------------
-    | Success response
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Success response
+        |--------------------------------------------------------------------------
+        */
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Your callback request has been sent successfully.'
+            'message' => 'Your callback request has been sent successfully.',
+            'remaining' => 600
         ]);
     }
+
+    public function callbackStatus()
+    {
+        $loggedInUser = Auth::guard('member')->user();
+
+        if (!$loggedInUser) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please login first.'
+            ], 401);
+        }
+
+        if (!session()->has('callback_expires_at')) {
+            return response()->json([
+                'status' => 'ready',
+                'remaining' => 0
+            ]);
+        }
+
+        $expiresAt = session('callback_expires_at');
+
+        if (now()->greaterThanOrEqualTo($expiresAt)) {
+
+            session()->forget('callback_expires_at');
+
+            return response()->json([
+                'status' => 'ready',
+                'remaining' => 0
+            ]);
+        }
+
+        $remaining = now()->diffInSeconds($expiresAt);
+
+        return response()->json([
+            'status' => 'cooldown',
+            'remaining' => $remaining
+        ]);
+    }
+
+    public function verify_account_request() {}
 }

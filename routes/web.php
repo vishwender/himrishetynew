@@ -63,10 +63,9 @@ Route::post('/send-otp', [OtpController::class, 'sendOtp'])->name('send-otp');
 Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->name('verify-otp');
 Route::post('/login-with-otp', [OtpController::class, 'login_otp'])->name('login-with-otp');
 Route::post('/verify-login-otp', [OtpController::class, 'verifyLoginOtp'])->name('verify-login-otp');
-Route::post('/callback-request', [
-    OtpController::class,
-    'callbackRequest'
-])->name('callback.request');
+Route::post('/callback-request', [OtpController::class, 'callbackRequest'])->name('callback.request');
+Route::get('/callback-status', [OtpController::class, 'callbackStatus'])->name('callback.status');
+Route::get('/verify-account-request', [OtpController::class, 'verify_account_request'])->name('verify_account_request');
 
 
 Route::middleware('auth:member')->group(function () {
@@ -126,6 +125,7 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/send-notification', [PushSubscriptionController::class, 'sendBrowserNotification']);
     Route::post('/upload-photos', [HomeController::class, 'uploadPhotos'])->name('upload-photos');
     Route::post('/profile/photo', [HomeController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::get('/verify-account', [MyMemberController::class, 'verify_account'])->name('verify-account');
 });
 
 Route::prefix('member')->name('member.')->group(function () {
