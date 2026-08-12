@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Models\MembershipPlan;
 use App\Models\Shortlist;
@@ -655,6 +656,12 @@ class MyMemberController extends Controller
         $member = Auth::guard('member')->user();
         $user = Member::findOrFail($member->id);
         $member_mobile = $user->mobile_number;
+
+        if ($user->member_type === 'Verified') {
+            return redirect('/home');
+        }
+
+        Session::put('verify_phone', $member_mobile);
 
         return view('dashboard.verify_account.verify-account', compact('member_mobile'));
     }

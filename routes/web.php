@@ -65,7 +65,8 @@ Route::post('/login-with-otp', [OtpController::class, 'login_otp'])->name('login
 Route::post('/verify-login-otp', [OtpController::class, 'verifyLoginOtp'])->name('verify-login-otp');
 Route::post('/callback-request', [OtpController::class, 'callbackRequest'])->name('callback.request');
 Route::get('/callback-status', [OtpController::class, 'callbackStatus'])->name('callback.status');
-Route::get('/verify-account-request', [OtpController::class, 'verify_account_request'])->name('verify_account_request');
+Route::post('/verify-account-request', [OtpController::class, 'verify_account_request'])->name('verify_account_request');
+
 
 
 Route::middleware('auth:member')->group(function () {

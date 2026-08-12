@@ -211,7 +211,7 @@ const otpTimer = document.getElementById('otpTimer');
 
                     const response =
                         await fetch(
-                            '/verify-otp', {
+                            '/verify-account-request', {
                                 method: 'POST',
 
                                 headers: {
@@ -250,7 +250,7 @@ const otpTimer = document.getElementById('otpTimer');
 
                     window.location.href =
                         data.redirect ||
-                        '/dashboard';
+                        '/home';
 
 
                 } catch (error) {
