@@ -329,6 +329,7 @@ class HomeController extends Controller
         }
 
         /* Matching profiles */
+
         $partner_country    = explode(',', $member->partner_country ?? '');
         $partner_religion   = explode(',', $member->partner_religion ?? '');
         $partner_education  = explode(',', $member->partner_education ?? '');
@@ -339,7 +340,6 @@ class HomeController extends Controller
         } else {
             $partner_cast = explode(',', $member->partner_cast ?? '');
         }
-
         $today = Carbon::today();
 
         $data['matching_profiles'] = Member::where('gender', '!=', $member->gender)
@@ -1562,11 +1562,28 @@ class HomeController extends Controller
 
     public function success_stories()
     {
-        $userId = Auth::guard('member')->user()->id;
+        return view('dashboard.success_stories.success-stories');
+    }
 
-        $success_stories = SuccessStory::where('user_id', $userId)->get();
+    public function successStories()
+    {
+        $userId = auth()->id();
 
-        return view('dashboard.success_stories.success-stories', compact('success_stories'));
+        $success_stories = SuccessStory::where('status', 1)
+            ->get()
+            ->map(function ($story) {
+
+                $story->photo = $story->photo
+                    ? asset('uploads/success-stories/' . $story->photo)
+                    : asset('uploads/success-stories/default-story.png');
+
+                return $story;
+            });
+
+        return response()->json([
+            'status' => true,
+            'data' => $success_stories
+        ]);
     }
 
 
