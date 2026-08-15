@@ -125,8 +125,8 @@ class MyMemberController extends Controller
             } else {
 
                 $photo = $profile->gender == 'Male'
-                    ? asset('img/boy.jpg')
-                    : asset('img/girl.jpg');
+                    ? asset('images/profile_photos/boy.jpg')
+                    : asset('images/profile_photos/girl.jpg');
             }
 
             $result[] = [
