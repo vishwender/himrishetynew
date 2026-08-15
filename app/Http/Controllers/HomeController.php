@@ -1232,6 +1232,7 @@ class HomeController extends Controller
     public function view_my_profile()
     {
         $profile = Auth::guard('member')->user();
+        //dd($profile);
 
         $profilegallery = $profile->photos()->get();
         if (!empty($profile->photo)) {
@@ -1257,6 +1258,8 @@ class HomeController extends Controller
         }
         $birthDate = Carbon::parse($profile->birth_date_time);
         $ageDiff   = $birthDate->diff(Carbon::today());
+        $profile->date = $birthDate->format('d-m-Y');
+        $profile->time = $birthDate->format('h:i A');
         $profile->age_years  = $ageDiff->y;
         $profile->age_months = $ageDiff->m;
         return view('dashboard.profile.view-my-profile', compact('profile', 'profilegallery'));

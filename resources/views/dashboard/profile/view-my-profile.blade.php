@@ -189,7 +189,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- ── ASTRO & KUNDLI ── -->
                 <div class="pd-section" id="sec-kundli">
                     <div class="pd-section-header">
@@ -202,18 +201,18 @@
                         <div class="pd-info-grid">
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Date of Birth</span>
-                                <span class="pd-info-value">15 March 1996</span>
+                                <span class="pd-info-value">{{$profile->date}}</span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Time of Birth</span>
-                                <span class="pd-info-value pd-locked" id="tobValue">
-                                    <i data-lucide="lock" width="14" height="14"></i> Premium Only
+                                <span class="pd-info-value" id="tobValue">
+                                    {{$profile->time}}
                                 </span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Place of Birth</span>
-                                <span class="pd-info-value pd-locked" id="pobValue">
-                                    <i data-lucide="lock" width="14" height="14"></i> {{$profile->birth_place}}
+                                <span class="pd-info-value" id="pobValue">
+                                    {{$profile->birth_place}}
                                 </span>
                             </div>
                             <div class="pd-info-row">
@@ -267,32 +266,29 @@
                         </div>
                         <div class="pd-section-body">
                             <div class="pd-info-grid">
-                                <div class="pd-info-row pd-contact-row">
-                                    <div>
-                                        <span class="pd-info-label">Contact Number</span>
-                                        <span class="pd-info-value pd-locked" id="mobileValue">
-                                            <i data-lucide="lock" width="14" height="14"></i>{{$profile->mobile_number}}
-                                        </span>
-                                    </div>
-                                    <i data-lucide="lock" width="16" height="16" class="pd-row-lock"></i>
+                                <div class="pd-info-row">
+                                    <span class="pd-info-label">Contact Number</span>
+                                    <span class="pd-info-value" id="mobileValue">
+                                        {{$profile->mobile_number}}
+                                    </span>
                                 </div>
-                                <div class="pd-info-row pd-contact-row">
-                                    <div>
-                                        <span class="pd-info-label">WhatsApp</span>
-                                        <span class="pd-info-value pd-locked" id="waValue">
-                                            <i data-lucide="lock" width="14" height="14"></i>{{$profile->whatsapp_number}}
-                                        </span>
-                                    </div>
-                                    <i data-lucide="lock" width="16" height="16" class="pd-row-lock"></i>
+                                <div class="pd-info-row">
+                                    <span class="pd-info-label">WhatsApp Number</span>
+                                    <span class="pd-info-value" id="waValue">
+                                        {{$profile->whatsapp_number}}
+                                    </span>
                                 </div>
-                                <div class="pd-info-row pd-contact-row">
-                                    <div>
-                                        <span class="pd-info-label">Email</span>
-                                        <span class="pd-info-value pd-locked" id="emailValue">
-                                            <i data-lucide="lock" width="14" height="14"></i>{{$profile->email}}
-                                        </span>
-                                    </div>
-                                    <i data-lucide="lock" width="16" height="16" class="pd-row-lock"></i>
+                                <div class="pd-info-row">
+                                    <span class="pd-info-label">Alternate Number</span>
+                                    <span class="pd-info-value" id="waValue">
+                                        {{$profile->alternate_number}}
+                                    </span>
+                                </div>
+                                <div class="pd-info-row">
+                                    <span class="pd-info-label">Email</span>
+                                    <span class="pd-info-value" id="emailValue">
+                                        {{$profile->email}}
+                                    </span>
                                 </div>
                             </div>
                             <!-- <div class="pd-unlock-strip" id="contactUnlock">
@@ -374,11 +370,11 @@
                                 </div>
                                 <div class="pd-info-row">
                                     <span class="pd-info-label">Brothers</span>
-                                    <span class="pd-info-value">{{$profile->no_of_brothers}}({{$profile->married_brothers}})</span>
+                                    <span class="pd-info-value">{{$profile->no_of_brothers}} | ( {{$profile->married_brothers}} Married)</span>
                                 </div>
                                 <div class="pd-info-row">
                                     <span class="pd-info-label">Sisters</span>
-                                    <span class="pd-info-value">{{$profile->no_of_sisters}}({{$profile->married_sisters}})</span>
+                                    <span class="pd-info-value">{{$profile->no_of_sisters}} | ( {{$profile->married_sisters}} Married)</span>
                                 </div>
                                 <div class="pd-info-row">
                                     <span class="pd-info-label">Native Place</span>
@@ -461,8 +457,12 @@
                                     <span class="pd-info-value">{{$profile->looking_for}}</span>
                                 </div>
                                 <div class="pd-info-row">
-                                    <span class="pd-info-label">Religion & Mother Tongue</span>
-                                    <span class="pd-info-value">{{$profile->partner_religion}} | {{$profile->partner_mothertongue}}</span>
+                                    <span class="pd-info-label">Religion</span>
+                                    <span class="pd-info-value">{{$profile->partner_religion}}</span>
+                                </div>
+                                <div class="pd-info-row">
+                                    <span class="pd-info-label">Mother Tongue</span>
+                                    <span class="pd-info-value">{{$profile->partner_mothertongue}}</span>
                                 </div>
                                 <div class="pd-info-row">
                                     <span class="pd-info-label">Community</span>
@@ -482,7 +482,7 @@
                                 </div>
                                 <div class="pd-info-row">
                                     <span class="pd-info-label">Annual Income</span>
-                                    <span class="pd-info-value">{{$profile->partner_annual_income_from}} - {{$profile->partner_annual_income_to}}</span>
+                                    <span class="pd-info-value">{{$profile->partner_annual_income_from}} - {{$profile->partner_annual_income_to}} LPA</span>
                                 </div>
                             </div>
                         </div>
