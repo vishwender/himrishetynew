@@ -121,7 +121,7 @@ class MyMemberController extends Controller
 
             if (!empty($profile->photo) && $profile->photo_approved == 'Yes') {
 
-                $photo = asset('photos/photo/' . $profile->photo);
+                $photo = 'https://himrishtey.com/photos/photo/' . $profile->photo;
             } else {
 
                 $photo = $profile->gender == 'Male'
