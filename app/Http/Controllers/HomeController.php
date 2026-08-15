@@ -29,6 +29,7 @@ use App\Services\PushNotificationService;
 
 class HomeController extends Controller
 {
+
     /**
      * Create a new controller instance.
      *
@@ -48,7 +49,6 @@ class HomeController extends Controller
     {
         $member = Auth::guard('member')->user();
         $id = $member->id;
-        //dd($member);
         //complete your profile section
         $steps = [
             [
@@ -103,8 +103,7 @@ class HomeController extends Controller
                     && !empty($member->no_of_sisters)
                     && !empty($member->married_brothers)
                     && !empty($member->married_sisters)
-                    && !empty($member->about_my_family)
-                    && !empty($member->family_income)
+                    && !empty($member->about_family)
             ],
             [
                 'title' => 'Lifestyle',
@@ -120,24 +119,20 @@ class HomeController extends Controller
                     && !empty($member->partner_age_to)
                     && !empty($member->partner_height_from)
                     && !empty($member->partner_height_to)
-                    && !empty($member->partner_marital_status)
                     && !empty($member->partner_religion)
                     && !empty($member->partner_cast)
-                    && !empty($member->partner_mother_tongue)
+                    && !empty($member->partner_mothertongue)
                     && !empty($member->partner_education)
                     && !empty($member->partner_occupation)
                     && !empty($member->partner_annual_income_from)
                     && !empty($member->partner_annual_income_to)
-                    && !empty($member->partner_country)
-                    && !empty($member->partner_state)
-                    && !empty($member->partner_city)
-                    && !empty($member->partner_diet)
-                    && !empty($member->partner_is_smoking)
-                    && !empty($member->partner_is_drinking)
+                    && !empty($member->is_partner_smoking)
+                    && !empty($member->is_partner_drinking)
                     && !empty($member->is_partner_manglik)
-                    && !empty($member->partner_religion)
             ]
         ];
+
+        //dd($steps);
 
         $completedSteps = 0;
 

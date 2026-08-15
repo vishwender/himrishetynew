@@ -45,15 +45,25 @@
 
 <!-- PROFILE COMPLETION -->
 <section class="profile-completion-section container-xxl" aria-label="Profile completion">
-    <div class="pc-card">
+
+    @if($completion < 100)
+
+        {{-- ==========================================
+             INCOMPLETE PROFILE
+        =========================================== --}}
+        <div class="pc-card">
+
         <div class="pc-left">
+
             <div class="pc-avatar-ring" style="--progress: {{ $completion }}%;">
+
                 <img
                     src="{{ !empty($member?->photo) ? asset('images/profile_photos/' . $member->photo) : asset('images/default-avatar.png') }}"
-                    alt="{{ $member->fullname }}"
+                    alt="{{ $member->full_name }}"
                     class="pc-avatar">
 
                 <svg class="pc-ring-svg" viewBox="0 0 80 80">
+
                     <circle
                         cx="40"
                         cy="40"
@@ -73,45 +83,206 @@
                         stroke-dashoffset="{{ $strokeOffset }}"
                         stroke-linecap="round"
                         transform="rotate(-90 40 40)" />
+
                 </svg>
 
-                <span class="pc-percent">{{ $completion }}%</span>
+                <span class="pc-percent">
+                    {{ $completion }}%
+                </span>
+
             </div>
+
         </div>
+
+
         <div class="pc-right">
-            <h3 class="pc-title">Complete Your Profile</h3>
-            <p class="pc-desc">A complete profile gets <strong>5x more</strong> matches. Add your details to stand out.</p>
+
+            <h3 class="pc-title">
+                Complete Your Profile
+            </h3>
+
+            <p class="pc-desc">
+                A complete profile gets <strong>5x more</strong> matches.
+                Add your details to stand out.
+            </p>
+
+
+            {{-- Progress --}}
             <div class="pc-progress-bar-wrap">
-                <div class="pc-progress-bar"
+
+                <div
+                    class="pc-progress-bar"
                     style="width: {{ $completion }}%;"
                     role="progressbar"
                     aria-valuenow="{{ $completion }}"
                     aria-valuemin="0"
-                    aria-valuemax="100">
-                </div>
+                    aria-valuemax="100"></div>
+
             </div>
+
+
+            {{-- Completion percentage --}}
+            <div class="pc-progress-info">
+                <span>Profile completion</span>
+                <strong>{{ $completion }}%</strong>
+            </div>
+
+
+            {{-- Steps --}}
             <div class="pc-steps">
+
                 @foreach($steps as $step)
+
                 <span class="pc-step {{ $step['completed'] ? 'done' : 'pending' }}">
+
                     @if($step['completed'])
-                    <i data-lucide="check" width="12" height="12"></i>
+
+                    <i
+                        data-lucide="check"
+                        width="12"
+                        height="12"></i>
+
                     @else
-                    <i data-lucide="plus" width="12" height="12"></i>
+
+                    <i
+                        data-lucide="plus"
+                        width="12"
+                        height="12"></i>
+
                     @endif
 
                     {{ $step['title'] }}
+
                 </span>
+
                 @endforeach
+
             </div>
+
         </div>
-        <a href="{{route('edit-profile')}}" class="pc-cta-btn">
-            @if($completion == 100)
-            View Profile
-            @else
+
+
+        {{-- CTA --}}
+        <a
+            href="{{ route('edit-profile') }}"
+            class="pc-cta-btn">
             Complete Now
-            @endif
+            <i
+                data-lucide="arrow-right"
+                width="16"
+                height="16"></i>
         </a>
-    </div>
+
+        </div>
+
+
+        @else
+
+        {{-- ==========================================
+             PROFILE 100% COMPLETE
+        =========================================== --}}
+        <div class="pc-card pc-card-complete">
+
+            {{-- Avatar --}}
+            <div class="pc-complete-left">
+
+                <div class="pc-avatar-ring pc-avatar-ring-complete">
+
+                    <img
+                        src="{{ !empty($member?->photo) ? asset('images/profile_photos/' . $member->photo) : asset('images/default-avatar.png') }}"
+                        alt="{{ $member->full_name }}"
+                        class="pc-avatar">
+
+                    <span class="pc-complete-check">
+                        <i
+                            data-lucide="check"
+                            width="14"
+                            height="14"></i>
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            {{-- Profile information --}}
+            <div class="pc-complete-info">
+
+                <div class="pc-complete-name-row">
+
+                    <h3 class="pc-complete-name">
+                        {{ $member->full_name }}
+                    </h3>
+
+                    <span class="pc-complete-badge">
+                        <i
+                            data-lucide="badge-check"
+                            width="14"
+                            height="14"></i>
+
+                        Profile Complete
+                    </span>
+
+                </div>
+
+
+                @if(!empty($member->profile_id))
+
+                <p class="pc-profile-id">
+                    Profile ID:
+                    <strong>{{ $member->profile_id }}</strong>
+                </p>
+
+                @endif
+
+
+                <div class="pc-complete-progress">
+
+                    <div class="pc-progress-info">
+
+                        <span>
+                            Profile completion
+                        </span>
+
+                        <strong>
+                            100%
+                        </strong>
+
+                    </div>
+
+                    <div class="pc-progress-bar-wrap">
+
+                        <div
+                            class="pc-progress-bar pc-progress-complete"
+                            style="width: 100%;"
+                            role="progressbar"
+                            aria-valuenow="100"
+                            aria-valuemin="0"
+                            aria-valuemax="100"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {{-- View Profile --}}
+            <a
+                href="{{ route('view-my-profile')}}"
+                class="pc-view-btn">
+                View Profile
+
+                <i
+                    data-lucide="arrow-right"
+                    width="16"
+                    height="16"></i>
+            </a>
+
+        </div>
+
+        @endif
+
 </section>
 
 <!-- STATS BLOCKS -->
