@@ -150,7 +150,7 @@
                   <span class="checkbox-custom" aria-hidden="true"></span>
                   Remember me
                 </label>
-                <a href="{{ route('member.password.request') }}" class="forgot-link">Forgot password?</a>
+                <a href="{{ route('forgot.password') }}" class="forgot-link">Forgot password?</a>
               </div>
 
               <!-- Submit -->

@@ -13,8 +13,8 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\PushSubscriptionController;
-use App\Http\Controllers\MemberAuth\ForgotPasswordController;
-use App\Http\Controllers\MemberAuth\ResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +66,13 @@ Route::post('/verify-login-otp', [OtpController::class, 'verifyLoginOtp'])->name
 Route::post('/callback-request', [OtpController::class, 'callbackRequest'])->name('callback.request');
 Route::get('/callback-status', [OtpController::class, 'callbackStatus'])->name('callback.status');
 Route::post('/verify-account-request', [OtpController::class, 'verify_account_request'])->name('verify_account_request');
+
+
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPassword'])->name('forgot.password');
+Route::post('/forgot-password/send-otp', [ForgotPasswordController::class, 'sendOtp'])->name('forgot.password.send.otp');
+Route::post('/forgot-password/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('forgot.password.verify.otp');
+Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('forgot.password.reset');
 
 
 
@@ -128,13 +135,6 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/profile/photo', [HomeController::class, 'updatePhoto'])->name('profile.photo.update');
     Route::get('/verify-account', [MyMemberController::class, 'verify_account'])->name('verify-account');
 });
-
-Route::prefix('member')->name('member.')->group(function () {
-    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
-});  
 
 // Route::get('/test-notify', function () {
 //     (new \App\Http\Controllers\PushSubscriptionController)->sendBrowserNotification();

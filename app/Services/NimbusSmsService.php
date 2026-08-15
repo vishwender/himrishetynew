@@ -22,6 +22,32 @@ class NimbusSmsService
             'EntityID'  => env('NIMBUS_ENTITY', '1701164189692214854'),
             'TemplateID' => env('NIMBUS_TEMPLATE', '1707166036739168867'),
         ]);
+
+        if (!$response->successful()) {
+            return [
+                'success' => false,
+                'message' => 'SMS API request failed.',
+                'response' => $response->body(),
+            ];
+        }
+
+        $data = $response->json();
+        if (
+            isset($data['Status']) &&
+            $data['Status'] === 'OK'
+        ) {
+            return [
+                'success' => true,
+                'message' => 'SMS sent successfully.',
+                'response' => $data,
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => 'SMS provider returned an error.',
+            'response' => $data,
+        ];
         return $response->body();
     }
 
