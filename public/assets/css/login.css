@@ -747,3 +747,54 @@ body.login-body {
 .captcha-refresh:active {
   transform: scale(.95);
 }
+
+/* =========================================================
+   CAPTCHA - DARK MODE FIX
+   ========================================================= */
+
+html[data-theme="dark"] .captcha-box {
+  background: #21181d !important;
+  border: 1px solid #4a2635 !important;
+  color: #f5dfe7 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .captcha-box span,
+html[data-theme="dark"] #captchaQuestion,
+html[data-theme="dark"] #registerCaptchaQuestion {
+  color: #f5dfe7 !important;
+}
+
+/* CAPTCHA answer input */
+html[data-theme="dark"] #loginCaptcha,
+html[data-theme="dark"] #regCaptcha {
+  background-color: #21181d !important;
+  color: #ffffff !important;
+  border: 1px solid #e91e63 !important;
+  box-shadow: none !important;
+}
+
+/* Placeholder */
+html[data-theme="dark"] #loginCaptcha::placeholder,
+html[data-theme="dark"] #regCaptcha::placeholder {
+  color: #a9959d !important;
+  opacity: 1;
+}
+
+/* Focus */
+html[data-theme="dark"] #loginCaptcha:focus,
+html[data-theme="dark"] #regCaptcha:focus {
+  background-color: #21181d !important;
+  color: #ffffff !important;
+  border-color: #ff4081 !important;
+  box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.15) !important;
+  outline: none !important;
+}
+
+/* Number input arrows - dark mode */
+html[data-theme="dark"] #loginCaptcha::-webkit-inner-spin-button,
+html[data-theme="dark"] #loginCaptcha::-webkit-outer-spin-button,
+html[data-theme="dark"] #regCaptcha::-webkit-inner-spin-button,
+html[data-theme="dark"] #regCaptcha::-webkit-outer-spin-button {
+  filter: invert(1);
+}
