@@ -127,7 +127,7 @@ function getKey(mode, tab) {
     article.setAttribute('aria-label', profile.name + ', ' + profile.age);
     article.style.animationDelay = delay + 'ms';
 
-    const imgUrl = 'https://picsum.photos/seed/' + profile.seed + '/220/280';
+    const imgUrl = profile.photo;
 
     const verifiedIcon = profile.verified
       ? '<i data-lucide="shield-check" width="13" height="13" class="verified-icon"></i>'
@@ -175,12 +175,12 @@ function getKey(mode, tab) {
     /* Card click → profile detail */
     article.addEventListener('click', function (e) {
       if (e.target.closest('.int-action-btn')) return; // let button handle
-      window.location.href = 'profile-detail.html?id=' + encodeURIComponent(profile.id);
+      window.location.href = '/view-profile/' + profile.profile_id;
     });
 
     article.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
-        window.location.href = 'profile-detail.html?id=' + encodeURIComponent(profile.id);
+        window.location.href = '/view-profile/' + profile.profile_id;
       }
     });
 
