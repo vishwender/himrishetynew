@@ -225,6 +225,78 @@ document.addEventListener('DOMContentLoaded', function () {
     checkShortlistStatus();
 });
 
+//Like button functionality
+document.addEventListener('DOMContentLoaded', function () {
+
+    const button = document.getElementById('likeBtn');
+
+    if (!button) return;
+
+    const profileId = button.dataset.profileId;
+
+    fetch(`/check-profile-like/${profileId}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.liked) {
+            button.classList.add('liked');
+            button.setAttribute('aria-label', 'Unlike profile');
+            button.setAttribute('title', 'Unlike profile');
+        }
+
+    })
+    .catch(error => {
+        console.error('Unable to check like status:', error);
+    });
+});
+
+document.getElementById('likeBtn')?.addEventListener('click', function () {
+
+    const button = this;
+    const profileId = button.dataset.profileId;
+
+    button.disabled = true;
+
+    fetch("/like-profile", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            id: profileId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.status === 'liked') {
+            button.classList.add('liked');
+            button.setAttribute('aria-label', 'Unlike profile');
+            button.setAttribute('title', 'Unlike profile');
+
+        } else if (data.status === 'unliked') {
+            button.classList.remove('liked');
+            button.setAttribute('aria-label', 'Like profile');
+            button.setAttribute('title', 'Like profile');
+        }
+
+    })
+    .catch(error => {
+        console.error('Like error:', error);
+    })
+    .finally(() => {
+        button.disabled = false;
+    });
+});
+
 /* ── INTEREST ACTIONS ── */
 let interestState = "none"; // none | sent | received | matched | rejected
 

@@ -1789,38 +1789,58 @@ class HomeController extends Controller
     public function like_profile(Request $request)
     {
         $member = Auth::guard('member')->user();
-        $status = $request->input('status');
-        $id = $request->input('id');
-        $user_id = $member->id;
-        $plan_id = $member->plan_id;
-        $profile_id = $id;
-        if ($plan_id == 0 || empty($plan_id)) {
+
+        $profile_id = $request->input('id');
+        //dd($profile_id);
+        $member_id = $member->id;
+
+        // Check if already liked
+        $existingLike = ProfileLike::where('user_id', $member_id)
+            ->where('like_profile_id', $profile_id)
+            ->first();
+
+        if ($existingLike) {
+
+            // Already liked → unlike
+            $existingLike->delete();
+
             return response()->json([
-                'status' => 'error',
-                'message' => 'Please upgrade your membership plan'
-            ], 403);
+                'status' => 'unliked',
+                'liked' => false,
+                'message' => 'Profile unliked'
+            ]);
         }
 
-        $newInterest = new ProfileLike();
-        $newInterest->user_id = $user_id;
-        $newInterest->like_profile_id = $profile_id;
-        $newInterest->status = $status;
-        if ($status == 1) {
-            $msg = 'Profile liked successfully';
-        } else {
-            $msg = 'Profile unliked successfully';
-        }
-        if ($newInterest->save()) {
+        // Not liked → create like
+        $like = new ProfileLike();
+        $like->user_id = $member_id;
+        $like->like_profile_id = $profile_id;
+
+        if ($like->save()) {
             return response()->json([
-                'status' => 'success',
-                'message' => $msg
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to Like Profile'
-            ], 500);
+                'status' => 'liked',
+                'liked' => true,
+                'message' => 'Profile liked'
+            ]);
         }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to like profile'
+        ], 500);
+    }
+
+    public function check_profile_like($id)
+    {
+        $member = Auth::guard('member')->user();
+
+        $liked = ProfileLike::where('user_id', $member->id)
+            ->where('like_profile_id', $id)
+            ->exists();
+
+        return response()->json([
+            'liked' => $liked
+        ]);
     }
 
     public function shortlist_profile(Request $request, EmailService $emailservice)

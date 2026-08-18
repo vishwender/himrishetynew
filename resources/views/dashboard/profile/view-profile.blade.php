@@ -192,6 +192,7 @@
                     <button
                         class="pd-hero-fab"
                         id="likeBtn"
+                        data-profile-id="{{$usr->id}}"
                         aria-label="Like profile"
                         title="Like">
                         <i
@@ -202,7 +203,7 @@
 
 
                     <!-- Shortlist -->
-                    <button
+                    <!-- <button
                         class="pd-hero-fab"
                         id="shortlistBtn"
                         aria-label="Shortlist profile"
@@ -211,7 +212,7 @@
                             data-lucide="bookmark"
                             width="20"
                             height="20"></i>
-                    </button>
+                    </button> -->
 
                 </div>
 

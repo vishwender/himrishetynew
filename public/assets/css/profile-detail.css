@@ -417,6 +417,13 @@
 /* =========================================================
    LIKE / SHORTLIST
 ========================================================= */
+#likeBtn.liked {
+    color: #e11d48;
+}
+
+#likeBtn.liked svg {
+    fill: currentColor;
+}
 
 .pd-hero-actions {
   display: flex;
@@ -425,6 +432,7 @@
 
   gap: 12px;
 }
+
 
 
 .pd-hero-fab {
