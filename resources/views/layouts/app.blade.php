@@ -122,7 +122,7 @@
           <li><a href="/">Home</a></li>
           <li><a href="{{route('login-form')}}">Login</a></li>
           <li><a href="{{route('login-form')}}#register">Register</a></li>
-          <li><a href="#">Dashboard</a></li>
+          <!-- <li><a href="#">Dashboard</a></li> -->
         </ul>
       </div>
 
