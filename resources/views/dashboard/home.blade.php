@@ -58,7 +58,7 @@
             <div class="pc-avatar-ring" style="--progress: {{ $completion }}%;">
 
                 <img
-                    src="{{ !empty($member?->photo) ? asset('images/profile_photos/' . $member->photo) : asset('images/default-avatar.png') }}"
+                    src="{{ !empty($member?->photo) ? asset('photos/photo/' . $member->photo) : asset('images/default-avatar.png') }}"
                     alt="{{ $member->full_name }}"
                     class="pc-avatar">
 
@@ -189,7 +189,7 @@
                 <div class="pc-avatar-ring pc-avatar-ring-complete">
 
                     <img
-                        src="{{ !empty($member?->photo) ? asset('images/profile_photos/' . $member->photo) : asset('images/default-avatar.png') }}"
+                        src="{{ !empty($member?->photo) ? asset('photos/photo/' . $member->photo) : asset('images/default-avatar.png') }}"
                         alt="{{ $member->full_name }}"
                         class="pc-avatar">
 

@@ -1957,10 +1957,11 @@ class HomeController extends Controller
         ]);
 
         $user = Auth::user();
+        $id = $user->id;
 
         // Delete old photo
         if ($user->photo) {
-            $oldPhoto = public_path('images/profile_photos/' . $user->profile_photo);
+            $oldPhoto = public_path('photos/photo/' . $user->profile_photo);
 
             if (File::exists($oldPhoto)) {
                 File::delete($oldPhoto);
@@ -1969,16 +1970,18 @@ class HomeController extends Controller
 
         // Upload new photo
         $file = $request->file('photo');
-        $filename = time() . '_' . $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
 
-        $file->move(public_path('images/profile_photos'), $filename);
+        $filename = 'member-photo-' . $id . '.' . $extension;
+
+        $file->move(public_path('photos/photo'), $filename);
 
         $user->photo = $filename;
         $user->save();
 
         return response()->json([
             'success' => true,
-            'photo_url' => asset('images/profile_photos/' . $filename),
+            'photo_url' => asset('photos/photo/' . $filename),
         ]);
     }
 }
