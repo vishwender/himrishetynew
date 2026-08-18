@@ -93,159 +93,505 @@
 @media (min-width: 640px) { .pd-icon-btn span { display: inline; } }
 
 /* ── HERO CAROUSEL ──────────────────────────────────────────── */
+/* =========================================================
+   HERO
+========================================================= */
+
 .pd-hero {
   width: 100%;
   position: relative;
 }
 
+
 .pd-hero-carousel {
   position: relative;
   width: 100%;
-  height: clamp(360px, 55vh, 580px);
+  height: 435px;
   overflow: hidden;
-  background: #f5dce7;
-  cursor: pointer;
+  background: #f4adc7;
 }
 
-.pd-slide {
+
+/* =========================================================
+   BLURRED BACKGROUND
+========================================================= */
+
+.pd-hero-bg {
+  position: absolute;
+  inset: -30px;
+
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  filter: blur(28px);
+
+  transform: scale(1.12);
+
+  opacity: 0.85;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   BACKGROUND OVERLAY
+========================================================= */
+
+.pd-hero-overlay-bg {
   position: absolute;
   inset: 0;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  background:
+    linear-gradient(to bottom,
+      rgba(255, 183, 211, 0.18) 0%,
+      rgba(50, 30, 40, 0.18) 55%,
+      rgba(25, 20, 25, 0.75) 100%);
+
+  z-index: 2;
 }
 
-.pd-slide.active { opacity: 1; }
 
-.pd-slide-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.4);
-  color: rgba(0,0,0,0.3);
-}
+/* =========================================================
+   PROFILE IMAGE
+========================================================= */
 
-.pd-slide-nav {
+.pd-profile-image-wrapper {
   position: absolute;
+
   top: 50%;
-  transform: translateY(-50%);
-  width: 42px;
-  height: 42px;
+  left: 50%;
+
+  transform: translate(-50%, -58%);
+
+  width: 295px;
+  height: 295px;
+
+  z-index: 5;
+}
+
+.pd-profile-image {
+  width: 100%;
+  height: 100%;
+
   border-radius: 50%;
-  background: rgba(0,0,0,0.32);
-  backdrop-filter: blur(6px);
-  color: #fff;
-  border: none;
+  overflow: hidden;
+
+  border: 6px solid rgba(255, 255, 255, 0.95);
+
+  background: #f7dce7;
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+
+.pd-profile-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* =========================================================
+   VERIFIED BADGE
+========================================================= */
+
+.pd-profile-verified {
+  position: absolute;
+
+  right: 2px;
+  bottom: 8px;
+
+  width: 52px;
+  height: 52px;
+
+  border-radius: 50%;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: background 0.15s;
+
+  background: #22c55e;
+
+  color: #ffffff;
+
+  border: 5px solid #ffffff;
+
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.pd-slide-nav:hover { background: rgba(0,0,0,0.55); }
-.pd-slide-prev { left: 14px; }
-.pd-slide-next { right: 14px; }
+
+.pd-profile-verified svg {
+  stroke-width: 3;
+}
+
+
+/* =========================================================
+   SLIDE DOTS
+========================================================= */
 
 .pd-slide-dots {
   position: absolute;
-  bottom: 90px;
+
   left: 50%;
+  bottom: 76px;
+
   transform: translateX(-50%);
+
   display: flex;
-  gap: 6px;
-  z-index: 10;
-}
-
-.pd-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.pd-dot.active {
-  background: #fff;
-  width: 20px;
-  border-radius: 999px;
-}
-
-.pd-hero-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 1.2rem 1.4rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
-  z-index: 10;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.pd-hero-age {
-  margin: 0 0 0.25rem;
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.85);
-}
-
-.pd-hero-name {
-  margin: 0 0 0.35rem;
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  font-family: 'Playfair Display', serif;
-  color: #fff;
-  font-weight: 700;
-}
-
-.pd-hero-id {
-  font-size: 1rem;
-  font-weight: 400;
-  opacity: 0.75;
-}
-
-.pd-hero-location {
-  margin: 0;
-  display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.88rem;
-  color: rgba(255,255,255,0.8);
+  gap: 7px;
+
+  z-index: 10;
 }
 
-.pd-hero-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
+
+.pd-slide-dots span {
+  width: 10px;
+  height: 6px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.55);
+
+  transition: all 0.25s ease;
 }
 
-.pd-hero-fab {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.38);
-  backdrop-filter: blur(8px);
-  color: #fff;
+
+.pd-slide-dots span.active {
+  width: 15px;
+
+  background: #e3266f;
+}
+
+
+/* =========================================================
+   PREVIOUS / NEXT
+========================================================= */
+
+.pd-slide-nav {
+  position: absolute;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 48px;
+  height: 48px;
+
   border: none;
+
+  border-radius: 50%;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   cursor: pointer;
-  transition: all 0.18s ease;
+
+  color: #ffffff;
+
+  background: rgba(90, 65, 78, 0.55);
+
+  backdrop-filter: blur(8px);
+
+  z-index: 10;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
-.pd-hero-fab:hover,
-.pd-hero-fab.active {
-  background: var(--color-primary, #D92768);
+
+.pd-slide-nav:hover {
+  background: rgba(60, 40, 50, 0.75);
+
+  transform:
+    translateY(-50%) scale(1.06);
+}
+
+
+.pd-slide-prev {
+  left: 18px;
+}
+
+
+.pd-slide-next {
+  right: 18px;
+}
+
+
+/* =========================================================
+   HERO INFORMATION
+========================================================= */
+
+.pd-hero-info {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  min-height: 125px;
+
+  padding:
+    30px 30px 24px;
+
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: space-between;
+
+  z-index: 10;
+}
+
+
+/* =========================================================
+   PROFILE META
+========================================================= */
+
+.pd-hero-meta {
+  color: #ffffff;
+}
+
+
+.pd-hero-age {
+  margin: 0 0 7px;
+
+  font-size: 14px;
+
+  color: rgba(255, 255, 255, 0.85);
+}
+
+
+.pd-hero-name {
+  margin: 0;
+
+  font-family: Georgia, serif;
+
+  font-size: 30px;
+
+  font-weight: 600;
+
+  line-height: 1.1;
+
+  color: #ffffff;
+}
+
+
+.pd-hero-id {
+  margin-left: 6px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 400;
+
+  color: rgba(255, 255, 255, 0.7);
+}
+
+
+.pd-hero-location {
+  margin: 8px 0 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  font-size: 14px;
+
+  color: rgba(255, 255, 255, 0.85);
+}
+
+
+/* =========================================================
+   LIKE / SHORTLIST
+========================================================= */
+
+.pd-hero-actions {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+
+.pd-hero-fab {
+  width: 44px;
+  height: 44px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  color: #ffffff;
+
+  background:
+    rgba(60, 45, 55, 0.65);
+
+  backdrop-filter: blur(10px);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.pd-hero-fab:hover {
   transform: scale(1.08);
+
+  background:
+    rgba(40, 30, 40, 0.85);
+}
+
+
+.pd-hero-fab.active {
+  background: #e3266f;
+}
+
+
+.pd-hero-fab svg {
+  stroke-width: 2;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .pd-hero-carousel {
+    height: 420px;
+  }
+
+
+  .pd-profile-image-wrapper {
+    width: 170px;
+    height: 170px;
+
+    transform:
+      translate(-50%, -62%);
+  }
+
+
+  .pd-profile-verified {
+    width: 42px;
+    height: 42px;
+
+    border-width: 4px;
+
+    right: 0;
+    bottom: 5px;
+  }
+
+
+  .pd-profile-verified svg {
+    width: 18px;
+    height: 18px;
+  }
+
+
+  .pd-hero-info {
+    padding:
+      25px 18px 18px;
+  }
+
+
+  .pd-hero-name {
+    font-size: 25px;
+  }
+
+
+  .pd-hero-id {
+    font-size: 12px;
+  }
+
+
+  .pd-slide-nav {
+    width: 42px;
+    height: 42px;
+  }
+
+
+  .pd-slide-prev {
+    left: 10px;
+  }
+
+
+  .pd-slide-next {
+    right: 10px;
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .pd-hero-carousel {
+    height: 390px;
+  }
+
+
+  .pd-profile-image-wrapper {
+    width: 145px;
+    height: 145px;
+
+    top: 42%;
+  }
+
+
+  .pd-hero-info {
+    min-height: 120px;
+
+    padding:
+      20px 14px 15px;
+  }
+
+
+  .pd-hero-age {
+    font-size: 12px;
+  }
+
+
+  .pd-hero-name {
+    font-size: 22px;
+  }
+
+
+  .pd-hero-location {
+    font-size: 12px;
+  }
+
+
+  .pd-hero-actions {
+    gap: 8px;
+  }
+
+
+  .pd-hero-fab {
+    width: 40px;
+    height: 40px;
+  }
+
 }
 
 /* ── MAIN LAYOUT ────────────────────────────────────────────── */

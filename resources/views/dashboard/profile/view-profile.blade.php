@@ -58,60 +58,167 @@
             </div>
         </div>
     </nav>
-
     <!-- ===================== HERO / PHOTO CAROUSEL ===================== -->
     <section class="pd-hero">
+
         <div class="pd-hero-carousel" id="heroCarousel">
-            <!-- Slides injected by JS or static placeholders -->
-            <div class="pd-slide active" style="background: linear-gradient(135deg, #fde8f0 0%, #f4adc7 100%);">
-                <div class="pd-slide-placeholder">
-                    <i data-lucide="user" width="64" height="64"></i>
-                </div>
-            </div>
-            <div class="pd-slide" style="background: linear-gradient(135deg, #f5f0ff 0%, #c8b0ff 100%);">
-                <div class="pd-slide-placeholder">
-                    <i data-lucide="image" width="64" height="64"></i>
-                </div>
-            </div>
-            <div class="pd-slide" style="background: linear-gradient(135deg, #fff4ec 0%, #ffc399 100%);">
-                <div class="pd-slide-placeholder">
-                    <i data-lucide="image" width="64" height="64"></i>
-                </div>
+
+            <!-- =========================================================
+             BLURRED BACKGROUND
+        ========================================================== -->
+            <div
+                class="pd-hero-bg"
+                id="heroBackground"
+                style="background-image: url('{{ $usr->photo }}');">
             </div>
 
-            <!-- Slide indicators -->
-            <div class="pd-slide-dots" id="slideDots"></div>
 
-            <!-- Prev / Next -->
-            <button class="pd-slide-nav pd-slide-prev" id="slidePrev" aria-label="Previous photo">
-                <i data-lucide="chevron-left" width="22" height="22"></i>
-            </button>
-            <button class="pd-slide-nav pd-slide-next" id="slideNext" aria-label="Next photo">
-                <i data-lucide="chevron-right" width="22" height="22"></i>
-            </button>
+            <!-- =========================================================
+             DARK / LIGHT OVERLAY
+        ========================================================== -->
+            <div class="pd-hero-overlay-bg"></div>
 
-            <!-- Hero overlay info -->
-            <div class="pd-hero-overlay">
+
+            <!-- =========================================================
+             MAIN PROFILE IMAGE
+        ========================================================== -->
+            <div class="pd-profile-image-wrapper">
+
+                <div class="pd-profile-image">
+
+                    <img
+                        id="mainProfileImage"
+                        src="{{ $usr->photo }}"
+                        alt="{{ $usr->full_name }}">
+
+                </div>
+
+
+                <!-- Verified badge -->
+                @if (!empty($usr->member_type))
+                <div
+                    class="pd-profile-verified"
+                    title="Verified Profile">
+                    <i
+                        data-lucide="check"
+                        width="22"
+                        height="22"></i>
+                </div>
+                @endif
+            </div>
+
+
+            <!-- =========================================================
+             SLIDE INDICATORS
+            ========================================================== -->
+            <!-- <div
+                class="pd-slide-dots"
+                id="slideDots">
+            </div> -->
+
+
+            <!-- =========================================================
+             PREVIOUS BUTTON
+            ========================================================== -->
+            <!-- <button
+                class="pd-slide-nav pd-slide-prev"
+                id="slidePrev"
+                aria-label="Previous photo">
+                <i
+                    data-lucide="chevron-left"
+                    width="22"
+                    height="22"></i>
+            </button> -->
+
+
+            <!-- =========================================================
+             NEXT BUTTON
+            ========================================================== -->
+            <!-- <button
+                class="pd-slide-nav pd-slide-next"
+                id="slideNext"
+                aria-label="Next photo">
+                <i
+                    data-lucide="chevron-right"
+                    width="22"
+                    height="22"></i>
+            </button> -->
+
+
+            <!-- =========================================================
+             HERO INFORMATION
+        ========================================================== -->
+            <div class="pd-hero-info">
+
                 <div class="pd-hero-meta">
-                    <p class="pd-hero-age">{{$usr->age_years}} | 5'7" ft</p>
-                    <h1 class="pd-hero-name">{{ $usr->full_name }}<span class="pd-hero-id">|{{$usr->profile_id}}</span></h1>
-                    <p class="pd-hero-location">
-                        <i data-lucide="map-pin" width="14" height="14"></i>
-                        {{$usr->city_living_in}}, {{$usr->state_living_in}}
+
+                    <p class="pd-hero-age">
+                        {{$usr->age_years}} | 5'7" ft
                     </p>
+
+
+                    <h1 class="pd-hero-name">
+
+                        {{ $usr->full_name }}
+
+                        <span class="pd-hero-id">
+                            |{{ $usr->profile_id }}
+                        </span>
+
+                    </h1>
+
+
+                    <p class="pd-hero-location">
+
+                        <i
+                            data-lucide="map-pin"
+                            width="14"
+                            height="14"></i>
+
+                        {{$usr->city_living_in}},
+                        {{$usr->state_living_in}}
+
+                    </p>
+
                 </div>
 
-                <!-- Right side action buttons (like / save) -->
+
+                <!-- =====================================================
+                 RIGHT SIDE ACTION BUTTONS
+            ====================================================== -->
                 <div class="pd-hero-actions">
-                    <button class="pd-hero-fab" id="likeBtn" aria-label="Like profile" title="Like">
-                        <i data-lucide="heart" width="20" height="20"></i>
+
+                    <!-- Like -->
+                    <button
+                        class="pd-hero-fab"
+                        id="likeBtn"
+                        aria-label="Like profile"
+                        title="Like">
+                        <i
+                            data-lucide="heart"
+                            width="20"
+                            height="20"></i>
                     </button>
-                    <button class="pd-hero-fab" id="shortlistBtn" aria-label="Shortlist profile" title="Shortlist">
-                        <i data-lucide="bookmark" width="20" height="20"></i>
+
+
+                    <!-- Shortlist -->
+                    <button
+                        class="pd-hero-fab"
+                        id="shortlistBtn"
+                        aria-label="Shortlist profile"
+                        title="Shortlist">
+                        <i
+                            data-lucide="bookmark"
+                            width="20"
+                            height="20"></i>
                     </button>
+
                 </div>
+
             </div>
+
         </div>
+
     </section>
 
     <!-- ===================== MAIN CONTENT ===================== -->
@@ -123,9 +230,11 @@
 
                 <!-- Premium / Verified badge strip -->
                 <div class="pd-badge-strip">
+                    @if(!empty($usr->member_type))
                     <span class="pd-badge pd-badge-verified">
                         <i data-lucide="badge-check" width="14" height="14"></i> Verified Profile
                     </span>
+                    @endif
                     <span class="pd-badge pd-badge-premium">
                         <i data-lucide="star" width="14" height="14"></i> Premium Member
                     </span>

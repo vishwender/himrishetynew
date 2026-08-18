@@ -29,8 +29,6 @@ $verified = !empty($profile['mem_type']) && $profile['mem_type'] === 'Yes';
             <span class="profile-card-verified-badge">
                 <i data-lucide="shield-check" width="12" height="12"></i>
             </span>
-            @else
-            <span class="profile-card-online" aria-label="Online"></span>
             @endif
 
             <div class="profile-card-actions">

@@ -130,7 +130,7 @@
     article.setAttribute('aria-label', profile.name + ', ' + profile.age);
     article.style.animationDelay = delay + 'ms';
 
-    const imgUrl = 'https://picsum.photos/seed/' + profile.seed + '/220/280';
+    const imgUrl = profile.photo;
 
     let badges = '';
     if (profile.matchPct) {
@@ -189,13 +189,13 @@
 
     /* Card click → profile detail */
     article.addEventListener('click', function () {
-      window.location.href = 'profile-detail.html?id=' + encodeURIComponent(profile.id);
+      window.location.href = '/view-profile/' + profile.profile_id;
     });
 
     article.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        window.location.href = 'profile-detail.html?id=' + encodeURIComponent(profile.id);
+        window.location.href = '/view-profile/' + profile.profile_id;
       }
     });
 

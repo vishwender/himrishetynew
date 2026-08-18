@@ -13,8 +13,8 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\PushSubscriptionController;
-use App\Http\Controllers\MemberAuth\ForgotPasswordController;
-use App\Http\Controllers\MemberAuth\ResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +63,17 @@ Route::post('/send-otp', [OtpController::class, 'sendOtp'])->name('send-otp');
 Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->name('verify-otp');
 Route::post('/login-with-otp', [OtpController::class, 'login_otp'])->name('login-with-otp');
 Route::post('/verify-login-otp', [OtpController::class, 'verifyLoginOtp'])->name('verify-login-otp');
+Route::post('/callback-request', [OtpController::class, 'callbackRequest'])->name('callback.request');
+Route::get('/callback-status', [OtpController::class, 'callbackStatus'])->name('callback.status');
+Route::post('/verify-account-request', [OtpController::class, 'verify_account_request'])->name('verify_account_request');
+
+
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPassword'])->name('forgot.password');
+Route::post('/forgot-password/send-otp', [ForgotPasswordController::class, 'sendOtp'])->name('forgot.password.send.otp');
+Route::post('/forgot-password/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('forgot.password.verify.otp');
+Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('forgot.password.reset');
+
 
 
 Route::middleware('auth:member')->group(function () {
@@ -81,6 +92,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('user-rating', [HomeController::class, 'rating'])->name('user-rating');
     Route::post('user-rate', [HomeController::class, 'rating_store'])->name('user-rate');
     Route::get('success-stories', [HomeController::class, 'success_stories'])->name('member.success-stories');
+    Route::get('/success-stories/data', [HomeController::class, 'successStories'])->name('success-stories.data');
     Route::post('stories_store', [HomeController::class, 'stories_store'])->name('stories_store');
     Route::put('/success-stories/{id}', [HomeController::class, 'update'])->name('stories_update');
     Route::delete('/success-stories/{id}', [HomeController::class, 'destroy'])->name('stories_delete');
@@ -122,13 +134,7 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/send-notification', [PushSubscriptionController::class, 'sendBrowserNotification']);
     Route::post('/upload-photos', [HomeController::class, 'uploadPhotos'])->name('upload-photos');
     Route::post('/profile/photo', [HomeController::class, 'updatePhoto'])->name('profile.photo.update');
-});
-
-Route::prefix('member')->name('member.')->group(function () {
-    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+    Route::get('/verify-account', [MyMemberController::class, 'verify_account'])->name('verify-account');
 });
 
 // Route::get('/test-notify', function () {

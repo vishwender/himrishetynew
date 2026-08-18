@@ -29,6 +29,7 @@ use App\Services\PushNotificationService;
 
 class HomeController extends Controller
 {
+
     /**
      * Create a new controller instance.
      *
@@ -48,7 +49,6 @@ class HomeController extends Controller
     {
         $member = Auth::guard('member')->user();
         $id = $member->id;
-        //dd($member);
         //complete your profile section
         $steps = [
             [
@@ -103,8 +103,7 @@ class HomeController extends Controller
                     && !empty($member->no_of_sisters)
                     && !empty($member->married_brothers)
                     && !empty($member->married_sisters)
-                    && !empty($member->about_my_family)
-                    && !empty($member->family_income)
+                    && !empty($member->about_family)
             ],
             [
                 'title' => 'Lifestyle',
@@ -120,24 +119,20 @@ class HomeController extends Controller
                     && !empty($member->partner_age_to)
                     && !empty($member->partner_height_from)
                     && !empty($member->partner_height_to)
-                    && !empty($member->partner_marital_status)
                     && !empty($member->partner_religion)
                     && !empty($member->partner_cast)
-                    && !empty($member->partner_mother_tongue)
+                    && !empty($member->partner_mothertongue)
                     && !empty($member->partner_education)
                     && !empty($member->partner_occupation)
                     && !empty($member->partner_annual_income_from)
                     && !empty($member->partner_annual_income_to)
-                    && !empty($member->partner_country)
-                    && !empty($member->partner_state)
-                    && !empty($member->partner_city)
-                    && !empty($member->partner_diet)
-                    && !empty($member->partner_is_smoking)
-                    && !empty($member->partner_is_drinking)
+                    && !empty($member->is_partner_smoking)
+                    && !empty($member->is_partner_drinking)
                     && !empty($member->is_partner_manglik)
-                    && !empty($member->partner_religion)
             ]
         ];
+
+        //dd($steps);
 
         $completedSteps = 0;
 
@@ -329,6 +324,7 @@ class HomeController extends Controller
         }
 
         /* Matching profiles */
+
         $partner_country    = explode(',', $member->partner_country ?? '');
         $partner_religion   = explode(',', $member->partner_religion ?? '');
         $partner_education  = explode(',', $member->partner_education ?? '');
@@ -339,7 +335,6 @@ class HomeController extends Controller
         } else {
             $partner_cast = explode(',', $member->partner_cast ?? '');
         }
-
         $today = Carbon::today();
 
         $data['matching_profiles'] = Member::where('gender', '!=', $member->gender)
@@ -1232,6 +1227,7 @@ class HomeController extends Controller
     public function view_my_profile()
     {
         $profile = Auth::guard('member')->user();
+        //dd($profile);
 
         $profilegallery = $profile->photos()->get();
         if (!empty($profile->photo)) {
@@ -1257,6 +1253,8 @@ class HomeController extends Controller
         }
         $birthDate = Carbon::parse($profile->birth_date_time);
         $ageDiff   = $birthDate->diff(Carbon::today());
+        $profile->date = $birthDate->format('d-m-Y');
+        $profile->time = $birthDate->format('h:i A');
         $profile->age_years  = $ageDiff->y;
         $profile->age_months = $ageDiff->m;
         return view('dashboard.profile.view-my-profile', compact('profile', 'profilegallery'));
@@ -1559,11 +1557,28 @@ class HomeController extends Controller
 
     public function success_stories()
     {
-        $userId = Auth::guard('member')->user()->id;
+        return view('dashboard.success_stories.success-stories');
+    }
 
-        $success_stories = SuccessStory::where('user_id', $userId)->get();
+    public function successStories()
+    {
+        $userId = auth()->id();
 
-        return view('dashboard.success_stories.success-stories', compact('success_stories'));
+        $success_stories = SuccessStory::where('status', 1)
+            ->get()
+            ->map(function ($story) {
+
+                $story->photo = $story->photo
+                    ? asset('uploads/success-stories/' . $story->photo)
+                    : asset('uploads/success-stories/default-story.png');
+
+                return $story;
+            });
+
+        return response()->json([
+            'status' => true,
+            'data' => $success_stories
+        ]);
     }
 
 

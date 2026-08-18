@@ -6,50 +6,50 @@
   'use strict';
 
   // ---- Mock data — replace with real API call ----
-  const MOCK_STORIES = [
-    {
-      id: 1,
-      groom_name: 'Rahul Sharma',
-      bride_name: 'Priya Verma',
-      detail: 'We matched on HimRishtey in January 2023. After a few conversations we knew we were meant for each other. Got married in April 2023 in Shimla. Thank you HimRishtey!',
-      photo: 'https://picsum.photos/seed/couple1/500/500'
-    },
-    {
-      id: 2,
-      groom_name: 'Amit Thakur',
-      bride_name: 'Seema Chauhan',
-      detail: 'HimRishtey helped us connect despite living in different districts. The platform was easy and trustworthy. We are happily married since November 2023.',
-      photo: 'https://picsum.photos/seed/couple2/500/500'
-    },
-    {
-      id: 3,
-      groom_name: 'Vikram Rana',
-      bride_name: 'Anita Negi',
-      detail: 'I had almost given up on matrimonial apps until a friend suggested HimRishtey. Found my perfect match within two weeks. Now married and settled in Dharamshala.',
-      photo: 'https://picsum.photos/seed/couple3/500/500'
-    },
-    {
-      id: 4,
-      groom_name: 'Suresh Kashyap',
-      bride_name: 'Rekha Dogra',
-      detail: 'Verified profiles and genuine people — that is what sets HimRishtey apart. We met through the app in 2024 and tied the knot in June. Eternally grateful.',
-      photo: 'https://picsum.photos/seed/couple4/500/500'
-    },
-    {
-      id: 5,
-      groom_name: 'Deepak Chandel',
-      bride_name: 'Kavita Pathak',
-      detail: 'Our families were hesitant at first but HimRishtey\'s community focus won their trust. We are so happy to have found each other here.',
-      photo: 'https://picsum.photos/seed/couple5/500/500'
-    },
-    {
-      id: 6,
-      groom_name: 'Naresh Pal',
-      bride_name: 'Sunita Minhas',
-      detail: 'A simple registration, a few matches, and life changed forever. HimRishtey made finding a life partner feel natural and stress free.',
-      photo: 'https://picsum.photos/seed/couple6/500/500'
-    }
-  ];
+  // const MOCK_STORIES = [
+  //   {
+  //     id: 1,
+  //     groom_name: 'Rahul Sharma',
+  //     bride_name: 'Priya Verma',
+  //     detail: 'We matched on HimRishtey in January 2023. After a few conversations we knew we were meant for each other. Got married in April 2023 in Shimla. Thank you HimRishtey!',
+  //     photo: 'https://picsum.photos/seed/couple1/500/500'
+  //   },
+  //   {
+  //     id: 2,
+  //     groom_name: 'Amit Thakur',
+  //     bride_name: 'Seema Chauhan',
+  //     detail: 'HimRishtey helped us connect despite living in different districts. The platform was easy and trustworthy. We are happily married since November 2023.',
+  //     photo: 'https://picsum.photos/seed/couple2/500/500'
+  //   },
+  //   {
+  //     id: 3,
+  //     groom_name: 'Vikram Rana',
+  //     bride_name: 'Anita Negi',
+  //     detail: 'I had almost given up on matrimonial apps until a friend suggested HimRishtey. Found my perfect match within two weeks. Now married and settled in Dharamshala.',
+  //     photo: 'https://picsum.photos/seed/couple3/500/500'
+  //   },
+  //   {
+  //     id: 4,
+  //     groom_name: 'Suresh Kashyap',
+  //     bride_name: 'Rekha Dogra',
+  //     detail: 'Verified profiles and genuine people — that is what sets HimRishtey apart. We met through the app in 2024 and tied the knot in June. Eternally grateful.',
+  //     photo: 'https://picsum.photos/seed/couple4/500/500'
+  //   },
+  //   {
+  //     id: 5,
+  //     groom_name: 'Deepak Chandel',
+  //     bride_name: 'Kavita Pathak',
+  //     detail: 'Our families were hesitant at first but HimRishtey\'s community focus won their trust. We are so happy to have found each other here.',
+  //     photo: 'https://picsum.photos/seed/couple5/500/500'
+  //   },
+  //   {
+  //     id: 6,
+  //     groom_name: 'Naresh Pal',
+  //     bride_name: 'Sunita Minhas',
+  //     detail: 'A simple registration, a few matches, and life changed forever. HimRishtey made finding a life partner feel natural and stress free.',
+  //     photo: 'https://picsum.photos/seed/couple6/500/500'
+  //   }
+  // ];
 
   document.addEventListener('DOMContentLoaded', () => {
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -61,79 +61,190 @@
   // =============================================
   // LOAD STORIES
   // =============================================
-  function loadStories() {
+function loadStories() {
+
     const skeleton = document.getElementById('ssSkeleton');
-    const grid     = document.getElementById('ssGrid');
-    const empty    = document.getElementById('ssEmpty');
+    const grid = document.getElementById('ssGrid');
+    const empty = document.getElementById('ssEmpty');
 
-    // Simulate API delay
-    setTimeout(() => {
-      const stories = MOCK_STORIES; // swap for real API data
+    fetch('/success-stories/data', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
 
-      if (skeleton) skeleton.setAttribute('hidden', '');
+        if (!response.ok) {
+            throw new Error('Failed to load success stories');
+        }
 
-      if (!stories || stories.length === 0) {
-        if (empty) empty.removeAttribute('hidden');
-        return;
-      }
+        return response.json();
 
-      if (grid) {
-        grid.removeAttribute('hidden');
-        grid.innerHTML = '';
-        stories.forEach(story => grid.appendChild(buildStoryCard(story)));
-      }
+    })
+    .then(result => {
 
-      if (typeof lucide !== 'undefined') lucide.createIcons();
-    }, 850);
-  }
+        if (skeleton) {
+            skeleton.setAttribute('hidden', '');
+        }
+
+        if (!result.status || !result.data || result.data.length === 0) {
+
+            if (grid) {
+                grid.setAttribute('hidden', '');
+            }
+
+            if (empty) {
+                empty.removeAttribute('hidden');
+            }
+
+            return;
+        }
+
+        if (empty) {
+            empty.setAttribute('hidden', '');
+        }
+
+        if (grid) {
+
+            grid.removeAttribute('hidden');
+
+            grid.innerHTML = '';
+
+            result.data.forEach(story => {
+
+                grid.appendChild(
+                    buildStoryCard(story)
+                );
+
+            });
+        }
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+    })
+    .catch(error => {
+
+        console.error('Success stories error:', error);
+
+        if (skeleton) {
+            skeleton.setAttribute('hidden', '');
+        }
+
+        if (grid) {
+            grid.setAttribute('hidden', '');
+        }
+
+        if (empty) {
+            empty.removeAttribute('hidden');
+        }
+    });
+}
 
   // =============================================
   // BUILD STORY CARD
   // =============================================
-  function buildStoryCard(story) {
+function buildStoryCard(story) {
+
     const article = document.createElement('article');
+
     article.className = 'ss-card';
     article.setAttribute('role', 'listitem');
     article.setAttribute('tabindex', '0');
-    article.setAttribute('aria-label', `Story of ${story.groom_name} and ${story.bride_name}`);
+
+    article.setAttribute(
+        'aria-label',
+        `Story of ${story.groom_name} and ${story.bride_name}`
+    );
 
     article.innerHTML = `
-      <div class="ss-card-img-wrap">
-        <img
-          class="ss-card-img"
-          src="${story.photo}"
-          alt="Wedding photo of ${story.groom_name} and ${story.bride_name}"
-          width="500" height="500"
-          loading="lazy"
-        />
-        <div class="ss-card-img-overlay" aria-hidden="true">
-          <i data-lucide="heart" width="14" height="14"></i>
-          Read Story
+        <div class="ss-card-img-wrap">
+
+            <img
+                class="ss-card-img"
+                src="${story.photo}"
+                alt="Wedding photo of ${story.groom_name} and ${story.bride_name}"
+                width="500"
+                height="500"
+                loading="lazy"
+            />
+
+            <div class="ss-card-img-overlay" aria-hidden="true">
+                <i data-lucide="heart" width="14" height="14"></i>
+                Read Story
+            </div>
+
         </div>
-      </div>
-      <div class="ss-card-body">
-        <div class="ss-card-hearts" aria-hidden="true">
-          <i data-lucide="heart" width="14" height="14" class="ss-card-heart"></i>
-          <div class="ss-card-divider"></div>
-          <i data-lucide="heart" width="14" height="14" class="ss-card-heart"></i>
+
+        <div class="ss-card-body">
+
+            <div class="ss-card-hearts" aria-hidden="true">
+
+                <i
+                    data-lucide="heart"
+                    width="14"
+                    height="14"
+                    class="ss-card-heart">
+                </i>
+
+                <div class="ss-card-divider"></div>
+
+                <i
+                    data-lucide="heart"
+                    width="14"
+                    height="14"
+                    class="ss-card-heart">
+                </i>
+
+            </div>
+
+            <h3 class="ss-card-couple">
+                ${story.groom_name} &amp; ${story.bride_name}
+            </h3>
+
+            <p class="ss-card-detail">
+                ${story.detail}
+            </p>
+
+            <button
+                type="button"
+                class="ss-card-read-more"
+                data-id="${story.id}"
+                aria-label="Read full story of ${story.groom_name} and ${story.bride_name}"
+            >
+                <i data-lucide="book-open" width="14" height="14"></i>
+                Read more
+            </button>
+
         </div>
-        <h3 class="ss-card-couple">${story.groom_name} &amp; ${story.bride_name}</h3>
-        <p class="ss-card-detail">${story.detail}</p>
-        <button class="ss-card-read-more" data-id="${story.id}" aria-label="Read full story of ${story.groom_name} and ${story.bride_name}">
-          <i data-lucide="book-open" width="14" height="14"></i>
-          Read more
-        </button>
-      </div>
     `;
 
-    // Click on card or button → open lightbox
-    article.addEventListener('click', () => openLightbox(story));
-    article.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(story); }
+    article.addEventListener('click', function (e) {
+
+        // Don't trigger twice when clicking Read More
+        if (e.target.closest('.ss-card-read-more')) {
+            openLightbox(story);
+            return;
+        }
+
+        openLightbox(story);
+    });
+
+    article.addEventListener('keydown', function (e) {
+
+        if (e.key === 'Enter' || e.key === ' ') {
+
+            e.preventDefault();
+
+            openLightbox(story);
+        }
     });
 
     return article;
-  }
+}
 
   // =============================================
   // ADD STORY MODAL
@@ -306,23 +417,43 @@
     });
   }
 
-  function openLightbox(story) {
-    const lightbox  = document.getElementById('ssLightbox');
-    const img       = document.getElementById('ssLightboxImg');
-    const couple    = document.getElementById('ssLightboxCouple');
-    const detail    = document.getElementById('ssLightboxDetail');
+function openLightbox(story) {
+
+    const lightbox = document.getElementById('ssLightbox');
+    const img = document.getElementById('ssLightboxImg');
+    const couple = document.getElementById('ssLightboxCouple');
+    const detail = document.getElementById('ssLightboxDetail');
 
     if (!lightbox) return;
 
-    if (img)    { img.src = story.photo; img.alt = `${story.groom_name} and ${story.bride_name}`; }
-    if (couple) couple.textContent = `${story.groom_name} & ${story.bride_name}`;
-    if (detail) detail.textContent = story.detail;
+    if (img) {
+
+        img.src = story.photo;
+
+        img.alt =
+            `${story.groom_name} and ${story.bride_name}`;
+    }
+
+    if (couple) {
+
+        couple.textContent =
+            `${story.groom_name} & ${story.bride_name}`;
+    }
+
+    if (detail) {
+
+        detail.textContent =
+            story.detail;
+    }
 
     lightbox.removeAttribute('hidden');
+
     document.body.style.overflow = 'hidden';
 
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-  }
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
 
   // =============================================
   // TOAST

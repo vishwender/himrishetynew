@@ -179,7 +179,7 @@ $birthDate = $member->birth_date_time
                     </div>
 
                     <div class="ep-field-group">
-                        <label class="ep-label" for="cast">Caste</label>
+                        <label class="ep-label" for="cast">Cast</label>
                         <input class="ep-input" type="text" id="cast" name="cast" placeholder="e.g. Brahmin" value="{{ old('cast', $member->cast) }}" />
                     </div>
 
@@ -610,7 +610,7 @@ $birthDate = $member->birth_date_time
                 <!-- Read-only community card -->
                 <div class="ep-info-card">
                     <div class="ep-info-row">
-                        <span class="ep-info-label">Community / Caste</span>
+                        <span class="ep-info-label">Community / Cast</span>
                         <span class="ep-info-value">{{$member->cast}}</span>
                     </div>
                     <a href="#" class="ep-info-link"><i data-lucide="external-link" width="14" height="14"></i> To edit community, click here</a>
@@ -824,7 +824,7 @@ $birthDate = $member->birth_date_time
                     $cst = ["Brahmin", "Rajput", "SC/ST", "Other"];
                     @endphp
                     <div class="ep-field-group">
-                        <label class="ep-label" for="partner_cast">Caste</label>
+                        <label class="ep-label" for="partner_cast">Cast</label>
                         <div class="ep-multiselect-trigger" data-target="partner_cast" tabindex="0" role="button">
                             <span class="ep-multiselect-value" id="partner_cast-display">{{count($cast) ? implode(',', $cast) : 'Any'}}</span>
                             <i data-lucide="chevron-down" width="16" height="16"></i>

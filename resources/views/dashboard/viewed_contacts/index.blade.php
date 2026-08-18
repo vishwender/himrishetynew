@@ -19,12 +19,12 @@
 
         @foreach($data['contacts'] as $member)
 
-        <a href="#" class="vc-card">
+        <a href="{{ route('view-profile', ['id' => $member['profile_id']]) }}" class="vc-card">
 
             <div class="vc-image-wrap">
 
                 <img
-                    src="{{ asset('photos/profile/'.$member['photo']) }}"
+                    src="{{$member['photo']}}"
                     class="vc-image"
                     alt="{{ $member['full_name'] }}">
 

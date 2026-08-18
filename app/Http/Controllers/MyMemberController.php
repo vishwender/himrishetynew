@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Models\MembershipPlan;
 use App\Models\Shortlist;
@@ -120,12 +121,12 @@ class MyMemberController extends Controller
 
             if (!empty($profile->photo) && $profile->photo_approved == 'Yes') {
 
-                $photo = asset('photos/photo/' . $profile->photo);
+                $photo = 'https://himrishtey.com/photos/photo/' . $profile->photo;
             } else {
 
                 $photo = $profile->gender == 'Male'
-                    ? asset('img/boy.jpg')
-                    : asset('img/girl.jpg');
+                    ? asset('images/profile_photos/boy.jpg')
+                    : asset('images/profile_photos/girl.jpg');
             }
 
             $result[] = [
@@ -648,5 +649,20 @@ class MyMemberController extends Controller
             'success' => true,
             'message' => 'Your profile deletion request has been sent to the administrator.'
         ]);
+    }
+
+    public function verify_account()
+    {
+        $member = Auth::guard('member')->user();
+        $user = Member::findOrFail($member->id);
+        $member_mobile = $user->mobile_number;
+
+        if ($user->member_type === 'Verified') {
+            return redirect('/home');
+        }
+
+        Session::put('verify_phone', $member_mobile);
+
+        return view('dashboard.verify_account.verify-account', compact('member_mobile'));
     }
 }
