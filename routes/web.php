@@ -121,6 +121,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('/stats-profiles', [ProfileController::class, 'stats_profiles'])->name('stats-profiles');
     Route::get('/all-stats-profiles', [ProfileController::class, 'all_stats_profiles'])->name('all-stats-profiles');
     Route::post('short-profile', [HomeController::class, 'shortlist_profile'])->name('short-profile');
+    Route::get('/check-shortlist', [HomeController::class, 'check_shortlist'])->name('check-shortlist');
     Route::get('member/privacy-policy', [PagesController::class, 'privacy_policy'])->name('member.privacy-policy');
     Route::get('refund-policy', [PagesController::class, 'refund'])->name('member.refund-policy');
     Route::post('/interest/update-status', [HomeController::class, 'updateInterestStatus'])->name('interest.update.status');

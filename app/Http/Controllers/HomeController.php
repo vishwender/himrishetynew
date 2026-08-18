@@ -1481,6 +1481,7 @@ class HomeController extends Controller
 
     public function send_interest(Request $request, EmailService $emailservice, NimbusSmsService $messageService, $id)
     {
+
         $member = Auth::guard('member')->user();
         $profile = Member::find($id);
         $status = $request->input('status');
@@ -1498,19 +1499,23 @@ class HomeController extends Controller
         $user_id = $member->id;
 
         $profile_id = $id;
+
         if ($plan_id == 0 || empty($plan_id)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Please upgrade your membership plan'
             ], 403);
         }
+
         $checkInterest = SentInterest::where('member_id', $user_id)
             ->where('profile_id', $profile_id)
             ->first();
 
+
         $checkedInterest = SentInterest::where('member_id', $profile_id)
             ->where('profile_id', $user_id)
             ->first();
+
         if (empty($checkInterest)) {
             if (!empty($checkedInterest)) {
                 $checkedInterest->status = $status;
@@ -1526,9 +1531,9 @@ class HomeController extends Controller
                 $newInterest->member_id = $user_id;
                 $newInterest->profile_id = $profile_id;
                 $newInterest->status = $status;
-                $messageService->sendInterest($email);
-                $emailservice->interestEmail($email);
-                $this->sendFCM($email);
+                //$messageService->sendInterest($email);
+                //$emailservice->interestEmail($email);
+                //$this->sendFCM($email);
                 if ($newInterest->save()) {
                     return response()->json([
                         'status' => 'success',
@@ -1820,6 +1825,7 @@ class HomeController extends Controller
 
     public function shortlist_profile(Request $request, EmailService $emailservice)
     {
+
         $member = Auth::guard('member')->user();
         $status = $request->input('status');
         $id = $request->input('id');
@@ -1833,10 +1839,22 @@ class HomeController extends Controller
                 'message' => 'Please upgrade your membership plan'
             ], 403);
         }
+
+        // Check if already shortlisted
+        $alreadyShortlisted = Shortlist::where('member_id', $user_id)
+            ->where('profile_id', $profile_id)
+            ->exists();
+
+        if ($alreadyShortlisted) {
+            return response()->json([
+                'status' => 'already_shortlisted',
+                'message' => 'Profile is already shortlisted'
+            ], 200);
+        }
         $newInterest = new Shortlist();
         $newInterest->member_id = $user_id;
         $newInterest->profile_id = $profile_id;
-        $emailservice->shortlist($profile, $member);
+        //$emailservice->shortlist($profile, $member);
         if ($newInterest->save()) {
             return response()->json([
                 'status' => 'success',
@@ -1848,6 +1866,21 @@ class HomeController extends Controller
                 'message' => 'Failed to Shortlist Profile'
             ], 500);
         }
+    }
+
+    public function check_shortlist(Request $request)
+    {
+        $member = Auth::guard('member')->user();
+
+        $profile_id = $request->input('id');
+        $shortlisted = Shortlist::where('member_id', $member->id)
+            ->where('profile_id', $profile_id)
+            ->exists();
+
+        return response()->json([
+            'status' => 'success',
+            'shortlisted' => $shortlisted
+        ]);
     }
 
     public function sendFCM($data)

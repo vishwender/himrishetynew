@@ -185,6 +185,46 @@ function toggleShortlist() {
 
 }
 
+function checkShortlistStatus() {
+    const button = document.getElementById('asideShortlistBtn');
+
+    if (!button) return;
+
+    const profileId = button.dataset.profileId;
+
+    fetch(`/check-shortlist?id=${profileId}`, {
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.shortlisted) {
+            button.classList.add('active');
+            button.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"></path>
+                </svg>
+                Shortlisted
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Shortlist check failed:', error);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    checkShortlistStatus();
+});
+
 /* ── INTEREST ACTIONS ── */
 let interestState = "none"; // none | sent | received | matched | rejected
 
@@ -392,17 +432,74 @@ function submitReport(btn) {
 document.getElementById("shareBtn")?.addEventListener("click", shareProfile);
 
 function shareProfile() {
-  if (navigator.share) {
-    navigator.share({
-      title: "Rahul Thakur – HimRishtey",
-      text: "Rahul Thakur | 28 yrs | Software Engineer | Mandi, HP",
-      url: window.location.href,
-    }).catch(() => {});
-  } else {
-    navigator.clipboard?.writeText(window.location.href).then(() => {
-      showToast("🔗 Profile link copied!");
-    });
-  }
+    const btn = document.getElementById("shareBtn");
+
+    if (!btn) return;
+
+    const name = btn.dataset.name || "HimRishtey Profile";
+    const age = btn.dataset.age || "";
+    const profession = btn.dataset.profession || "";
+    const location = btn.dataset.location || "";
+
+    const details = [
+        name,
+        age ? `${age} yrs` : "",
+        profession,
+        location
+    ].filter(Boolean).join(" | ");
+
+    const shareData = {
+        title: `${name} – HimRishtey`,
+        text: details,
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData).catch((error) => {
+            // User cancelled the share dialog
+            if (error.name !== "AbortError") {
+                console.error("Share failed:", error);
+            }
+        });
+    } else {
+        copyProfileLink();
+    }
+}
+
+function copyProfileLink() {
+    const url = window.location.href;
+
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                showToast("🔗 Profile link copied!");
+            })
+            .catch(() => {
+                fallbackCopy(url);
+            });
+    } else {
+        fallbackCopy(url);
+    }
+}
+
+function fallbackCopy(text) {
+    const textarea = document.createElement("textarea");
+
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+        document.execCommand("copy");
+        showToast("🔗 Profile link copied!");
+    } catch (error) {
+        console.error("Unable to copy profile link:", error);
+    }
+
+    textarea.remove();
 }
 
 function shareToWhatsApp(btn) {

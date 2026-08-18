@@ -652,7 +652,18 @@
 
                     <div class="pd-action-divider"></div>
 
-                    <button class="pd-btn-share-profile" onclick="shareProfile()">
+                    <button class="pd-btn-share-profile"
+                        data-name="{{ $usr->full_name }}"
+                        data-created="{{ $usr->profile_created_for }}"
+                        data-age="{{ $usr->age_years }}"
+                        data-height="{{ $usr->height }}"
+                        data-profile="{{ $usr->profile_id }}"
+                        data-religion="{{ $usr->religion }}"
+                        data-caste="{{ $usr->cast }}"
+                        data-city="{{ $usr->city_living_in }}"
+                        data-state="{{ $usr->state_living_in }}"
+                        data-about="{{ \Illuminate\Support\Str::limit(strip_tags($usr->about_me ?? 'Interested in finding a suitable life partner through HimRishtey.'),180) }}"
+                        data-url="{{ route('view-profile',$usr->id) }}" onclick="shareProfile()">
                         <i data-lucide="share-2" width="16" height="16"></i>
                         Share Profile
                     </button>
