@@ -159,11 +159,9 @@
 
                     <h1 class="pd-hero-name">
 
-                        {{ $usr->full_name }}
+                        {{ $usr->full_name }} |
 
-                        <span class="pd-hero-id">
-                            |{{ $usr->profile_id }}
-                        </span>
+                        <span class="pd-hero-id">{{ $usr->profile_id }}</span>
 
                     </h1>
 
@@ -263,7 +261,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- ── ASTRO & KUNDLI ── -->
                 <div class="pd-section" id="sec-kundli">
                     <div class="pd-section-header">
@@ -276,18 +273,18 @@
                         <div class="pd-info-grid">
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Date of Birth</span>
-                                <span class="pd-info-value">15 March 1996</span>
+                                <span class="pd-info-value pd-locked">{{$usr->birth_date_masked}}<i data-lucide="lock" width="14" height="14"></i></span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Time of Birth</span>
-                                <span class="pd-info-value pd-locked" id="tobValue">
+                                <span class="pd-info-value pd-locked" id="tobValue">{{$usr->birth_time_masked}}
                                     <i data-lucide="lock" width="14" height="14"></i> Premium Only
                                 </span>
                             </div>
                             <div class="pd-info-row">
                                 <span class="pd-info-label">Place of Birth</span>
                                 <span class="pd-info-value pd-locked" id="pobValue">
-                                    <i data-lucide="lock" width="14" height="14"></i> M***
+                                    <i data-lucide="lock" width="14" height="14"></i> {{$usr->birth_place}}
                                 </span>
                             </div>
                             <div class="pd-info-row">
@@ -352,7 +349,7 @@
                                 <div>
                                     <span class="pd-info-label">Contact Number</span>
                                     <span class="pd-info-value pd-locked" id="mobileValue">
-                                        <i data-lucide="lock" width="14" height="14"></i> ******4567
+                                        <i data-lucide="lock" width="14" height="14"></i>{{$usr->mobile_number_masked}}
                                     </span>
                                 </div>
                                 <i data-lucide="lock" width="16" height="16" class="pd-row-lock"></i>
@@ -361,7 +358,7 @@
                                 <div>
                                     <span class="pd-info-label">WhatsApp</span>
                                     <span class="pd-info-value pd-locked" id="waValue">
-                                        <i data-lucide="lock" width="14" height="14"></i> ******4567
+                                        <i data-lucide="lock" width="14" height="14"></i> {{$usr->whatsapp_number_masked}}
                                     </span>
                                 </div>
                                 <i data-lucide="lock" width="16" height="16" class="pd-row-lock"></i>
@@ -370,7 +367,7 @@
                                 <div>
                                     <span class="pd-info-label">Email</span>
                                     <span class="pd-info-value pd-locked" id="emailValue">
-                                        <i data-lucide="lock" width="14" height="14"></i> *********il.com
+                                        <i data-lucide="lock" width="14" height="14"></i> {{$usr->email_masked}}
                                     </span>
                                 </div>
                                 <i data-lucide="lock" width="16" height="16" class="pd-row-lock"></i>
@@ -608,18 +605,38 @@
                     </div>
 
                     <div class="pd-action-btns" id="actionBtns">
-                        <!-- Send Interest (default state) -->
-                        <button class="pd-btn-interest" id="sendInterestBtn" data-profile-id="{{$usr->id}}" onclick="handleInterestAction()">
+
+                        @if($usr->is_free_member)
+
+                        <a href="{{ route('membership') }}" class="pd-btn-interest">
+                            <i data-lucide="crown" width="17" height="17"></i>
+                            Activate Membership to Send Interest
+                        </a>
+
+                        @else
+
+                        <button
+                            class="pd-btn-interest"
+                            id="sendInterestBtn"
+                            data-profile-id="{{ $usr->id }}"
+                            onclick="handleInterestAction()">
                             <i data-lucide="send" width="17" height="17"></i>
                             Send Interest
                         </button>
+
+
+
                         <!-- Shortlist -->
-                        <button class="pd-btn-shortlist" id="asideShortlistBtn" data-profile-id="{{ $usr->id }}" onclick="toggleShortlist()">
+                        <button
+                            class="pd-btn-shortlist"
+                            id="asideShortlistBtn"
+                            data-profile-id="{{ $usr->id }}"
+                            onclick="toggleShortlist()">
                             <i data-lucide="bookmark" width="17" height="17"></i>
                             Shortlist
                         </button>
+                        @endif
                     </div>
-
                     <div class="pd-action-divider"></div>
 
                     <!-- Quick info -->
@@ -675,7 +692,7 @@
                         Share via WhatsApp
                     </button>
                 </div>
-
+                @if($usr->is_free_member)
                 <!-- Upgrade card (shown when plan not active) -->
                 <div class="pd-upgrade-card" id="upgradeCard">
                     <div class="pd-upgrade-icon">
@@ -688,6 +705,7 @@
                         View Plans
                     </a>
                 </div>
+                @endif
             </aside>
 
         </div><!-- / pd-layout -->

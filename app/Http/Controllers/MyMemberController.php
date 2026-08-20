@@ -28,6 +28,7 @@ use App\Models\Countrie;
 use App\Models\City;
 use App\Models\FamilyStatus;
 use App\Models\DeleteProfile;
+use App\Models\Occupation;
 
 class MyMemberController extends Controller
 {
@@ -408,10 +409,20 @@ class MyMemberController extends Controller
     {
 
         $member = Auth::guard('member')->user();
-        //dd($member);
+        $educations = Education::orderBy('education')->get();
+        $occupations = Occupation::where('status', '1')->orderBy('occupation')->get();
+        $employedIn = Employer::orderBy('employer')->get();
+        $annualIncome = AnnualIncome::orderBy('annual_income')->get();
+        $familyStatus = FamilyStatus::orderBy('value')->get();
+        $maritalStatus = MaritalStatus::orderBy('marital_status')->get();
+        $religions = Religion::orderBy('religion')->get();
+        $motherTongues = MotherTongue::orderBy('mother_tongue')->get();
+        $casts = Cast::orderBy('cast')->get();
+        //dd($employedIn);
         $steps = [
             [
-                'Basic Info' => !empty($member->about_me)
+                'title' => 'Basic Info',
+                'completed' => !empty($member->about_me)
                     && !empty($member->profile_created_for)
                     && !empty($member->height)
                     && !empty($member->birth_date_time)
@@ -423,11 +434,23 @@ class MyMemberController extends Controller
                     && !empty($member->city_living_in)
             ],
             [
-                'Astro & Kundali' => !empty($member->manglik)
+                'title' => 'Astro & Kundali',
+                'completed' => !empty($member->manglik)
                     && !empty($member->birth_place)
             ],
             [
-                'Education & Career' => !empty($member->education)
+                'title' => 'Horoscope',
+                'completed' => !empty($member->horoscope_needed)
+            ],
+            [
+                'title' => 'Religion & Community',
+                'completed' => !empty($member->gotra)
+                    && !empty($member->sub_cast)
+            ],
+
+            [
+                'title' => 'Education & Career',
+                'completed' => !empty($member->education)
                     && !empty($member->any_other_qualifications)
                     && !empty($member->about_my_career)
                     && !empty($member->employed_in)
@@ -437,7 +460,8 @@ class MyMemberController extends Controller
                     && !empty($member->annual_income)
             ],
             [
-                'Family' => !empty($member->family_status)
+                'title' => 'Family',
+                'completed' => !empty($member->family_status)
                     && !empty($member->native_place)
                     && !empty($member->family_type)
                     && !empty($member->father_occupation)
@@ -448,55 +472,50 @@ class MyMemberController extends Controller
                     && !empty($member->no_of_sisters)
                     && !empty($member->married_brothers)
                     && !empty($member->married_sisters)
-                    && !empty($member->about_my_family)
-                    && !empty($member->family_income)
+                    && !empty($member->about_family)
             ],
             [
-                'Lifestyle' => !empty($member->diet)
+                'title' => 'Lifestyle',
+                'completed' => !empty($member->diet)
                     && !empty($member->is_smoking)
                     && !empty($member->is_drinking)
                     && !empty($member->any_disability)
             ],
             [
-                'Religion' => !empty($member->gotra)
-                    && !empty($member->sub_cast)
-            ],
-            [
-                'Partner Preference' => !empty($member->looking_for)
+                'title' => 'Partner Preference',
+                'completed' => !empty($member->looking_for)
                     && !empty($member->partner_age_from)
                     && !empty($member->partner_age_to)
                     && !empty($member->partner_height_from)
                     && !empty($member->partner_height_to)
-                    && !empty($member->partner_marital_status)
                     && !empty($member->partner_religion)
                     && !empty($member->partner_cast)
-                    && !empty($member->partner_mother_tongue)
+                    && !empty($member->partner_mothertongue)
                     && !empty($member->partner_education)
                     && !empty($member->partner_occupation)
                     && !empty($member->partner_annual_income_from)
                     && !empty($member->partner_annual_income_to)
-                    && !empty($member->partner_country)
-                    && !empty($member->partner_state)
-                    && !empty($member->partner_city)
-                    && !empty($member->partner_diet)
-                    && !empty($member->partner_is_smoking)
-                    && !empty($member->partner_is_drinking)
+                    && !empty($member->is_partner_smoking)
+                    && !empty($member->is_partner_drinking)
                     && !empty($member->is_partner_manglik)
-                    && !empty($member->partner_religion)
-            ],
-            [
-                'Contact' => !empty($member->alternate_number)
-                    && !empty($member->whatsapp_number)
-                    && !empty($member->email)
-                    && !empty($member->mobile_number)
-            ],
+            ]
         ];
 
-        $completedSteps = collect($steps)->filter()->count();
 
-        $profilePercent = round(($completedSteps / count($steps)) * 100);
-        //dd($profileCompletion);
-        return view('dashboard.profile.edit', compact('member', 'profilePercent'));
+
+        $completedSteps = 0;
+
+        foreach ($steps as $step) {
+            if ($step['completed']) {
+                $completedSteps++;
+            }
+        }
+
+        //$completedSteps = collect($steps)->filter()->count();
+        $completion = round(($completedSteps / count($steps)) * 100);
+
+        //dd($completion);
+        return view('dashboard.profile.edit', compact('member', 'completion', 'familyStatus', 'annualIncome', 'employedIn', 'educations', 'occupations', 'maritalStatus', 'religions', 'motherTongues', 'casts'));
     }
 
     public function update_profile(Request $request)

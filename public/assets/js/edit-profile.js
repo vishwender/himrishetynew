@@ -795,29 +795,30 @@ const StatusManager = {
 
     updateOverall() {
 
-        const totalTabs = DOM.sidebarTabs.length;
+        // const totalTabs = DOM.sidebarTabs.length;
 
-        if (!totalTabs) return;
+        // if (!totalTabs) return;
 
-        const completedTabs = document.querySelectorAll(
-            ".ep-tab-status.complete"
-        ).length;
+        // const completedTabs = document.querySelectorAll(
+        //     ".ep-tab-status.complete"
+        // ).length;
 
-        const percentage = Math.round(
-            (completedTabs / totalTabs) * 100
-        );
+        // const percentage = Math.round(
+        //     (completedTabs / totalTabs) * 100
+        // );
 
-        if (DOM.completionBar) {
+        // if (DOM.completionBar) {
 
-            DOM.completionBar.style.width = `${percentage}%`;
+        //     DOM.completionBar.style.width = `${percentage}%`;
 
-        }
+        // }
 
-        if (DOM.completionText) {
+        // if (DOM.completionText) {
 
-            DOM.completionText.textContent = `${percentage}%`;
+        //     DOM.completionText.textContent = `${percentage}%`;
 
-        }
+        // }
+        return;
 
     },
 
@@ -1252,7 +1253,7 @@ const ConditionManager = {
     init() {
 
         this.initMaritalStatus();
-
+        this.initSiblings();
         this.initDisability();
 
     },
@@ -1304,6 +1305,77 @@ const ConditionManager = {
         update();
 
     },
+
+    /* ==========================================
+        BROTHER / SISTER
+    ========================================== */
+
+        initSiblings() {
+
+            const brother = document.getElementById("no_of_brothers");
+            const sister = document.getElementById("no_of_sisters");
+
+            const marriedBrother = document.getElementById("married_brothers");
+            const marriedSister = document.getElementById("married_sisters");
+
+            if (!brother && !sister) {
+                return;
+            }
+
+            const updateBrother = () => {
+
+                if (!marriedBrother || !brother) {
+                    return;
+                }
+
+                const count = parseInt(brother.value, 10) || 0;
+
+                marriedBrother.disabled = count === 0;
+
+                if (count === 0) {
+                    marriedBrother.value = "";
+                }
+
+            };
+
+            const updateSister = () => {
+
+                if (!marriedSister || !sister) {
+                    return;
+                }
+
+                const count = parseInt(sister.value, 10) || 0;
+
+                marriedSister.disabled = count === 0;
+
+                if (count === 0) {
+                    marriedSister.value = "";
+                }
+
+            };
+
+            // Initial state
+            updateBrother();
+            updateSister();
+
+            // Update when user changes values
+            brother?.addEventListener("change", () => {
+
+                updateBrother();
+
+                this.markDirty(brother);
+
+            });
+
+            sister?.addEventListener("change", () => {
+
+                updateSister();
+
+                this.markDirty(sister);
+
+            });
+
+        },
 
     /* ==========================================
        DISABILITY

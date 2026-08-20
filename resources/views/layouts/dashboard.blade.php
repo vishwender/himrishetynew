@@ -59,7 +59,7 @@
           <span class="sidebar-label">Membership</span>
           <span class="sidebar-status active">Active</span>
           <span class="sidebar-label">Plan</span>
-          <span class="sidebar-plan-name">Gold Member</span>
+          <span class="sidebar-plan-name">{{ empty(Auth::user()->membership_type) ? 'Free' : Auth::user()->membership_type }}</span>
         </div>
       </div>
       <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close menu">
@@ -70,7 +70,7 @@
     <nav class="sidebar-nav" aria-label="Main navigation">
       <span class="sidebar-nav-section-label">Menu</span>
       <ul role="list">
-        <li><a href="{{ route('profile') }}" class="sidebar-nav-item @if(Route::currentRouteName() === 'dashboard') active @endif" @if(Route::currentRouteName()==='dashboard' ) aria-current="page" @endif><i data-lucide="home" width="18" height="18"></i><span>Home</span></a></li>
+        <li><a href="{{ route('home') }}" class="sidebar-nav-item" ><i data-lucide="home" width="18" height="18"></i><span>Home</span></a></li>
         <li><a href="{{ route('memberships') }}" class="sidebar-nav-item"><i data-lucide="shield" width="18" height="18"></i><span>Membership</span></a></li>
         <li><a href="{{ route('edit-profile') }}" class="sidebar-nav-item"><i data-lucide="edit-3" width="18" height="18"></i><span>Edit Profile</span></a></li>
         <li><a href="{{ route('quick-search') }}" class="sidebar-nav-item"><i data-lucide="search" width="18" height="18"></i><span>Quick Search</span></a></li>

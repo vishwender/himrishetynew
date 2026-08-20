@@ -237,7 +237,7 @@ async function loginMember() {
 
     try {
 
-        const response = await fetch('/member-login', {
+        const response = await fetch(`member-login`, {
 
             method: 'POST',
 
@@ -515,7 +515,7 @@ async function registerMember() {
 
     try {
 
-        const response = await fetch('/initial-register', {
+        const response = await fetch(`initial-register`, {
 
             method: 'POST',
 
@@ -643,7 +643,7 @@ async function checkMemberExist(type, value, input, errorElement) {
 
     try {
 
-        const response = await fetch('/checkMemberExist', {
+        const response = await fetch(`checkMemberExist`, {
 
             method: 'POST',
 

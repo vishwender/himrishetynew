@@ -13,6 +13,7 @@ $birthDate = $member->birth_date_time
 @endphp
 
 @section('content')
+
 <!-- ========== MAIN LAYOUT ========== -->
 <main class="ep-main" id="main-content">
 
@@ -26,9 +27,9 @@ $birthDate = $member->birth_date_time
         <div class="ep-overall-completion">
             <span class="ep-completion-label">Profile Completion</span>
             <div class="ep-completion-bar-wrap">
-                <div class="ep-completion-bar" style="width: {{ $profilePercent }}%;"></div>
+                <div class="ep-completion-bar" style="width: {{ $completion }} % "></div>
             </div>
-            <span class="ep-completion-pct">{{$profilePercent}}%</span>
+            <span class="ep-completion-pct">{{$completion}}%</span>
         </div>
     </div>
 
@@ -306,30 +307,39 @@ $birthDate = $member->birth_date_time
                     </div>
 
                     <div class="ep-field-group">
-                        <label class="ep-label" for="education">Highest Education</label>
+
+                        <label class="ep-label" for="education">
+                            Highest Education
+                        </label>
+
                         <div class="ep-select-wrapper">
+
                             <select class="ep-select" id="education" name="education">
+
                                 <option value="">Select</option>
-                                <option value="10" @selected(old('education', $member->education) == '10')>10th</option>
-                                <option value="12" @selected(old('education', $member->education) == '12')>12th</option>
-                                <option value="Diploma" @selected(old('education', $member->education) == 'Diploma')>Diploma</option>
-                                <option value="B.A." @selected(old('education', $member->education) == 'B.A.')>B.A.</option>
-                                <option value="B.Sc." @selected(old('education', $member->education) == 'B.Sc.')>B.Sc.</option>
-                                <option value="B.Com." @selected(old('education', $member->education) == 'B.Com.')>B.Com.</option>
-                                <option value="B.Tech / B.E." @selected(old('education', $member->education) == 'B.Tech / B.E.')>B.Tech / B.E.</option>
-                                <option value="BBA" @selected(old('education', $member->education) == 'BBA')>BBA</option>
-                                <option value="BCA" @selected(old('education', $member->education) == 'BCA')>BCA</option>
-                                <option value="M.A." @selected(old('education', $member->education) == 'M.A.')>M.A.</option>
-                                <option value="M.Sc." @selected(old('education', $member->education) == 'M.Sc.')>M.Sc.</option>
-                                <option value="M.Com." @selected(old('education', $member->education) == 'M.Com.')>M.Com.</option>
-                                <option value="M.Tech." @selected(old('education', $member->education) == 'M.Tech.')>M.Tech / M.E.</option>
-                                <option value="MBA" @selected(old('education', $member->education) == 'MBA')>MBA</option>
-                                <option value="MCA" @selected(old('education', $member->education) == 'MCA')>MCA</option>
-                                <option value="Ph.D." @selected(old('education', $member->education) == 'Ph.D.')>Ph.D.</option>
-                                <option value="Other" @selected(old('education', $member->education) == 'Other')>Other</option>
+
+                                @foreach($educations as $education)
+
+                                <option
+                                    value="{{ $education->education }}"
+                                    @selected(old('education', $member->education) == $education->education)
+                                    >
+                                    {{ $education->education }}
+                                </option>
+
+                                @endforeach
+
                             </select>
-                            <i data-lucide="chevron-down" width="16" height="16" class="ep-select-icon"></i>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16"
+                                class="ep-select-icon">
+                            </i>
+
                         </div>
+
                     </div>
 
                     <div class="ep-field-group">
@@ -338,37 +348,76 @@ $birthDate = $member->birth_date_time
                     </div>
 
                     <div class="ep-field-group">
-                        <label class="ep-label" for="employed_in">Employed In</label>
+
+                        <label class="ep-label" for="employed_in">
+                            Employed In
+                        </label>
+
                         <div class="ep-select-wrapper">
-                            <select class="ep-select" id="employed_in" name="employed_in">
+
+                            <select
+                                class="ep-select"
+                                id="employed_in"
+                                name="employed_in">
                                 <option value="">Select</option>
-                                <option value="Government" {{ old('employed_id', $member->employed_in) == 'Government' ? "slected" : ""}}>Government</option>
-                                <option value="Private" {{ old('employed_id', $member->employed_in) == 'Private' ? "selected" : "" }}>Private</option>
-                                <option value="Business" {{ old('employed_id', $member->employed_in) == 'Business' ? "selected" : "" }}>Business / Self Employed</option>
-                                <option value="Defense" {{ old('employed_id', $member->employed_in) == 'Defense' ?  "selected" : "" }}>Defense</option>
-                                <option value="Not Working" {{ old('employed_id', $member->employed_in) == 'Not Working' ? "selected" : "" }}>Not Working</option>
+
+                                @foreach($employedIn as $employment)
+
+                                <option
+                                    value="{{ $employment->employer }}"
+                                    @selected(old('employed_in', $member->employer) == $employment->employer)
+                                    >
+                                    {{ $employment->employer }}
+                                </option>
+
+                                @endforeach
+
                             </select>
-                            <i data-lucide="chevron-down" width="16" height="16" class="ep-select-icon"></i>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16"
+                                class="ep-select-icon">
+                            </i>
+
                         </div>
+
                     </div>
                     <div class="ep-field-group">
-                        <label class="ep-label" for="occupation">Occupation</label>
+
+                        <label class="ep-label" for="occupation">
+                            Occupation
+                        </label>
+
                         <div class="ep-select-wrapper">
+
                             <select class="ep-select" id="occupation" name="occupation">
+
                                 <option value="">Select</option>
-                                <option value="Software Engineer" {{ old('occupation', $member->occupation) == 'Software developer' ? "slected" : "" }}>Software Engineer</option>
-                                <option value="Doctor" {{ old('occupation', $member->occupation) == 'Doctor' ? "selected" : "" }}>Doctor</option>
-                                <option value="Teacher" {{ old('occupation', $member->occupation) == 'Teacher' ? "selected" : "" }}>Teacher</option>
-                                <option value="Lawyer" {{ old('occupation', $member->occupation) == 'Lawyer' ? "selected" : ""}}>Lawyer</option>
-                                <option value="Banker" {{old('occupation', $member->occupation) == 'Banker' ? "selected" : ""}}>Banker</option>
-                                <option value="Businessman" {{ old('occupation', $member->occupation) == 'Businessman' ? "selected" : "" }}>Businessman</option>
-                                <option value="Farmer" {{ old('occupation', $member->occupation) == 'Farmer' ? "selected" : "" }}>Farmer</option>
-                                <option value="Nurse" {{old('occupation', $member->occupation) == 'Nurse' ? "selected" : "" }}>Nurse</option>
-                                <option value="Architect" {{old('occupation', $member->occupation) == 'Architect' ? "selected" : "" }}>Architect</option>
-                                <option value="Other" {{ old('occupation', $member->occupation) == 'Other' ? "selected" : "" }}>Other</option>
+
+                                @foreach($occupations as $occupation)
+
+                                <option
+                                    value="{{ $occupation->occupation }}"
+                                    @selected(old('occupation', $member->occupation) == $occupation->occupation)
+                                    >
+                                    {{ $occupation->occupation }}
+                                </option>
+
+                                @endforeach
+
                             </select>
-                            <i data-lucide="chevron-down" width="16" height="16" class="ep-select-icon"></i>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16"
+                                class="ep-select-icon">
+                            </i>
+
                         </div>
+
                     </div>
 
                     <div class="ep-field-group">
@@ -382,24 +431,41 @@ $birthDate = $member->birth_date_time
                     </div>
 
                     <div class="ep-field-group">
-                        <label class="ep-label" for="annual_income">Annual Income</label>
+
+                        <label class="ep-label" for="annual_income">
+                            Annual Income
+                        </label>
+
                         <div class="ep-select-wrapper">
-                            <select class="ep-select" id="annual_income" name="annual_income">
+
+                            <select
+                                class="ep-select"
+                                id="annual_income"
+                                name="annual_income">
                                 <option value="">Select</option>
-                                <option value="Below 1 LPA" {{ old('annual_income', $member->annual_income ) == 'Below 1 LPA' ? "selected" : ""  }}>Below 1 LPA</option>
-                                <option value="1–2 LPA" {{ old('annual_income', $member->annual_income ) == '1–2 LPA' ? "selected" : ""  }}>1–2 LPA</option>
-                                <option value="2–3 LPA" {{ old('annual_income', $member->annual_income ) == '2–3 LPA' ? "selected" : ""  }}>2–3 LPA</option>
-                                <option value="3–5 LPA" {{ old('annual_income', $member->annual_income ) == '3–5 LPA' ? "selected" : ""  }}>3–5 LPA</option>
-                                <option value="5–7 LPA" {{ old('annual_income', $member->annual_income ) == '5–7 LPA' ? "selected" : ""  }}>5–7 LPA</option>
-                                <option value="7–10 LPA" {{ old('annual_income', $member->annual_income ) == '7–10 LPA' ? "selected" : ""  }}>7–10 LPA</option>
-                                <option value="10–15 LPA" {{ old('annual_income', $member->annual_income ) == '10–15 LPA' ? "selected" : ""  }}>10–15 LPA</option>
-                                <option value="15–20 LPA" {{ old('annual_income', $member->annual_income ) == '15–20 LPA' ? "selected" : ""  }}>15–20 LPA</option>
-                                <option value="20–30 LPA" {{ old('annual_income', $member->annual_income ) == '20–30 LPA' ? "selected" : ""  }}>20–30 LPA</option>
-                                <option value="30–50 LPA" {{ old('annual_income', $member->annual_income ) == '30–50 LPA' ? "selected" : ""  }}>30–50 LPA</option>
-                                <option value="50 LPA+" {{ old('annual_income', $member->annual_income ) == '50 LPA+' ? "selected" : ""  }}>50 LPA+</option>
+
+                                @foreach($annualIncome as $income)
+
+                                <option
+                                    value="{{ $income->annual_income }}"
+                                    @selected(old('annual_income', $member->annual_income) == $income->annual_income)
+                                    >
+                                    {{ $income->annual_income }}
+                                </option>
+
+                                @endforeach
+
                             </select>
-                            <i data-lucide="chevron-down" width="16" height="16" class="ep-select-icon"></i>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16"
+                                class="ep-select-icon">
+                            </i>
+
                         </div>
+
                     </div>
 
                     <div class="ep-form-footer">
@@ -421,17 +487,41 @@ $birthDate = $member->birth_date_time
                         <textarea class="ep-textarea" id="about_family" name="about_my_family" rows="3" placeholder="Brief about your family background...">{{old('about_family', $member->about_family)}}</textarea>
                     </div>
                     <div class="ep-field-group">
-                        <label class="ep-label" for="family_status">Family Status</label>
+
+                        <label class="ep-label" for="family_status">
+                            Family Status
+                        </label>
+
                         <div class="ep-select-wrapper">
-                            <select class="ep-select" id="family_status" name="family_status">
+
+                            <select
+                                class="ep-select"
+                                id="family_status"
+                                name="family_status">
                                 <option value="">Select</option>
-                                <option value="Middle Class" {{ old('family_status', $member->family_status) == 'Middle Class' ? "selected" : "" }}>Middle Class</option>
-                                <option value="Upper Middle Class" {{ old('family_status', $member->family_status) == 'Upper Middle Class' ? "selected" : "" }}>Upper Middle Class</option>
-                                <option value="Rich / Affluent" {{ old('family_status', $member->family_status) == 'Rich / Affluent' ? "selected" : "" }}>Rich / Affluent</option>
-                                <option value="High Class" {{ old('family_status', $member->family_status) == 'High Class' ? "selected" : ""}}>High Class</option>
+
+                                @foreach($familyStatus as $status)
+
+                                <option
+                                    value="{{ $status->value }}"
+                                    @selected(old('family_status', $member->value) == $status->value)
+                                    >
+                                    {{ $status->value }}
+                                </option>
+
+                                @endforeach
+
                             </select>
-                            <i data-lucide="chevron-down" width="16" height="16" class="ep-select-icon"></i>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16"
+                                class="ep-select-icon">
+                            </i>
+
                         </div>
+
                     </div>
 
                     <div class="ep-field-group">
@@ -765,76 +855,259 @@ $birthDate = $member->birth_date_time
                     </div>
                     @php
                     $looking = $member->looking_for ?? '';
-                    $looking = $looking !== '' ? array_map('trim', explode(',', $looking)) : [];
-                    $ms = ["Never Married","Divorced","Widowed","Awating Divorce"];
+
+                    $looking = $looking !== ''
+                    ? array_map('trim', explode(',', $looking))
+                    : [];
                     @endphp
-                    <!-- Partner Marital status -->
+
+                    <!-- Partner Marital Status -->
+
                     <div class="ep-field-group">
-                        <label class="ep-label" for="looking_for">Partner Marital Status</label>
-                        <div class="ep-multiselect-trigger" data-target="looking_for" tabindex="0" role="button" aria-haspopup="true">
-                            <span class="ep-multiselect-value" id="looking_for-display">Any</span>
-                            <i data-lucide="chevron-down" width="16" height="16"></i>
+
+                        <label class="ep-label" for="looking_for">
+                            Partner Marital Status
+                        </label>
+
+                        <div
+                            class="ep-multiselect-trigger"
+                            data-target="looking_for"
+                            tabindex="0"
+                            role="button"
+                            aria-haspopup="true">
+                            <span
+                                class="ep-multiselect-value"
+                                id="looking_for-display">
+                                Any
+                            </span>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16">
+                            </i>
                         </div>
-                        <input type="hidden" id="looking_for" name="looking_for" value="Any" />
-                        <div class="ep-multiselect-dropdown" id="looking_for-dropdown" hidden>
-                            @foreach($ms as $m)
-                            <label><input type="checkbox" name="looking_for[]" value="{{$m}}" {{in_array($m, $looking) ? "checked" : "" }} />{{$m}}</label>
+
+                        <input
+                            type="hidden"
+                            id="looking_for"
+                            name="looking_for"
+                            value="Any" />
+
+                        <div
+                            class="ep-multiselect-dropdown"
+                            id="looking_for-dropdown"
+                            hidden>
+
+                            @foreach($maritalStatus as $status)
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="looking_for[]"
+                                    value="{{ $status->marital_status }}"
+                                    @checked(in_array($status->marital_status, $looking))
+                                />
+
+                                {{ $status->marital_status }}
+                            </label>
+
                             @endforeach
+
                         </div>
+
                     </div>
                     @php
-                    $religion = $member->partner_religion ?? '';
-                    $religion = $religion !== '' ? array_map('trim', explode(',', $religion)) : [];
-                    $rl = ["Hindu", "Muslim","Christian","Sikh","Buddhist","Jain"];
+                    $partnerReligion = $member->partner_religion ?? '';
+
+                    $partnerReligion = $partnerReligion !== ''
+                    ? array_map('trim', explode(',', $partnerReligion))
+                    : [];
                     @endphp
+
                     <div class="ep-field-group">
-                        <label class="ep-label" for="partner_religion">Religion</label>
-                        <div class="ep-multiselect-trigger" data-target="partner_religion" tabindex="0" role="button">
-                            <span class="ep-multiselect-value" id="partner_religion-display">{{count($religion) ? implode(',', $religion) : 'Any'}}</span>
-                            <i data-lucide="chevron-down" width="16" height="16"></i>
+
+                        <label class="ep-label" for="partner_religion">
+                            Religion
+                        </label>
+
+                        <div
+                            class="ep-multiselect-trigger"
+                            data-target="partner_religion"
+                            tabindex="0"
+                            role="button"
+                            aria-haspopup="true">
+
+                            <span
+                                class="ep-multiselect-value"
+                                id="partner_religion-display">
+                                {{ count($partnerReligion) ? implode(', ', $partnerReligion) : 'Any' }}
+                            </span>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16">
+                            </i>
+
                         </div>
-                        <input type="hidden" id="partner_religion" name="partner_religion" value="Any" />
-                        <div class="ep-multiselect-dropdown" id="partner_religion-dropdown" hidden>
-                            @foreach($rl as $r)
-                            <label><input type="checkbox" name="partner_religion[]" value="{{$r}}" {{in_array($r, $religion) ?  "checked" : "" }} />{{$r}}</label>
+
+                        <input
+                            type="hidden"
+                            id="partner_religion"
+                            name="partner_religion"
+                            value="{{ $member->partner_religion ?: 'Any' }}" />
+
+                        <div
+                            class="ep-multiselect-dropdown"
+                            id="partner_religion-dropdown"
+                            hidden>
+
+                            @foreach($religions as $religion)
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="partner_religion[]"
+                                    value="{{ $religion->religion }}"
+                                    @checked(in_array($religion->religion, $partnerReligion))
+                                />
+
+                                {{ $religion->religion }}
+                            </label>
+
                             @endforeach
+
                         </div>
+
                     </div>
                     @php
-                    $mother_tounge = $member->partner_mothertongue ?? '';
-                    $mother_tounge = $mother_tounge !== '' ? array_map('trim', explode(',',$mother_tounge)) : [];
-                    $pmt = ["Hindi", "Pahari", "Punjabi","Dogri","Kinnauri"];
+                    $partnerMotherTongue = $member->partner_mothertongue ?? '';
+
+                    $partnerMotherTongue = $partnerMotherTongue !== ''
+                    ? array_map('trim', explode(',', $partnerMotherTongue))
+                    : [];
                     @endphp
+
                     <div class="ep-field-group">
-                        <label class="ep-label" for="partner_mothertongue">Mother Tongue</label>
-                        <div class="ep-multiselect-trigger" data-target="partner_mothertongue" tabindex="0" role="button">
-                            <span class="ep-multiselect-value" id="partner_mothertongue-display">{{count($mother_tounge) ? implode(',', $mother_tounge) : 'Any'}}</span>
-                            <i data-lucide="chevron-down" width="16" height="16"></i>
+
+                        <label class="ep-label" for="partner_mothertongue">
+                            Mother Tongue
+                        </label>
+
+                        <div
+                            class="ep-multiselect-trigger"
+                            data-target="partner_mothertongue"
+                            tabindex="0"
+                            role="button"
+                            aria-haspopup="true">
+
+                            <span
+                                class="ep-multiselect-value"
+                                id="partner_mothertongue-display">
+                                {{ count($partnerMotherTongue) ? implode(', ', $partnerMotherTongue) : 'Any' }}
+                            </span>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16">
+                            </i>
+
                         </div>
-                        <input type="hidden" id="partner_mothertongue" name="partner_mothertongue" value="Any" />
-                        <div class="ep-multiselect-dropdown" id="partner_mothertongue-dropdown" hidden>
-                            @foreach($pmt as $mt)
-                            <label><input type="checkbox" name="partner_mothertongue[]" value="{{$mt}}" {{in_array($mt, $mother_tounge) ? "checked" : "" }} />{{$mt}}</label>
+
+                        <input
+                            type="hidden"
+                            id="partner_mothertongue"
+                            name="partner_mothertongue"
+                            value="{{ $member->partner_mothertongue ?: 'Any' }}" />
+
+                        <div
+                            class="ep-multiselect-dropdown"
+                            id="partner_mothertongue-dropdown"
+                            hidden>
+
+                            @foreach($motherTongues as $motherTongue)
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="partner_mothertongue[]"
+                                    value="{{ $motherTongue->mother_tongue }}"
+                                    @checked(in_array($motherTongue->mother_tongue, $partnerMotherTongue))
+                                />
+
+                                {{ $motherTongue->mother_tongue }}
+                            </label>
+
                             @endforeach
+
                         </div>
+
                     </div>
                     @php
-                    $cast = $member->partner_cast ?? '';
-                    $cast = $cast !== '' ? array_map('trim', explode(',',$cast)) : [];
-                    $cst = ["Brahmin", "Rajput", "SC/ST", "Other"];
+                    $partnerCast = $member->partner_cast ?? '';
+
+                    $partnerCast = $partnerCast !== ''
+                    ? array_map('trim', explode(',', $partnerCast))
+                    : [];
                     @endphp
+
                     <div class="ep-field-group">
-                        <label class="ep-label" for="partner_cast">Cast</label>
-                        <div class="ep-multiselect-trigger" data-target="partner_cast" tabindex="0" role="button">
-                            <span class="ep-multiselect-value" id="partner_cast-display">{{count($cast) ? implode(',', $cast) : 'Any'}}</span>
-                            <i data-lucide="chevron-down" width="16" height="16"></i>
+
+                        <label class="ep-label" for="partner_cast">
+                            Caste
+                        </label>
+
+                        <div
+                            class="ep-multiselect-trigger"
+                            data-target="partner_cast"
+                            tabindex="0"
+                            role="button"
+                            aria-haspopup="true">
+
+                            <span
+                                class="ep-multiselect-value"
+                                id="partner_cast-display">
+                                {{ count($partnerCast) ? implode(', ', $partnerCast) : 'Any' }}
+                            </span>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16">
+                            </i>
+
                         </div>
-                        <input type="hidden" id="partner_cast" name="partner_cast" value="Any" />
-                        <div class="ep-multiselect-dropdown" id="partner_cast-dropdown" hidden>
-                            @foreach($cst as $ct)
-                            <label><input type="checkbox" name="partner_cast[]" value="{{$ct}}" {{ in_array($ct,$cast) ? "Checked" : "" }} />{{$ct}}</label>
+
+                        <input
+                            type="hidden"
+                            id="partner_cast"
+                            name="partner_cast"
+                            value="{{ $member->partner_cast ?: 'Any' }}" />
+
+                        <div
+                            class="ep-multiselect-dropdown"
+                            id="partner_cast-dropdown"
+                            hidden>
+
+                            @foreach($casts as $cast)
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="partner_cast[]"
+                                    value="{{ $cast->cast }}"
+                                    @checked(in_array($cast->cast, $partnerCast))
+                                />
+
+                                {{ $cast->cast }}
+                            </label>
+
                             @endforeach
+
                         </div>
+
                     </div>
 
                     <div class="ep-field-group">
@@ -849,40 +1122,132 @@ $birthDate = $member->birth_date_time
                         </div>
                     </div>
                     @php
-                    $partner_edu = $member->partner_education ?? '';
-                    $partner_edu = $partner_edu !=='' ? array_map('trim', explode(',',$partner_edu)) : [];
-                    $ptedu = ["10th","12th","Graduate","Post Graduate","Doctrate"];
+                    $partnerEducation = $member->partner_education ?? '';
+
+                    $partnerEducation = $partnerEducation !== ''
+                    ? array_map('trim', explode(',', $partnerEducation))
+                    : [];
                     @endphp
+
                     <div class="ep-field-group">
-                        <label class="ep-label" for="partner_education">Highest Qualification</label>
-                        <div class="ep-multiselect-trigger" data-target="partner_education" tabindex="0" role="button">
-                            <span class="ep-multiselect-value" id="partner_education-display">{{count($partner_edu) ? implode(',', $partner_edu) : 'Any'}}</span>
-                            <i data-lucide="chevron-down" width="16" height="16"></i>
+
+                        <label class="ep-label" for="partner_education">
+                            Highest Qualification
+                        </label>
+
+                        <div
+                            class="ep-multiselect-trigger"
+                            data-target="partner_education"
+                            tabindex="0"
+                            role="button"
+                            aria-haspopup="true">
+
+                            <span
+                                class="ep-multiselect-value"
+                                id="partner_education-display">
+                                {{ count($partnerEducation) ? implode(', ', $partnerEducation) : 'Any' }}
+                            </span>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16">
+                            </i>
+
                         </div>
-                        <input type="hidden" id="partner_education" name="partner_education" value="Any" />
-                        <div class="ep-multiselect-dropdown" id="partner_education-dropdown" hidden>
-                            @foreach($ptedu as $edu)
-                            <label><input type="checkbox" name="partner_education[]" value="{{$edu}}" {{in_array($edu, $partner_edu) ? "checked" : "" }}>{{$edu}}</label>
+
+                        <input
+                            type="hidden"
+                            id="partner_education"
+                            name="partner_education"
+                            value="{{ $member->partner_education ?: 'Any' }}" />
+
+                        <div
+                            class="ep-multiselect-dropdown"
+                            id="partner_education-dropdown"
+                            hidden>
+
+                            @foreach($educations as $education)
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="partner_education[]"
+                                    value="{{ $education->education }}"
+                                    @checked(in_array($education->education, $partnerEducation))
+                                />
+
+                                {{ $education->education }}
+                            </label>
+
                             @endforeach
+
                         </div>
+
                     </div>
                     @php
-                    $partner_occ = $member->partner_occupation ?? '';
-                    $partner_occ = $partner_edu !=='' ? array_map('trim', explode(',',$partner_occ)) : [];
-                    $ptocc = ["Government","Private","Bussiness/Self Employed","Defence","Not Working"];
+                    $partnerEmployedIn = $member->partner_occupation ?? '';
+
+                    $partnerEmployedIn = $partnerEmployedIn !== ''
+                    ? array_map('trim', explode(',', $partnerEmployedIn))
+                    : [];
                     @endphp
+
                     <div class="ep-field-group">
-                        <label class="ep-label" for="partner_occupation">Employed In</label>
-                        <div class="ep-multiselect-trigger" data-target="partner_occupation" tabindex="0" role="button">
-                            <span class="ep-multiselect-value" id="partner_occupation-display">{{count($partner_occ) ? implode(',', $partner_occ) : 'Any'}}</span>
-                            <i data-lucide="chevron-down" width="16" height="16"></i>
+
+                        <label class="ep-label" for="partner_occupation">
+                            Employed In
+                        </label>
+
+                        <div
+                            class="ep-multiselect-trigger"
+                            data-target="partner_occupation"
+                            tabindex="0"
+                            role="button"
+                            aria-haspopup="true">
+
+                            <span
+                                class="ep-multiselect-value"
+                                id="partner_occupation-display">
+                                {{ count($partnerEmployedIn) ? implode(', ', $partnerEmployedIn) : 'Any' }}
+                            </span>
+
+                            <i
+                                data-lucide="chevron-down"
+                                width="16"
+                                height="16">
+                            </i>
+
                         </div>
-                        <input type="hidden" id="partner_occupation" name="partner_occupation" value="Any" />
-                        <div class="ep-multiselect-dropdown" id="partner_occupation-dropdown" hidden>
-                            @foreach($ptocc as $oc)
-                            <label><input type="checkbox" name="partner_occupation[]" value="{{$oc}}" {{in_array($oc, $partner_occ) ? "checked" : "" }} />{{$oc}}</label>
+
+                        <input
+                            type="hidden"
+                            id="partner_occupation"
+                            name="partner_occupation"
+                            value="{{ $member->partner_occupation ?: 'Any' }}" />
+
+                        <div
+                            class="ep-multiselect-dropdown"
+                            id="partner_occupation-dropdown"
+                            hidden>
+
+                            @foreach($employedIn as $employment)
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="partner_occupation[]"
+                                    value="{{ $employment->employer }}"
+                                    @checked(in_array($employment->employer, $partnerEmployedIn))
+                                />
+
+                                {{ $employment->employer }}
+                            </label>
+
                             @endforeach
+
                         </div>
+
                     </div>
 
                     <div class="ep-field-group">

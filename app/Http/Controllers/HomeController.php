@@ -49,6 +49,7 @@ class HomeController extends Controller
     {
         $member = Auth::guard('member')->user();
         $id = $member->id;
+
         //complete your profile section
         $steps = [
             [
@@ -427,6 +428,9 @@ class HomeController extends Controller
         $query->where('gender', '!=', $member->gender);
         // Active members
         $query->where('active', 'yes');
+        //verified
+        $query->where('member_type', 'Verified');
+
 
         /*
     |--------------------------------------------------------------------------
@@ -1322,42 +1326,84 @@ class HomeController extends Controller
 
     public function view_profile($profileId, EmailService $emailService)
     {
-
         $data['user_id'] = Auth::guard('member')->user()->id;
+
         $profilemain = Member::where('profile_id', $profileId)->firstOrFail();
+
         $data['photos'] = $profilemain->photos()->get();
         $data['profile_id'] = $profileId;
-        //dd($data);
+
         $usr = DB::table('members')
             ->where('profile_id', $data['profile_id'])
             ->where('profile_hide', '!=', 'yes')
             ->where('active', 'Yes')
             ->first();
-        //dd($usr);
+
         if (!$usr) {
             return null;
         }
 
-        // Check sent interest
+        /*
+    |--------------------------------------------------------------------------
+    | Check sent interest
+    |--------------------------------------------------------------------------
+    */
         $profile = DB::table('sent_interests')
             ->where('member_id', $data['user_id'])
             ->where('profile_id', $data['profile_id'])
             ->first();
-        //dd($profile);
-        // Shortlisted count
+
+        /*
+    |--------------------------------------------------------------------------
+    | Shortlisted
+    |--------------------------------------------------------------------------
+    */
         $short = DB::table('short_listed')
             ->where('member_id', $data['user_id'])
             ->where('profile_id', $data['profile_id'])
             ->count();
 
-        // Profile views count
-        $viewed_profile  = DB::table('profile_viewed')->where('member_id', $data['user_id'])->count();
-        $viewed_contacts = DB::table('viewed_contacts')->where('member_id', $data['user_id'])->count();
+        /*
+        |--------------------------------------------------------------------------
+        | Profile views
+        |--------------------------------------------------------------------------
+        */
+        $viewed_profile = DB::table('profile_viewed')
+            ->where('member_id', $data['user_id'])
+            ->count();
 
-        // Current user
-        $pc_user = DB::table('members')->where('id', $data['user_id'])->first();
+        $viewed_contacts = DB::table('viewed_contacts')
+            ->where('member_id', $data['user_id'])
+            ->count();
 
-        // Already viewed contact?
+        /*
+        |--------------------------------------------------------------------------
+        | Current user
+        |--------------------------------------------------------------------------
+        */
+        $pc_user = DB::table('members')
+            ->where('id', $data['user_id'])
+            ->first();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Current Membership Plan
+        |--------------------------------------------------------------------------
+        */
+
+        $currentPlan = DB::table('membership_plans')
+            ->where('id', $pc_user->plan_id)
+            ->first();
+
+        $usr->current_plan_name = $currentPlan?->plan_name ?? 'Free';
+        $usr->is_free_member = !$currentPlan || strtolower($currentPlan->plan_name) === 'free';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Already viewed contact?
+        |--------------------------------------------------------------------------
+        */
         $viewed_contact = DB::table('viewed_contacts')
             ->where('member_id', $data['user_id'])
             ->where('profile_id', $data['profile_id'])
@@ -1365,16 +1411,42 @@ class HomeController extends Controller
 
         $usr->profile_viewed = $viewed_contact ? 'Yes' : 'No';
 
-        // Fix birth_date_time formatting
+        /*
+        |--------------------------------------------------------------------------
+        | Birth date/time
+        |--------------------------------------------------------------------------
+        */
+        $birthDate = null;
+
         if (!empty($usr->birth_date_time)) {
-            $datee = $usr->birth_date_time;
-            if (strpos($datee, 'AM') || strpos($datee, 'PM')) {
-                $date = new DateTime($datee);
-                $usr->birth_date_time = $date->format('Y-m-d H:i:s');
-            }
+
+            $birthDate = Carbon::parse($usr->birth_date_time);
+
+            // Keep original database value if needed internally
+            $usr->birth_date_time_original = $usr->birth_date_time;
+
+            // Actual values
+            $usr->birth_date = $birthDate->format('j F Y');
+            $usr->birth_time = $birthDate->format('g:i A');
+
+            // Age
+            $diff = $birthDate->diff(Carbon::today());
+
+            $usr->age_years = $diff->y;
+            $usr->age_months = $diff->m;
+        } else {
+
+            $usr->birth_date = '';
+            $usr->birth_time = '';
+            $usr->age_years = 0;
+            $usr->age_months = 0;
         }
 
-        // Check like profile
+        /*
+        |--------------------------------------------------------------------------
+        | Check like profile
+        |--------------------------------------------------------------------------
+        */
         $like_profile = DB::table('profile_like')
             ->where('user_id', $data['user_id'])
             ->where('like_profile_id', $data['profile_id'])
@@ -1383,7 +1455,11 @@ class HomeController extends Controller
 
         $usr->like = $like_profile ? 'Yes' : 'No';
 
-        // Profile created for mapping
+        /*
+        |--------------------------------------------------------------------------
+        | Profile created for mapping
+        |--------------------------------------------------------------------------
+        */
         $map = [
             'Self' => 'Self',
             'Relative' => 'Relative',
@@ -1393,90 +1469,297 @@ class HomeController extends Controller
             'Sister' => 'Sibilings',
             'Client (Marriage bureau)' => 'Marriage Bureau'
         ];
-        $usr->profile_created_for = $map[$usr->profile_created_for] ?? 'Friend';
 
-        // View count logic
-        $vvcnt   = $pc_user->profile_view_count ?? 0;
+        $usr->profile_created_for =
+            $map[$usr->profile_created_for] ?? 'Friend';
+
+        /*
+        |--------------------------------------------------------------------------
+        | View count logic
+        |--------------------------------------------------------------------------
+        */
+        $vvcnt = $pc_user->profile_view_count ?? 0;
+
         $vcontact = $vvcnt + 2 + $viewed_contacts;
-        $usrtt   = strval($vcontact);
 
-        // Shorten full name (first + initial)
-        $full_name = $usr->full_name;
-        $fname = explode(' ', $full_name);
-        if (count($fname) > 1) {
-            $first = mb_substr($fname[1], 0, 1);
-            $usr->full_name = $fname[0] . ' ' . $first;
-        } else {
-            $usr->full_name = $full_name;
-        }
+        $usrtt = strval($vcontact);
 
-        // Get profile range pricing
+        /*
+        |--------------------------------------------------------------------------
+        | Profile range pricing
+        |--------------------------------------------------------------------------
+        */
         $result = DB::table('member_profile_range')
             ->where('member_id', $data['profile_id'])
-            ->whereRaw('? BETWEEN range_from AND range_to', [$vcontact])
+            ->whereRaw(
+                '? BETWEEN range_from AND range_to',
+                [$vcontact]
+            )
             ->first();
 
-        $usr->profile_view_price = $result ? $result->price : '0';
+        $usr->profile_view_price = $result
+            ? $result->price
+            : '0';
+
         $usr->interest = $profile ? '1' : '0';
+
         $usr->shortlisted = $short ? 'Yes' : 'No';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Profile photo
+        |--------------------------------------------------------------------------
+        */
         if (!empty($usr->photo) && $usr->photo_approved === "Yes") {
-            $usr->photo = 'https://himrishtey.com/photos/photo/' . $usr->photo;
+
+            $usr->photo =
+                'https://himrishtey.com/photos/photo/' . $usr->photo;
         } elseif ($usr->gender === "Male") {
-            $usr->photo = "https://himrishtey.com/img/boy.jpg";
+
+            $usr->photo =
+                "https://himrishtey.com/img/boy.jpg";
         } elseif ($usr->gender === "Female") {
-            $usr->photo = "https://himrishtey.com/img/girl.jpg";
+
+            $usr->photo =
+                "https://himrishtey.com/img/girl.jpg";
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Verified
+        |--------------------------------------------------------------------------
+        */
         if ($usr->member_type === 'Verified') {
-            $usr->member_type = "https://himrishtey.com/img/promoted.png";
+
+            $usr->member_type =
+                "https://himrishtey.com/img/promoted.png";
         } else {
+
             $usr->member_type = "normal";
         }
 
-        // Trusted status
+        /*
+        |--------------------------------------------------------------------------
+        | Trusted
+        |--------------------------------------------------------------------------
+        */
         if ($usr->is_trusted === 'Trusted') {
-            $usr->is_trusted = "https://himrishtey.com/img/trusted.png";
+
+            $usr->is_trusted =
+                "https://himrishtey.com/img/trusted.png";
         }
 
-        // Final viewed profile count
-        $profile_count = DB::table('members')->where('id', $data['user_id'])->value('profile_view_count');
+        /*
+        |--------------------------------------------------------------------------
+        | Final viewed profile count
+        |--------------------------------------------------------------------------
+        */
+        $profile_count = DB::table('members')
+            ->where('id', $data['user_id'])
+            ->value('profile_view_count');
+
         $cnt2 = $profile_count ?? 0;
-        $cnt  = $viewed_contacts + $cnt2;
+
+        $cnt = $viewed_contacts + $cnt2;
 
         $usr->viewed_profile = (string) $cnt;
 
-        $profile_viewed_check =  ProfileViewed::where('member_id', $data['user_id'])->where('viewed_profile_id', $data['profile_id'])->first();
+        /*
+        |--------------------------------------------------------------------------
+        | Record profile view
+        |--------------------------------------------------------------------------
+        */
+        $profile_viewed_check = ProfileViewed::where(
+            'member_id',
+            $data['user_id']
+        )
+            ->where(
+                'viewed_profile_id',
+                $data['profile_id']
+            )
+            ->first();
+
         if (empty($profile_viewed_check)) {
+
             $profile_viewed_by_me = new ProfileViewed();
-            $profile_viewed_by_me->member_id = $data['user_id'];
-            $profile_viewed_by_me->viewed_profile_id = $data['profile_id'];
+
+            $profile_viewed_by_me->member_id =
+                $data['user_id'];
+
+            $profile_viewed_by_me->viewed_profile_id =
+                $data['profile_id'];
+
             $profile_viewed_by_me->save();
-            $emailService->viewProfile($profilemain, $usr);
+
+            $emailService->viewProfile(
+                $profilemain,
+                $usr
+            );
         }
-        $wallet = MemberWallet::where('member_id', $data['user_id'])
+
+        /*
+        |--------------------------------------------------------------------------
+        | Wallet
+        |--------------------------------------------------------------------------
+        */
+        $wallet = MemberWallet::where(
+            'member_id',
+            $data['user_id']
+        )
             ->latest('created_at')
             ->first();
 
-        $interest_action = SentInterest::where('member_id', $data['profile_id'])->where('profile_id', $data['user_id'])->where('status', 0)->first();
+        /*
+        |--------------------------------------------------------------------------
+        | Interest action
+        |--------------------------------------------------------------------------
+        */
+        $interest_action = SentInterest::where(
+            'member_id',
+            $data['profile_id']
+        )
+            ->where(
+                'profile_id',
+                $data['user_id']
+            )
+            ->where('status', 0)
+            ->first();
 
         if (!empty($interest_action)) {
+
             $usr->interest_action = '1';
         } else {
-            $interest_action_2 = SentInterest::where('member_id', $data['profile_id'])->where('profile_id', $data['user_id'])->whereIn('status', [1, 2])->first();
+
+            $interest_action_2 = SentInterest::where(
+                'member_id',
+                $data['profile_id']
+            )
+                ->where(
+                    'profile_id',
+                    $data['user_id']
+                )
+                ->whereIn('status', [1, 2])
+                ->first();
+
             if (!empty($interest_action_2)) {
+
                 $usr->interest_action = '2';
             } else {
+
                 $usr->interest_action = '0';
             }
         }
-        $birthDate = Carbon::parse($usr->birth_date_time);
-        $diff      = $birthDate->diff(Carbon::today());
 
-        $usr->age_years  = $diff->y;
-        $usr->age_months = $diff->m;
+        /*
+        |--------------------------------------------------------------------------
+        |    MASK SENSITIVE INFORMATION
+        |--------------------------------------------------------------------------
+        |
+        | Do this AFTER calculating the actual values.
+        |
+        */
 
-        //dd($wallet);
-        return view('dashboard.profile.view-profile', compact('usr', 'data', 'wallet'));
+        // Mobile
+        if (!empty($usr->mobile_number)) {
+
+            $mobile = preg_replace(
+                '/\D/',
+                '',
+                $usr->mobile_number
+            );
+
+            $usr->mobile_number_masked =
+                '****' . substr($mobile, -4);
+        } else {
+
+            $usr->mobile_number_masked = '****';
+        }
+
+        // WhatsApp
+        if (!empty($usr->whatsapp_number)) {
+
+            $whatsapp = preg_replace(
+                '/\D/',
+                '',
+                $usr->whatsapp_number
+            );
+
+            $usr->whatsapp_number_masked =
+                '****' . substr($whatsapp, -4);
+        } else {
+
+            $usr->whatsapp_number_masked = '****';
+        }
+
+        // Email
+        if (!empty($usr->email)) {
+
+            $emailParts = explode(
+                '@',
+                $usr->email,
+                2
+            );
+
+            if (count($emailParts) === 2) {
+
+                $usr->email_masked =
+                    '****@' . $emailParts[1];
+            } else {
+
+                $usr->email_masked = '****';
+            }
+        } else {
+
+            $usr->email_masked = '****';
+        }
+
+        // Date of birth
+        if ($birthDate) {
+
+            $usr->birth_date_masked =
+                '** ' . $birthDate->format('F Y');
+        } else {
+
+            $usr->birth_date_masked = '** **** ****';
+        }
+
+        // Time of birth
+        if ($birthDate) {
+
+            $usr->birth_time_masked = '****';
+        } else {
+
+            $usr->birth_time_masked = '****';
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Membership / Unlock status
+        |--------------------------------------------------------------------------
+        |
+        | For now locked by default.
+        | Later we can replace this with your actual membership check.
+        |
+        */
+
+        $usr->contact_unlocked = false;
+        $usr->kundli_unlocked = false;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return view
+        |--------------------------------------------------------------------------
+        */
+
+        //dd($usr);
+        return view(
+            'dashboard.profile.view-profile',
+            compact(
+                'usr',
+                'data',
+                'wallet'
+            )
+        );
     }
 
     public function send_interest(Request $request, EmailService $emailservice, NimbusSmsService $messageService, $id)

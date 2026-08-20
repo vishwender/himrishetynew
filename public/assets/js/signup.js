@@ -235,7 +235,7 @@
     //save details to of first step.
     try {
 
-        const response = await fetch('/complete-profile', {
+        const response = await fetch(`complete-profile`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -328,7 +328,7 @@
     //save details to of second step.
     try {
 
-        const response = await fetch('/complete-profile', {
+        const response = await fetch(`complete-profile`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -437,7 +437,7 @@
     //save details to of second step.
     try {
 
-        const response = await fetch('/complete-profile', {
+        const response = await fetch(`complete-profile`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -536,6 +536,8 @@
 
   continuePhotoBtn.addEventListener('click', () => {
     setLoading(continuePhotoBtn, true);
+    const file = photoInput.files && photoInput.files[0];
+    console.log(file);
     fakeSubmit(() => {
       setLoading(continuePhotoBtn, false);
       finishSignup(true);

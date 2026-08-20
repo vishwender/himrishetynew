@@ -98,7 +98,7 @@
     clearChip.setAttribute('aria-label', 'Clear all filters');
     clearChip.innerHTML = '<svg data-lucide="x" width="12" height="12"></svg> Clear all';
     clearChip.addEventListener('click', function () {
-      window.location.href = 'advance-search.html';
+      window.location.href = '/quick-search';
     });
     chipContainer.appendChild(clearChip);
 

@@ -30,7 +30,7 @@ fileInput.addEventListener('change', async function () {
     });
 
     const result = await response.json();
-    console.log(result);
+    console.log(result.photo_url);
 
     if (result.success) {
         avatar.src = result.photo_url + '?t=' + new Date().getTime();
