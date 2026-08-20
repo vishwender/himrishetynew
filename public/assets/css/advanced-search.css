@@ -10,10 +10,18 @@
       gap: var(--space-6);
       align-items: start;
     }
-    @media (max-width: 991px) {
+    @media (max-width: 991px) { 
       .adv-search-layout { grid-template-columns: 1fr; }
       .adv-search-sticky { position: static !important; }
     }
+
+        /* ---- Sticky Right Sidebar ---- */
+        .adv-search-sticky {
+          position: sticky;
+          top: calc(var(--navbar-height) + var(--space-4));
+          align-self: start;
+          height: fit-content;
+        }
 
     /* ---- Form Card ---- */
     .adv-card {
@@ -388,8 +396,6 @@
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-sm);
       overflow: hidden;
-      position: sticky;
-      top: calc(var(--navbar-height) + var(--space-4));
     }
     .adv-summary-header {
       padding: var(--space-4) var(--space-5);
