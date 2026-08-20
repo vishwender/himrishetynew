@@ -110,6 +110,7 @@ Route::middleware('auth:member')->group(function () {
     Route::post('update-password', [MemberController::class, 'updatePassword'])->name('update-password');
     Route::post('send-interest/{id}', [HomeController::class, 'send_interest'])->name('send-interest');
     Route::post('like-profile', [HomeController::class, 'like_profile'])->name('like-profile');
+    Route::get('check-profile-like/{id}', [HomeController::class, 'check_profile_like'])->name('check-profile-like');
     Route::get('/membership/checkout/{planId}', [MembershipController::class, 'buyPlan'])->name('membership.checkout');
     Route::post('/membership/verify', [MembershipController::class, 'verifyPayment'])->name('membership.verify');
     Route::get('recent-profiles', [ProfileController::class, 'recent_profiles'])->name('recent-profiles');
@@ -121,6 +122,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('/stats-profiles', [ProfileController::class, 'stats_profiles'])->name('stats-profiles');
     Route::get('/all-stats-profiles', [ProfileController::class, 'all_stats_profiles'])->name('all-stats-profiles');
     Route::post('short-profile', [HomeController::class, 'shortlist_profile'])->name('short-profile');
+    Route::get('/check-shortlist', [HomeController::class, 'check_shortlist'])->name('check-shortlist');
     Route::get('member/privacy-policy', [PagesController::class, 'privacy_policy'])->name('member.privacy-policy');
     Route::get('refund-policy', [PagesController::class, 'refund'])->name('member.refund-policy');
     Route::post('/interest/update-status', [HomeController::class, 'updateInterestStatus'])->name('interest.update.status');

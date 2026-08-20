@@ -1764,6 +1764,7 @@ class HomeController extends Controller
 
     public function send_interest(Request $request, EmailService $emailservice, NimbusSmsService $messageService, $id)
     {
+
         $member = Auth::guard('member')->user();
         $profile = Member::find($id);
         $status = $request->input('status');
@@ -1781,19 +1782,23 @@ class HomeController extends Controller
         $user_id = $member->id;
 
         $profile_id = $id;
+
         if ($plan_id == 0 || empty($plan_id)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Please upgrade your membership plan'
             ], 403);
         }
+
         $checkInterest = SentInterest::where('member_id', $user_id)
             ->where('profile_id', $profile_id)
             ->first();
 
+
         $checkedInterest = SentInterest::where('member_id', $profile_id)
             ->where('profile_id', $user_id)
             ->first();
+
         if (empty($checkInterest)) {
             if (!empty($checkedInterest)) {
                 $checkedInterest->status = $status;
@@ -1809,9 +1814,9 @@ class HomeController extends Controller
                 $newInterest->member_id = $user_id;
                 $newInterest->profile_id = $profile_id;
                 $newInterest->status = $status;
-                $messageService->sendInterest($email);
-                $emailservice->interestEmail($email);
-                $this->sendFCM($email);
+                //$messageService->sendInterest($email);
+                //$emailservice->interestEmail($email);
+                //$this->sendFCM($email);
                 if ($newInterest->save()) {
                     return response()->json([
                         'status' => 'success',
@@ -2067,42 +2072,63 @@ class HomeController extends Controller
     public function like_profile(Request $request)
     {
         $member = Auth::guard('member')->user();
-        $status = $request->input('status');
-        $id = $request->input('id');
-        $user_id = $member->id;
-        $plan_id = $member->plan_id;
-        $profile_id = $id;
-        if ($plan_id == 0 || empty($plan_id)) {
+
+        $profile_id = $request->input('id');
+        //dd($profile_id);
+        $member_id = $member->id;
+
+        // Check if already liked
+        $existingLike = ProfileLike::where('user_id', $member_id)
+            ->where('like_profile_id', $profile_id)
+            ->first();
+
+        if ($existingLike) {
+
+            // Already liked → unlike
+            $existingLike->delete();
+
             return response()->json([
-                'status' => 'error',
-                'message' => 'Please upgrade your membership plan'
-            ], 403);
+                'status' => 'unliked',
+                'liked' => false,
+                'message' => 'Profile unliked'
+            ]);
         }
 
-        $newInterest = new ProfileLike();
-        $newInterest->user_id = $user_id;
-        $newInterest->like_profile_id = $profile_id;
-        $newInterest->status = $status;
-        if ($status == 1) {
-            $msg = 'Profile liked successfully';
-        } else {
-            $msg = 'Profile unliked successfully';
-        }
-        if ($newInterest->save()) {
+        // Not liked → create like
+        $like = new ProfileLike();
+        $like->user_id = $member_id;
+        $like->like_profile_id = $profile_id;
+
+        if ($like->save()) {
             return response()->json([
-                'status' => 'success',
-                'message' => $msg
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to Like Profile'
-            ], 500);
+                'status' => 'liked',
+                'liked' => true,
+                'message' => 'Profile liked'
+            ]);
         }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to like profile'
+        ], 500);
+    }
+
+    public function check_profile_like($id)
+    {
+        $member = Auth::guard('member')->user();
+
+        $liked = ProfileLike::where('user_id', $member->id)
+            ->where('like_profile_id', $id)
+            ->exists();
+
+        return response()->json([
+            'liked' => $liked
+        ]);
     }
 
     public function shortlist_profile(Request $request, EmailService $emailservice)
     {
+
         $member = Auth::guard('member')->user();
         $status = $request->input('status');
         $id = $request->input('id');
@@ -2116,10 +2142,22 @@ class HomeController extends Controller
                 'message' => 'Please upgrade your membership plan'
             ], 403);
         }
+
+        // Check if already shortlisted
+        $alreadyShortlisted = Shortlist::where('member_id', $user_id)
+            ->where('profile_id', $profile_id)
+            ->exists();
+
+        if ($alreadyShortlisted) {
+            return response()->json([
+                'status' => 'already_shortlisted',
+                'message' => 'Profile is already shortlisted'
+            ], 200);
+        }
         $newInterest = new Shortlist();
         $newInterest->member_id = $user_id;
         $newInterest->profile_id = $profile_id;
-        $emailservice->shortlist($profile, $member);
+        //$emailservice->shortlist($profile, $member);
         if ($newInterest->save()) {
             return response()->json([
                 'status' => 'success',
@@ -2131,6 +2169,21 @@ class HomeController extends Controller
                 'message' => 'Failed to Shortlist Profile'
             ], 500);
         }
+    }
+
+    public function check_shortlist(Request $request)
+    {
+        $member = Auth::guard('member')->user();
+
+        $profile_id = $request->input('id');
+        $shortlisted = Shortlist::where('member_id', $member->id)
+            ->where('profile_id', $profile_id)
+            ->exists();
+
+        return response()->json([
+            'status' => 'success',
+            'shortlisted' => $shortlisted
+        ]);
     }
 
     public function sendFCM($data)
@@ -2187,10 +2240,11 @@ class HomeController extends Controller
         ]);
 
         $user = Auth::user();
+        $id = $user->id;
 
         // Delete old photo
         if ($user->photo) {
-            $oldPhoto = public_path('images/profile_photos/' . $user->profile_photo);
+            $oldPhoto = public_path('photos/photo/' . $user->profile_photo);
 
             if (File::exists($oldPhoto)) {
                 File::delete($oldPhoto);
@@ -2199,16 +2253,18 @@ class HomeController extends Controller
 
         // Upload new photo
         $file = $request->file('photo');
-        $filename = time() . '_' . $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
 
-        $file->move(public_path('images/profile_photos'), $filename);
+        $filename = 'member-photo-' . $id . '.' . $extension;
+
+        $file->move(public_path('photos/photo'), $filename);
 
         $user->photo = $filename;
         $user->save();
 
         return response()->json([
             'success' => true,
-            'photo_url' => asset('images/profile_photos/' . $filename),
+            'photo_url' => asset('photos/photo/' . $filename),
         ]);
     }
 }
