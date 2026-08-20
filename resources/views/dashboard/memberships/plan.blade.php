@@ -90,10 +90,12 @@
                 </li>
 
             </ul>
-
-            <button class="buy-btn">
-                Buy Now
-            </button>
+            <form action="{{ route('membership.checkout', $plan->id) }}" method="GET">
+                @csrf
+                <button type="submit" class="buy-btn">
+                    Buy Now
+                </button>
+            </form>
 
         </article>
 

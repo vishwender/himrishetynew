@@ -52,7 +52,7 @@ class MembershipController extends Controller
 
         $orderData = [
             'receipt'         => 'rcpt_' . time(),
-            'amount'          => $plan->final_cost * 100,
+            'amount'          => (int) round($plan->final_cost * 100),
             'currency'        => 'INR',
             'payment_capture' => 1
         ];
