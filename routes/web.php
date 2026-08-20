@@ -119,6 +119,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
     Route::post('/wallet/create-order', [WalletController::class, 'createOrder'])->name('wallet.createOrder');
     Route::post('/wallet/callback', [WalletController::class, 'paymentCallback'])->name('wallet.callback');
+    Route::post('/wallet/buy-offer', [WalletController::class, 'buyOffer'])->name('wallet.buy-offer');
     Route::get('/stats-profiles', [ProfileController::class, 'stats_profiles'])->name('stats-profiles');
     Route::get('/all-stats-profiles', [ProfileController::class, 'all_stats_profiles'])->name('all-stats-profiles');
     Route::post('short-profile', [HomeController::class, 'shortlist_profile'])->name('short-profile');

@@ -9,7 +9,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb-custom">
             <li><i data-lucide="home" width="14" height="14"></i></li>
-            <li aria-current="page">Dashboard</li>
+            <li aria-current="page">Home</li>
         </ol>
     </nav>
     <div class="page-header-actions">
@@ -293,8 +293,9 @@
         <a href="{{ url('stats-profiles?profile=profile_viewed') }}" class="stat-card pink">
             <div class="stat-card-header">
                 <span class="stat-label">Profile Views</span>
+
                 <div class="stat-icon-wrap pink">
-                    <i data-lucide="user" width="20" height="20"></i>
+                    <i data-lucide="eye" width="20" height="20"></i>
                 </div>
             </div>
 
@@ -303,15 +304,17 @@
             </span>
 
             <span class="stat-trend up">
-                <i data-lucide="trending-up" width="12" height="12"></i>
-                Viewed your profile
+                <i data-lucide="users" width="12" height="12"></i>
+                People viewed your profile
             </span>
         </a>
+
 
         <!-- Likes -->
         <a href="{{ url('stats-profiles?profile=likes') }}" class="stat-card blue">
             <div class="stat-card-header">
                 <span class="stat-label">Likes</span>
+
                 <div class="stat-icon-wrap blue">
                     <i data-lucide="heart" width="20" height="20"></i>
                 </div>
@@ -322,17 +325,19 @@
             </span>
 
             <span class="stat-trend up">
-                <i data-lucide="heart" width="12" height="12"></i>
+                <i data-lucide="heart-handshake" width="12" height="12"></i>
                 Profiles you liked
             </span>
         </a>
+
 
         <!-- Interests -->
         <a href="{{ url('interest-box') }}" class="stat-card purple">
             <div class="stat-card-header">
                 <span class="stat-label">Interests Sent</span>
+
                 <div class="stat-icon-wrap purple">
-                    <i data-lucide="user-plus" width="20" height="20"></i>
+                    <i data-lucide="send" width="20" height="20"></i>
                 </div>
             </div>
 
@@ -341,17 +346,19 @@
             </span>
 
             <span class="stat-trend up">
-                <i data-lucide="send" width="12" height="12"></i>
+                <i data-lucide="user-round-plus" width="12" height="12"></i>
                 Interests sent
             </span>
         </a>
+
 
         <!-- Contacts -->
         <a href="{{ url('stats-profiles?profile=contacts') }}" class="stat-card green">
             <div class="stat-card-header">
                 <span class="stat-label">Contacts Viewed</span>
+
                 <div class="stat-icon-wrap green">
-                    <i data-lucide="eye" width="20" height="20"></i>
+                    <i data-lucide="contact-round" width="20" height="20"></i>
                 </div>
             </div>
 
@@ -359,9 +366,9 @@
                 {{ $data['contact'] }}
             </span>
 
-            <span class="stat-trend neutral">
+            <span class="stat-trend up">
                 <i data-lucide="phone" width="12" height="12"></i>
-                Contacts viewed
+                Contact details viewed
             </span>
         </a>
 

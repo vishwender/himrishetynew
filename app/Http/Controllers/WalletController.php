@@ -55,6 +55,122 @@ class WalletController extends Controller
         ]);
     }
 
+    public function buyOffer(Request $request)
+    {
+        $request->validate([
+            'offer_id' => 'required|integer',
+        ]);
+
+        $user = auth()->guard('member')->user();
+
+        /*
+    |--------------------------------------------------------------------------
+    | Find Offer
+    |--------------------------------------------------------------------------
+    */
+
+        $offer = WalletOffer::findOrFail(
+            $request->offer_id
+        );
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Get Price From Database
+    |--------------------------------------------------------------------------
+    */
+
+        $amount = (float) $offer->amount;
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Create Razorpay Order
+    |--------------------------------------------------------------------------
+    */
+
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+
+
+        $orderData = [
+
+            'receipt' =>
+            'offer_' .
+                $user->id .
+                '_' .
+                time(),
+
+            'amount' =>
+            (int) round($amount * 100),
+
+            'currency' => 'INR',
+
+            'notes' => [
+
+                'member_id' => $user->id,
+
+                'offer_id' => $offer->id,
+
+                'purpose' => 'wallet_offer',
+
+            ],
+
+            'payment_capture' => 1,
+
+        ];
+
+
+        $order = $api
+            ->order
+            ->create($orderData);
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Save Pending Payment
+    |--------------------------------------------------------------------------
+    */
+
+        DB::table('wallet_offers')->insert([
+
+            'member_id' => $user->id,
+
+            'offer_id' => $offer->id,
+
+            'razorpay_order_id' => $order['id'],
+
+            'amount' => $amount,
+
+            'status' => 'pending',
+
+            'created_at' => now(),
+
+            'updated_at' => now(),
+
+        ]);
+
+
+        return response()->json([
+
+            'success' => true,
+
+            'order_id' => $order['id'],
+
+            'amount' => $order['amount'],
+
+            'currency' => $order['currency'],
+
+            'key' => config(
+                'services.razorpay.key'
+            ),
+
+            'description' =>
+            $offer->title,
+
+        ]);
+    }
+
+
     public function paymentCallback(Request $request)
     {
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));

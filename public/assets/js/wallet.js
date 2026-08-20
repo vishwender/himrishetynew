@@ -248,19 +248,433 @@
   // =============================================
   // PAYMENT HANDLERS
   // =============================================
-  function handleAddMoney(plan) {
-    // TODO: Integrate Razorpay or your payment gateway here
-    // Replace this stub with your actual payment call
-    console.log('Initiating payment for:', plan);
-    showToast(`Redirecting to pay ₹${plan.amount}…`);
-  }
+async function handleAddMoney(plan) {
 
-  function handleBuyOffer(offer) {
-    // TODO: Integrate payment gateway
-    console.log('Buying offer:', offer);
-    showToast(`Proceeding to buy ${offer.title} for ₹${offer.amount}…`);
-  }
+    try {
 
+        showToast(`Preparing payment of ₹${plan.amount}...`);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Razorpay Order
+        |--------------------------------------------------------------------------
+        */
+
+        const response = await fetch(`wallet/create-order`, {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+
+                'X-CSRF-TOKEN': document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute('content')
+            },
+
+            body: JSON.stringify({
+                amount: plan.amount
+            })
+        });
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message || 'Unable to create payment order.'
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Razorpay Checkout
+        |--------------------------------------------------------------------------
+        */
+
+        const options = {
+
+            key: data.key,
+
+            amount: data.amount,
+
+            currency: data.currency,
+
+            name: 'HimRishtey',
+
+            description: 'Wallet Recharge',
+
+            order_id: data.order_id,
+
+            handler: async function (response) {
+
+                await verifyWalletPayment(
+                    response,
+                    plan.amount
+                );
+
+            },
+
+            prefill: {
+                name: window.memberName || '',
+                email: window.memberEmail || '',
+                contact: window.memberPhone || ''
+            },
+
+            theme: {
+                color: '#d92768'
+            },
+
+            modal: {
+                ondismiss: function () {
+
+                    showToast(
+                        'Payment cancelled.'
+                    );
+
+                }
+            }
+
+        };
+
+
+        const razorpay = new Razorpay(options);
+
+        razorpay.open();
+
+
+    } catch (error) {
+
+        console.error(
+            'Razorpay Error:',
+            error
+        );
+
+        showToast(
+            error.message || 'Unable to start payment.'
+        );
+    }
+}
+
+async function verifyWalletPayment(
+    razorpayResponse,
+    amount
+) {
+
+    try {
+
+        showToast(
+            'Verifying payment...'
+        );
+
+
+        const response = await fetch(
+            `wallet/callback`,
+            {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Content-Type': 'application/json',
+
+                    'Accept': 'application/json',
+
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector(
+                                'meta[name="csrf-token"]'
+                            )
+                            .getAttribute('content')
+                },
+
+                body: JSON.stringify({
+
+                    razorpay_order_id:
+                        razorpayResponse.razorpay_order_id,
+
+                    razorpay_payment_id:
+                        razorpayResponse.razorpay_payment_id,
+
+                    razorpay_signature:
+                        razorpayResponse.razorpay_signature,
+
+                    amount: amount
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                'Payment verification failed.'
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Wallet Balance
+        |--------------------------------------------------------------------------
+        */
+
+        renderBalance(
+            data.balance
+        );
+
+
+        showToast(
+            '₹' + amount +
+            ' added to your wallet successfully!'
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Reload transactions
+        |--------------------------------------------------------------------------
+        */
+
+        setTimeout(() => {
+
+            window.location.reload();
+
+        }, 1500);
+
+
+    } catch (error) {
+
+        console.error(
+            'Payment verification error:',
+            error
+        );
+
+        showToast(
+            error.message ||
+            'Payment verification failed.'
+        );
+    }
+}
+
+  async function handleBuyOffer(offer) {
+
+    try {
+
+        if (!offer.id) {
+            throw new Error('Invalid offer.');
+        }
+
+        showToast(`Preparing payment for ${offer.title}...`);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Razorpay Order
+        |--------------------------------------------------------------------------
+        */
+
+        const response = await fetch(`wallet/buy-offer`, {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute('content')
+            },
+
+            body: JSON.stringify({
+                offer_id: offer.id
+            })
+        });
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.message || 'Unable to create payment order.'
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Razorpay Checkout
+        |--------------------------------------------------------------------------
+        */
+
+        const options = {
+
+            key: data.key,
+
+            amount: data.amount,
+
+            currency: data.currency,
+
+            name: 'HimRishtey',
+
+            description: data.description,
+
+            order_id: data.order_id,
+
+
+            prefill: {
+                name: window.memberName || '',
+                email: window.memberEmail || '',
+                contact: window.memberPhone || ''
+            },
+
+
+            theme: {
+                color: '#d92768'
+            },
+
+
+            handler: async function (razorpayResponse) {
+
+                await verifyOfferPayment(
+                    razorpayResponse
+                );
+
+            },
+
+
+            modal: {
+
+                ondismiss: function () {
+
+                    showToast(
+                        'Payment cancelled.'
+                    );
+
+                }
+
+            }
+
+        };
+
+
+        const razorpay = new Razorpay(options);
+
+        razorpay.open();
+
+
+    } catch (error) {
+
+        console.error(
+            'Offer payment error:',
+            error
+        );
+
+        showToast(
+            error.message ||
+            'Unable to start payment.'
+        );
+    }
+}
+
+async function verifyOfferPayment(razorpayResponse) {
+
+    try {
+
+        showToast('Verifying payment...');
+
+
+        const response = await fetch(
+            `wallet/callback`,
+            {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Content-Type': 'application/json',
+
+                    'Accept': 'application/json',
+
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector(
+                                'meta[name="csrf-token"]'
+                            )
+                            .getAttribute('content')
+                },
+
+                body: JSON.stringify({
+
+                    razorpay_order_id:
+                        razorpayResponse.razorpay_order_id,
+
+                    razorpay_payment_id:
+                        razorpayResponse.razorpay_payment_id,
+
+                    razorpay_signature:
+                        razorpayResponse.razorpay_signature
+
+                })
+
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                'Payment verification failed.'
+            );
+
+        }
+
+
+        showToast(
+            data.message ||
+            'Offer purchased successfully!'
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Reload wallet / offers
+        |--------------------------------------------------------------------------
+        */
+
+        setTimeout(() => {
+
+            window.location.reload();
+
+        }, 1500);
+
+
+    } catch (error) {
+
+        console.error(
+            'Offer verification error:',
+            error
+        );
+
+        showToast(
+            error.message ||
+            'Payment verification failed.'
+        );
+
+    }
+}
   // =============================================
   // TOAST
   // =============================================

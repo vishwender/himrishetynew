@@ -45,326 +45,793 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+    // public function index()
+    // {
+    //     $member = Auth::guard('member')->user();
+    //     $id = $member->id;
+
+    //     //complete your profile section
+    //     $steps = [
+    //         [
+    //             'title' => 'Basic Info',
+    //             'completed' => !empty($member->about_me)
+    //                 && !empty($member->profile_created_for)
+    //                 && !empty($member->height)
+    //                 && !empty($member->birth_date_time)
+    //                 && !empty($member->religion)
+    //                 && !empty($member->cast)
+    //                 && !empty($member->marital_status)
+    //                 && !empty($member->country_living_in)
+    //                 && !empty($member->state_living_in)
+    //                 && !empty($member->city_living_in)
+    //         ],
+    //         [
+    //             'title' => 'Astro & Kundali',
+    //             'completed' => !empty($member->manglik)
+    //                 && !empty($member->birth_place)
+    //         ],
+    //         [
+    //             'title' => 'Horoscope',
+    //             'completed' => !empty($member->horoscope_needed)
+    //         ],
+    //         [
+    //             'title' => 'Religion & Community',
+    //             'completed' => !empty($member->gotra)
+    //                 && !empty($member->sub_cast)
+    //         ],
+
+    //         [
+    //             'title' => 'Education & Career',
+    //             'completed' => !empty($member->education)
+    //                 && !empty($member->any_other_qualifications)
+    //                 && !empty($member->about_my_career)
+    //                 && !empty($member->employed_in)
+    //                 && !empty($member->organization_name)
+    //                 && !empty($member->job_location)
+    //                 && !empty($member->occupation)
+    //                 && !empty($member->annual_income)
+    //         ],
+    //         [
+    //             'title' => 'Family',
+    //             'completed' => !empty($member->family_status)
+    //                 && !empty($member->native_place)
+    //                 && !empty($member->family_type)
+    //                 && !empty($member->father_occupation)
+    //                 && !empty($member->father_name)
+    //                 && !empty($member->mother_name)
+    //                 && !empty($member->mother_occupation)
+    //                 && !empty($member->no_of_brothers)
+    //                 && !empty($member->no_of_sisters)
+    //                 && !empty($member->married_brothers)
+    //                 && !empty($member->married_sisters)
+    //                 && !empty($member->about_family)
+    //         ],
+    //         [
+    //             'title' => 'Lifestyle',
+    //             'completed' => !empty($member->diet)
+    //                 && !empty($member->is_smoking)
+    //                 && !empty($member->is_drinking)
+    //                 && !empty($member->any_disability)
+    //         ],
+    //         [
+    //             'title' => 'Partner Preference',
+    //             'completed' => !empty($member->looking_for)
+    //                 && !empty($member->partner_age_from)
+    //                 && !empty($member->partner_age_to)
+    //                 && !empty($member->partner_height_from)
+    //                 && !empty($member->partner_height_to)
+    //                 && !empty($member->partner_religion)
+    //                 && !empty($member->partner_cast)
+    //                 && !empty($member->partner_mothertongue)
+    //                 && !empty($member->partner_education)
+    //                 && !empty($member->partner_occupation)
+    //                 && !empty($member->partner_annual_income_from)
+    //                 && !empty($member->partner_annual_income_to)
+    //                 && !empty($member->is_partner_smoking)
+    //                 && !empty($member->is_partner_drinking)
+    //                 && !empty($member->is_partner_manglik)
+    //         ]
+    //     ];
+
+    //     //dd($steps);
+
+    //     $completedSteps = 0;
+
+    //     foreach ($steps as $step) {
+    //         if ($step['completed']) {
+    //             $completedSteps++;
+    //         }
+    //     }
+
+    //     $completion = round(($completedSteps / count($steps)) * 100);
+    //     $circumference = 226.2;
+    //     $strokeOffset = $circumference - ($completion / 100) * $circumference;
+
+    //     $data['plan'] = MembershipPlan::where('id', $member->plan_id)->first();
+    //     $data['shortlisted'] = Shortlist::where('member_id', $id)->count();
+    //     $data['iLikes'] = ProfileLike::where('user_id', $id)->count();
+    //     $data['iviewed'] = ProfileViewed::where('viewed_profile_id', $id)->count();
+    //     $data['interestSent'] = SentInterest::where('member_id', $id)->count();
+    //     $data['contact'] = ProfileViewed::where('member_id', $id)->count();
+
+    //     /* recent profiles */
+    //     $today   = Carbon::today()->format('Y-m-d');
+    //     $loggedInUser = Member::find($id);
+    //     if (!$loggedInUser) {
+    //         return [];
+    //     }
+    //     $gender = $loggedInUser->gender;
+    //     $recents = Member::where('gender', '!=', $gender)
+    //         ->where('id', '!=', $id)
+    //         ->where('profile_hide', '!=', 'yes')
+    //         ->where('active', 'Yes')
+    //         ->orderBy('activation_number', 'desc')
+    //         ->limit(30)
+    //         ->get();
+
+    //     $users = [];
+
+    //     foreach ($recents as $key => $recent) {
+    //         $birthDate = Carbon::parse($recent->birth_date_time);
+    //         $diff = $birthDate->diff(Carbon::parse($today));
+    //         $users[$key]['age_years']  = $diff->y;
+    //         $users[$key]['age_months'] = $diff->m;
+    //         if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
+    //             $users[$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
+    //         } elseif ($recent->gender === "Male") {
+    //             $users[$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
+    //         } elseif ($recent->gender === "Female") {
+    //             $users[$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
+    //         }
+    //         if ($recent->member_type === 'Verified') {
+    //             $users[$key]['member_type'] = "https://himrishtey.com/img/verified.png";
+    //             $users[$key]['mem_type']    = "Yes";
+    //         } else {
+    //             $users[$key]['member_type'] = "normal";
+    //         }
+    //         if ($recent->is_trusted === 'Trusted') {
+    //             $users[$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
+    //         } else {
+    //             $users[$key]['is_trusted'] = "No";
+    //         }
+    //         $users[$key] = array_merge($recent->toArray(), $users[$key]);
+    //     }
+    //     $data['recents'] = $users;
+
+    //     /********** Verified Users **************/
+    //     $verified = Member::where('gender', '!=', $gender)
+    //         ->where('id', '!=', $id)
+    //         ->where('profile_hide', '!=', 'yes')
+    //         ->where('member_type', 'Verified')
+    //         ->where('active', 'Yes')
+    //         ->orderBy('activation_number', 'desc')
+    //         ->limit(30)
+    //         ->get();
+
+    //     $data['verifiedUsers'] = [];
+    //     foreach ($verified as $key => $recent) {
+    //         $birthDate = Carbon::parse($recent->birth_date_time);
+    //         $diff = $birthDate->diff(Carbon::parse($today));
+    //         $data['verifiedUsers'][$key]['age_years']  = $diff->y;
+    //         $data['verifiedUsers'][$key]['age_months'] = $diff->m;
+    //         if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
+    //             $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
+    //         } elseif ($recent->gender === "Male") {
+    //             $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
+    //         } elseif ($recent->gender === "Female") {
+    //             $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
+    //         }
+    //         if ($recent->member_type === 'Verified') {
+    //             $data['verifiedUsers'][$key]['member_type'] = "https://himrishtey.com/img/verified.png";
+    //             $data['verifiedUsers'][$key]['mem_type']    = "Yes";
+    //         } else {
+    //             $data['verifiedUsers'][$key]['member_type'] = "normal";
+    //         }
+    //         if ($recent->is_trusted === 'Trusted') {
+    //             $data['verifiedUsers'][$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
+    //         } else {
+    //             $data['verifiedUsers'][$key]['is_trusted'] = "No";
+    //         }
+    //         $data['verifiedUsers'][$key] = array_merge($recent->toArray(), $data['verifiedUsers'][$key]);
+    //     }
+
+    //     /********** Who viewewd *********/
+    //     $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
+    //         ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
+    //         ->where('profile_viewed.viewed_profile_id', $id)
+    //         ->where('members.active', 'Yes')
+    //         ->where('members.profile_hide', '!=', 'yes')
+    //         ->orderBy('profile_viewed.id', 'desc')
+    //         ->limit(30)
+    //         ->get();
+
+    //     $data['viewed'] = [];
+
+    //     foreach ($recents as $key => $recent) {
+    //         $birthDate = Carbon::parse($recent->birth_date_time);
+    //         $diff = $birthDate->diff($today);
+    //         $data['viewed'][$key]['id']                = $recent->id;
+    //         $data['viewed'][$key]['profile_id']        = $recent->profile_id;
+    //         $data['viewed'][$key]['full_name']         = $recent->full_name;
+    //         $data['viewed'][$key]['age_years']         = $diff->y;
+    //         $data['viewed'][$key]['age_months']        = $diff->m;
+    //         $data['viewed'][$key]['birth_date_time']   = $birthDate->format('d-m-Y h:i:s A');
+    //         $data['viewed'][$key]['religion']          = $recent->religion;
+    //         $data['viewed'][$key]['cast']              = $recent->cast;
+    //         $data['viewed'][$key]['height']            = $recent->height;
+    //         $data['viewed'][$key]['mother_tongue']     = $recent->mother_tongue;
+    //         $data['viewed'][$key]['annual_income']     = $recent->annual_income;
+    //         $data['viewed'][$key]['gender']            = $recent->gender;
+    //         $data['viewed'][$key]['activation_number'] = $recent->activation_number;
+    //         if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
+    //             $data['viewed'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
+    //         } elseif ($recent->gender === "Male") {
+    //             $data['viewed'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
+    //         } elseif ($recent->gender === "Female") {
+    //             $data['viewed'][$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
+    //         }
+    //         if ($recent->member_type === 'Verified') {
+    //             $data['viewed'][$key]['member_type'] = "https://himrishtey.com/img/verified.png";
+    //             $data['viewed'][$key]['mem_type']    = "Yes";
+    //         } else {
+    //             $data['viewed'][$key]['member_type'] = "normal";
+    //         }
+    //         if ($recent->is_trusted === 'Trusted') {
+    //             $data['viewed'][$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
+    //         } else {
+    //             $data['viewed'][$key]['is_trusted'] = "No";
+    //         }
+    //         $data['viewed'][$key] = array_merge($recent->toArray(), $data['viewed'][$key]);
+    //     }
+
+    //     /****** shortlisted profiles **************/
+    //     $results = Member::whereIn('id', function ($query) use ($id) {
+    //         $query->select('profile_id')
+    //             ->from('short_listed')
+    //             ->where('member_id', $id);
+    //     })
+    //         ->where('active', 'Yes')
+    //         ->where('profile_hide', '!=', 'yes')
+    //         ->orderBy('activation_number', 'desc')
+    //         ->get();
+
+    //     $data['shortlist'] = [];
+
+    //     foreach ($results as $key => $recent) {
+    //         $birthDate = Carbon::parse($recent->birth_date_time);
+    //         $diff = $birthDate->diff($today);
+
+    //         $data['shortlist'][$key]['age_years']  = $diff->y;
+    //         $data['shortlist'][$key]['age_months'] = $diff->m;
+    //         if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
+    //             $data['shortlist'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
+    //         } elseif ($recent->gender === "Male") {
+    //             $data['shortlist'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
+    //         } elseif ($recent->gender === "Female") {
+    //             $data['shortlist'][$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
+    //         }
+    //         if ($recent->member_type === 'Verified') {
+    //             $data['shortlist'][$key]['member_type'] = "https://himrishtey.com/img/verified.png";
+    //             $data['shortlist'][$key]['mem_type']    = "Yes";
+    //         } else {
+    //             $data['shortlist'][$key]['member_type'] = "normal";
+    //         }
+    //         if ($recent->is_trusted === 'Trusted') {
+    //             $data['shortlist'][$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
+    //         } else {
+    //             $data['shortlist'][$key]['is_trusted'] = "No";
+    //         }
+    //         $data['shortlist'][$key] = array_merge($recent->toArray(), $data['shortlist'][$key]);
+    //     }
+
+    //     /* Matching profiles */
+
+    //     $partner_country    = explode(',', $member->partner_country ?? '');
+    //     $partner_religion   = explode(',', $member->partner_religion ?? '');
+    //     $partner_education  = explode(',', $member->partner_education ?? '');
+    //     $partner_mothertongue = explode(',', $member->partner_mothertongue ?? '');
+
+    //     if ($member->partner_cast === 'Any') {
+    //         $partner_cast = Member::where('cast', '!=', '')->distinct()->pluck('cast')->toArray();
+    //     } else {
+    //         $partner_cast = explode(',', $member->partner_cast ?? '');
+    //     }
+    //     $today = Carbon::today();
+
+    //     $data['matching_profiles'] = Member::where('gender', '!=', $member->gender)
+    //         ->where('id', '!=', $id)
+    //         ->where('birth_date_time', 'not like', '%00:30:00%')
+    //         ->get()
+    //         ->filter(function ($profile) use (
+    //             $member,
+    //             $today,
+    //             $partner_country,
+    //             $partner_religion,
+    //             $partner_cast,
+    //             $partner_education,
+    //             $partner_mothertongue
+    //         ) {
+
+    //             $age = Carbon::parse($profile->birth_date_time)->diffInYears($today);
+    //             return $age >= $member->partner_age_from &&
+    //                 $age <= $member->partner_age_to &&
+    //                 $profile->height >= $member->partner_height_from &&
+    //                 $profile->height <= $member->partner_height_to &&
+    //                 in_array($profile->religion, $partner_religion) &&
+    //                 in_array($profile->country_living_in, $partner_country) &&
+    //                 in_array($profile->cast, $partner_cast) &&
+    //                 in_array($profile->education, $partner_education) &&
+    //                 in_array($profile->mother_tongue, $partner_mothertongue);
+    //         });
+    //     //dd($data['matching_profiles']);
+    //     return view('dashboard/home', compact(['member', 'data', 'completion', 'steps', 'strokeOffset']));
+    // }
+
     public function index()
     {
         $member = Auth::guard('member')->user();
         $id = $member->id;
 
-        //complete your profile section
+        /*
+    |--------------------------------------------------------------------------
+    | Profile Completion
+    |--------------------------------------------------------------------------
+    */
+
         $steps = [
             [
                 'title' => 'Basic Info',
-                'completed' => !empty($member->about_me)
-                    && !empty($member->profile_created_for)
-                    && !empty($member->height)
-                    && !empty($member->birth_date_time)
-                    && !empty($member->religion)
-                    && !empty($member->cast)
-                    && !empty($member->marital_status)
-                    && !empty($member->country_living_in)
-                    && !empty($member->state_living_in)
-                    && !empty($member->city_living_in)
+                'completed' =>
+                filled($member->about_me) &&
+                    filled($member->profile_created_for) &&
+                    filled($member->height) &&
+                    filled($member->birth_date_time) &&
+                    filled($member->religion) &&
+                    filled($member->cast) &&
+                    filled($member->marital_status) &&
+                    filled($member->country_living_in) &&
+                    filled($member->state_living_in) &&
+                    filled($member->city_living_in),
             ],
+
             [
                 'title' => 'Astro & Kundali',
-                'completed' => !empty($member->manglik)
-                    && !empty($member->birth_place)
+                'completed' =>
+                filled($member->manglik) &&
+                    filled($member->birth_place),
             ],
+
             [
                 'title' => 'Horoscope',
-                'completed' => !empty($member->horoscope_needed)
+                'completed' =>
+                filled($member->horoscope_needed),
             ],
+
             [
                 'title' => 'Religion & Community',
-                'completed' => !empty($member->gotra)
-                    && !empty($member->sub_cast)
+                'completed' =>
+                filled($member->gotra) &&
+                    filled($member->sub_cast),
             ],
 
             [
                 'title' => 'Education & Career',
-                'completed' => !empty($member->education)
-                    && !empty($member->any_other_qualifications)
-                    && !empty($member->about_my_career)
-                    && !empty($member->employed_in)
-                    && !empty($member->organization_name)
-                    && !empty($member->job_location)
-                    && !empty($member->occupation)
-                    && !empty($member->annual_income)
+                'completed' =>
+                filled($member->education) &&
+                    filled($member->any_other_qualifications) &&
+                    filled($member->about_my_career) &&
+                    filled($member->employed_in) &&
+                    filled($member->organization_name) &&
+                    filled($member->job_location) &&
+                    filled($member->occupation) &&
+                    filled($member->annual_income),
             ],
+
             [
                 'title' => 'Family',
-                'completed' => !empty($member->family_status)
-                    && !empty($member->native_place)
-                    && !empty($member->family_type)
-                    && !empty($member->father_occupation)
-                    && !empty($member->father_name)
-                    && !empty($member->mother_name)
-                    && !empty($member->mother_occupation)
-                    && !empty($member->no_of_brothers)
-                    && !empty($member->no_of_sisters)
-                    && !empty($member->married_brothers)
-                    && !empty($member->married_sisters)
-                    && !empty($member->about_family)
+                'completed' =>
+                filled($member->family_status) &&
+                    filled($member->native_place) &&
+                    filled($member->family_type) &&
+                    filled($member->father_occupation) &&
+                    filled($member->father_name) &&
+                    filled($member->mother_name) &&
+                    filled($member->mother_occupation) &&
+                    filled($member->no_of_brothers) &&
+                    filled($member->no_of_sisters) &&
+                    filled($member->married_brothers) &&
+                    filled($member->married_sisters) &&
+                    filled($member->about_family),
             ],
+
             [
                 'title' => 'Lifestyle',
-                'completed' => !empty($member->diet)
-                    && !empty($member->is_smoking)
-                    && !empty($member->is_drinking)
-                    && !empty($member->any_disability)
+                'completed' =>
+                filled($member->diet) &&
+                    filled($member->is_smoking) &&
+                    filled($member->is_drinking) &&
+                    filled($member->any_disability),
             ],
+
             [
                 'title' => 'Partner Preference',
-                'completed' => !empty($member->looking_for)
-                    && !empty($member->partner_age_from)
-                    && !empty($member->partner_age_to)
-                    && !empty($member->partner_height_from)
-                    && !empty($member->partner_height_to)
-                    && !empty($member->partner_religion)
-                    && !empty($member->partner_cast)
-                    && !empty($member->partner_mothertongue)
-                    && !empty($member->partner_education)
-                    && !empty($member->partner_occupation)
-                    && !empty($member->partner_annual_income_from)
-                    && !empty($member->partner_annual_income_to)
-                    && !empty($member->is_partner_smoking)
-                    && !empty($member->is_partner_drinking)
-                    && !empty($member->is_partner_manglik)
-            ]
+                'completed' =>
+                filled($member->looking_for) &&
+                    filled($member->partner_age_from) &&
+                    filled($member->partner_age_to) &&
+                    filled($member->partner_height_from) &&
+                    filled($member->partner_height_to) &&
+                    filled($member->partner_religion) &&
+                    filled($member->partner_cast) &&
+                    filled($member->partner_mothertongue) &&
+                    filled($member->partner_education) &&
+                    filled($member->partner_occupation) &&
+                    filled($member->partner_annual_income_from) &&
+                    filled($member->partner_annual_income_to) &&
+                    filled($member->is_partner_smoking) &&
+                    filled($member->is_partner_drinking) &&
+                    filled($member->is_partner_manglik),
+            ],
         ];
 
-        //dd($steps);
+        $completedSteps = collect($steps)
+            ->where('completed', true)
+            ->count();
 
-        $completedSteps = 0;
+        $completion = round(
+            ($completedSteps / count($steps)) * 100
+        );
 
-        foreach ($steps as $step) {
-            if ($step['completed']) {
-                $completedSteps++;
-            }
-        }
-
-        $completion = round(($completedSteps / count($steps)) * 100);
         $circumference = 226.2;
-        $strokeOffset = $circumference - ($completion / 100) * $circumference;
 
-        $data['plan'] = MembershipPlan::where('id', $member->plan_id)->first();
-        $data['shortlisted'] = Shortlist::where('member_id', $id)->count();
-        $data['iLikes'] = ProfileLike::where('user_id', $id)->count();
-        $data['iviewed'] = ProfileViewed::where('viewed_profile_id', $id)->count();
-        $data['interestSent'] = SentInterest::where('member_id', $id)->count();
-        $data['contact'] = ProfileViewed::where('member_id', $id)->count();
+        $strokeOffset = $circumference -
+            ($completion / 100) * $circumference;
 
-        /* recent profiles */
-        $today   = Carbon::today()->format('Y-m-d');
-        $loggedInUser = Member::find($id);
-        if (!$loggedInUser) {
-            return [];
-        }
-        $gender = $loggedInUser->gender;
-        $recents = Member::where('gender', '!=', $gender)
+
+        /*
+    |--------------------------------------------------------------------------
+    | Dashboard Counts
+    |--------------------------------------------------------------------------
+    */
+
+        $data['plan'] = MembershipPlan::find($member->plan_id);
+
+        $data['shortlisted'] = Shortlist::where(
+            'member_id',
+            $id
+        )->count();
+
+        $data['iLikes'] = ProfileLike::where(
+            'user_id',
+            $id
+        )->count();
+
+        $data['iviewed'] = ProfileViewed::where(
+            'viewed_profile_id',
+            $id
+        )->count();
+
+        $data['interestSent'] = SentInterest::where(
+            'member_id',
+            $id
+        )->count();
+
+        $data['contact'] = ProfileViewed::where(
+            'member_id',
+            $id
+        )->count();
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Common Profile Query
+    |--------------------------------------------------------------------------
+    */
+
+        $profileColumns = [
+            'members.id',
+            'members.profile_id',
+            'members.full_name',
+            'members.gender',
+            'members.birth_date_time',
+            'members.religion',
+            'members.cast',
+            'members.height',
+            'members.mother_tongue',
+            'members.annual_income',
+            'members.photo',
+            'members.photo_approved',
+            'members.member_type',
+            'members.is_trusted',
+            'members.activation_number',
+        ];
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Recent Profiles
+    |--------------------------------------------------------------------------
+    */
+
+        $recentProfiles = Member::query()
+            ->select($profileColumns)
+            ->where('gender', '!=', $member->gender)
             ->where('id', '!=', $id)
             ->where('profile_hide', '!=', 'yes')
             ->where('active', 'Yes')
-            ->orderBy('activation_number', 'desc')
+            ->orderByDesc('activation_number')
             ->limit(30)
             ->get();
 
-        $users = [];
+        $data['recents'] = $this->formatDashboardProfiles(
+            $recentProfiles
+        );
 
-        foreach ($recents as $key => $recent) {
-            $birthDate = Carbon::parse($recent->birth_date_time);
-            $diff = $birthDate->diff(Carbon::parse($today));
-            $users[$key]['age_years']  = $diff->y;
-            $users[$key]['age_months'] = $diff->m;
-            if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $users[$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
-            } elseif ($recent->gender === "Male") {
-                $users[$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
-            } elseif ($recent->gender === "Female") {
-                $users[$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
-            }
-            if ($recent->member_type === 'Verified') {
-                $users[$key]['member_type'] = "https://himrishtey.com/img/verified.png";
-                $users[$key]['mem_type']    = "Yes";
-            } else {
-                $users[$key]['member_type'] = "normal";
-            }
-            if ($recent->is_trusted === 'Trusted') {
-                $users[$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
-            } else {
-                $users[$key]['is_trusted'] = "No";
-            }
-            $users[$key] = array_merge($recent->toArray(), $users[$key]);
-        }
-        $data['recents'] = $users;
 
-        /********** Verified Users **************/
-        $verified = Member::where('gender', '!=', $gender)
+        /*
+    |--------------------------------------------------------------------------
+    | Verified Profiles
+    |--------------------------------------------------------------------------
+    */
+
+        $verifiedProfiles = Member::query()
+            ->select($profileColumns)
+            ->where('gender', '!=', $member->gender)
             ->where('id', '!=', $id)
             ->where('profile_hide', '!=', 'yes')
             ->where('member_type', 'Verified')
             ->where('active', 'Yes')
-            ->orderBy('activation_number', 'desc')
+            ->orderByDesc('activation_number')
             ->limit(30)
             ->get();
 
-        $data['verifiedUsers'] = [];
-        foreach ($verified as $key => $recent) {
-            $birthDate = Carbon::parse($recent->birth_date_time);
-            $diff = $birthDate->diff(Carbon::parse($today));
-            $data['verifiedUsers'][$key]['age_years']  = $diff->y;
-            $data['verifiedUsers'][$key]['age_months'] = $diff->m;
-            if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
-            } elseif ($recent->gender === "Male") {
-                $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
-            } elseif ($recent->gender === "Female") {
-                $data['verifiedUsers'][$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
-            }
-            if ($recent->member_type === 'Verified') {
-                $data['verifiedUsers'][$key]['member_type'] = "https://himrishtey.com/img/verified.png";
-                $data['verifiedUsers'][$key]['mem_type']    = "Yes";
-            } else {
-                $data['verifiedUsers'][$key]['member_type'] = "normal";
-            }
-            if ($recent->is_trusted === 'Trusted') {
-                $data['verifiedUsers'][$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
-            } else {
-                $data['verifiedUsers'][$key]['is_trusted'] = "No";
-            }
-            $data['verifiedUsers'][$key] = array_merge($recent->toArray(), $data['verifiedUsers'][$key]);
-        }
+        $data['verifiedUsers'] = $this->formatDashboardProfiles(
+            $verifiedProfiles
+        );
 
-        /********** Who viewewd *********/
-        $recents = Member::select('members.*', 'profile_viewed.viewed_profile_id')
-            ->join('profile_viewed', 'members.id', '=', 'profile_viewed.member_id')
-            ->where('profile_viewed.viewed_profile_id', $id)
-            ->where('members.active', 'Yes')
-            ->where('members.profile_hide', '!=', 'yes')
-            ->orderBy('profile_viewed.id', 'desc')
-            ->limit(30)
-            ->get();
 
-        $data['viewed'] = [];
+        /*
+    |--------------------------------------------------------------------------
+    | Shortlisted Profiles
+    |--------------------------------------------------------------------------
+    */
 
-        foreach ($recents as $key => $recent) {
-            $birthDate = Carbon::parse($recent->birth_date_time);
-            $diff = $birthDate->diff($today);
-            $data['viewed'][$key]['id']                = $recent->id;
-            $data['viewed'][$key]['profile_id']        = $recent->profile_id;
-            $data['viewed'][$key]['full_name']         = $recent->full_name;
-            $data['viewed'][$key]['age_years']         = $diff->y;
-            $data['viewed'][$key]['age_months']        = $diff->m;
-            $data['viewed'][$key]['birth_date_time']   = $birthDate->format('d-m-Y h:i:s A');
-            $data['viewed'][$key]['religion']          = $recent->religion;
-            $data['viewed'][$key]['cast']              = $recent->cast;
-            $data['viewed'][$key]['height']            = $recent->height;
-            $data['viewed'][$key]['mother_tongue']     = $recent->mother_tongue;
-            $data['viewed'][$key]['annual_income']     = $recent->annual_income;
-            $data['viewed'][$key]['gender']            = $recent->gender;
-            $data['viewed'][$key]['activation_number'] = $recent->activation_number;
-            if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $data['viewed'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
-            } elseif ($recent->gender === "Male") {
-                $data['viewed'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
-            } elseif ($recent->gender === "Female") {
-                $data['viewed'][$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
-            }
-            if ($recent->member_type === 'Verified') {
-                $data['viewed'][$key]['member_type'] = "https://himrishtey.com/img/verified.png";
-                $data['viewed'][$key]['mem_type']    = "Yes";
-            } else {
-                $data['viewed'][$key]['member_type'] = "normal";
-            }
-            if ($recent->is_trusted === 'Trusted') {
-                $data['viewed'][$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
-            } else {
-                $data['viewed'][$key]['is_trusted'] = "No";
-            }
-            $data['viewed'][$key] = array_merge($recent->toArray(), $data['viewed'][$key]);
-        }
+        $shortlistedProfiles = Member::query()
+            ->select($profileColumns)
+            ->whereIn('id', function ($query) use ($id) {
 
-        /****** shortlisted profiles **************/
-        $results = Member::whereIn('id', function ($query) use ($id) {
-            $query->select('profile_id')
-                ->from('short_listed')
-                ->where('member_id', $id);
-        })
+                $query->select('profile_id')
+                    ->from('short_listed')
+                    ->where('member_id', $id);
+            })
             ->where('active', 'Yes')
             ->where('profile_hide', '!=', 'yes')
-            ->orderBy('activation_number', 'desc')
+            ->orderByDesc('activation_number')
+            ->limit(30)
             ->get();
 
-        $data['shortlist'] = [];
+        $data['shortlist'] = $this->formatDashboardProfiles(
+            $shortlistedProfiles
+        );
 
-        foreach ($results as $key => $recent) {
-            $birthDate = Carbon::parse($recent->birth_date_time);
-            $diff = $birthDate->diff($today);
+        /*
+        |--------------------------------------------------------------------------
+        | Who Viewed My Profile
+        |--------------------------------------------------------------------------
+        |
+        | profile_viewed:
+        |   member_id          = person who viewed the profile
+        |   viewed_profile_id  = profile that was viewed
+        |
+        */
 
-            $data['shortlist'][$key]['age_years']  = $diff->y;
-            $data['shortlist'][$key]['age_months'] = $diff->m;
-            if (!empty($recent->photo) && $recent->photo_approved === "Yes") {
-                $data['shortlist'][$key]['photo'] = "https://himrishtey.com/photos/photo/" . $recent->photo;
-            } elseif ($recent->gender === "Male") {
-                $data['shortlist'][$key]['photo'] = "https://himrishtey.com/img/boy.jpg";
-            } elseif ($recent->gender === "Female") {
-                $data['shortlist'][$key]['photo'] = "https://himrishtey.com/img/girl.jpg";
-            }
-            if ($recent->member_type === 'Verified') {
-                $data['shortlist'][$key]['member_type'] = "https://himrishtey.com/img/verified.png";
-                $data['shortlist'][$key]['mem_type']    = "Yes";
-            } else {
-                $data['shortlist'][$key]['member_type'] = "normal";
-            }
-            if ($recent->is_trusted === 'Trusted') {
-                $data['shortlist'][$key]['is_trusted'] = "https://himrishtey.com/img/trusted.png";
-            } else {
-                $data['shortlist'][$key]['is_trusted'] = "No";
-            }
-            $data['shortlist'][$key] = array_merge($recent->toArray(), $data['shortlist'][$key]);
-        }
+        $viewedProfiles = Member::query()
+            ->select($profileColumns)
+            ->join(
+                'profile_viewed',
+                'members.id',
+                '=',
+                'profile_viewed.member_id'
+            )
+            ->where(
+                'profile_viewed.viewed_profile_id',
+                $id
+            )
+            ->where('members.id', '!=', $id)
+            ->where('members.active', 'Yes')
+            ->where('members.profile_hide', '!=', 'yes')
+            ->orderByDesc('profile_viewed.id')
+            ->limit(30)
+            ->get();
 
-        /* Matching profiles */
+        $data['viewed'] = $this->formatDashboardProfiles(
+            $viewedProfiles
+        );
 
-        $partner_country    = explode(',', $member->partner_country ?? '');
-        $partner_religion   = explode(',', $member->partner_religion ?? '');
-        $partner_education  = explode(',', $member->partner_education ?? '');
-        $partner_mothertongue = explode(',', $member->partner_mothertongue ?? '');
+        /*
+    |--------------------------------------------------------------------------
+    | Matching Profiles
+    |--------------------------------------------------------------------------
+    */
+
+        $partnerCountry = array_filter(
+            explode(',', $member->partner_country ?? '')
+        );
+
+        $partnerReligion = array_filter(
+            explode(',', $member->partner_religion ?? '')
+        );
+
+        $partnerEducation = array_filter(
+            explode(',', $member->partner_education ?? '')
+        );
+
+        $partnerMotherTongue = array_filter(
+            explode(',', $member->partner_mothertongue ?? '')
+        );
 
         if ($member->partner_cast === 'Any') {
-            $partner_cast = Member::where('cast', '!=', '')->distinct()->pluck('cast')->toArray();
+
+            $partnerCast = Member::whereNotNull('cast')
+                ->where('cast', '!=', '')
+                ->distinct()
+                ->pluck('cast')
+                ->toArray();
         } else {
-            $partner_cast = explode(',', $member->partner_cast ?? '');
+
+            $partnerCast = array_filter(
+                explode(',', $member->partner_cast ?? '')
+            );
         }
+
+
+        /*
+        | Age calculation in SQL
+        */
+
+        $minBirthDate = Carbon::today()
+            ->subYears($member->partner_age_to + 1)
+            ->addDay()
+            ->startOfDay();
+
+        $maxBirthDate = Carbon::today()
+            ->subYears($member->partner_age_from)
+            ->endOfDay();
+
+
+        $matchingQuery = Member::query()
+            ->select($profileColumns)
+
+            ->where('gender', '!=', $member->gender)
+            ->where('id', '!=', $id)
+
+            ->where('active', 'Yes')
+            ->where('profile_hide', '!=', 'yes')
+
+            ->whereBetween('birth_date_time', [
+                $minBirthDate,
+                $maxBirthDate
+            ])
+
+            ->whereBetween('height', [
+                $member->partner_height_from,
+                $member->partner_height_to
+            ]);
+
+
+        if (!empty($partnerCountry)) {
+            $matchingQuery->whereIn(
+                'country_living_in',
+                $partnerCountry
+            );
+        }
+
+        if (!empty($partnerReligion)) {
+            $matchingQuery->whereIn(
+                'religion',
+                $partnerReligion
+            );
+        }
+
+        if (!empty($partnerCast)) {
+            $matchingQuery->whereIn(
+                'cast',
+                $partnerCast
+            );
+        }
+
+        if (!empty($partnerEducation)) {
+            $matchingQuery->whereIn(
+                'education',
+                $partnerEducation
+            );
+        }
+
+        if (!empty($partnerMotherTongue)) {
+            $matchingQuery->whereIn(
+                'mother_tongue',
+                $partnerMotherTongue
+            );
+        }
+
+
+        $data['matching_profiles'] = $this
+            ->formatDashboardProfiles(
+                $matchingQuery
+                    ->orderByDesc('activation_number')
+                    ->limit(30)
+                    ->get()
+            );
+        //dd($data);
+
+        return view(
+            'dashboard/home',
+            compact(
+                'member',
+                'data',
+                'completion',
+                'steps',
+                'strokeOffset'
+            )
+        );
+    }
+
+    private function formatDashboardProfiles($profiles)
+    {
         $today = Carbon::today();
 
-        $data['matching_profiles'] = Member::where('gender', '!=', $member->gender)
-            ->where('id', '!=', $id)
-            ->where('birth_date_time', 'not like', '%00:30:00%')
-            ->get()
-            ->filter(function ($profile) use (
-                $member,
-                $today,
-                $partner_country,
-                $partner_religion,
-                $partner_cast,
-                $partner_education,
-                $partner_mothertongue
+        return $profiles->map(function ($profile) use ($today) {
+
+            $birthDate = Carbon::parse(
+                $profile->birth_date_time
+            );
+
+            $diff = $birthDate->diff($today);
+
+            $profile->age_years = $diff->y;
+            $profile->age_months = $diff->m;
+
+            if (
+                !empty($profile->photo) &&
+                $profile->photo_approved === 'Yes'
             ) {
 
-                $age = Carbon::parse($profile->birth_date_time)->diffInYears($today);
-                return $age >= $member->partner_age_from &&
-                    $age <= $member->partner_age_to &&
-                    $profile->height >= $member->partner_height_from &&
-                    $profile->height <= $member->partner_height_to &&
-                    in_array($profile->religion, $partner_religion) &&
-                    in_array($profile->country_living_in, $partner_country) &&
-                    in_array($profile->cast, $partner_cast) &&
-                    in_array($profile->education, $partner_education) &&
-                    in_array($profile->mother_tongue, $partner_mothertongue);
-            });
-        //dd($data['matching_profiles']);
-        return view('dashboard/home', compact(['member', 'data', 'completion', 'steps', 'strokeOffset']));
+                $profile->photo =
+                    'https://himrishtey.com/photos/photo/' .
+                    $profile->photo;
+            } elseif ($profile->gender === 'Male') {
+
+                $profile->photo =
+                    'https://himrishtey.com/img/boy.jpg';
+            } else {
+
+                $profile->photo =
+                    'https://himrishtey.com/img/girl.jpg';
+            }
+
+            if ($profile->member_type === 'Verified') {
+
+                $profile->member_type =
+                    'https://himrishtey.com/img/verified.png';
+
+                $profile->mem_type = 'Yes';
+            } else {
+
+                $profile->member_type = 'normal';
+                $profile->mem_type = 'No';
+            }
+
+            if ($profile->is_trusted === 'Trusted') {
+
+                $profile->is_trusted =
+                    'https://himrishtey.com/img/trusted.png';
+            } else {
+
+                $profile->is_trusted = 'No';
+            }
+
+            return $profile;
+        });
     }
 
     public function quick_search(Request $request)
