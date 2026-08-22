@@ -128,10 +128,10 @@ Route::middleware('auth:member')->group(function () {
     Route::get('refund-policy', [PagesController::class, 'refund'])->name('member.refund-policy');
     Route::post('/interest/update-status', [HomeController::class, 'updateInterestStatus'])->name('interest.update.status');
     Route::get('/membership/success', function () {
-        return view('dashboard.success');
+        return view('dashboard.memberships.success');
     })->name('membership.success');
     Route::get('/membership/failed', function () {
-        return view('dashboard.failed');
+        return view('dashboard.memberships.failed');
     })->name('membership.failed');
     Route::post('/save-subscription', [PushSubscriptionController::class, 'store']);
     Route::post('/send-notification', [PushSubscriptionController::class, 'sendBrowserNotification']);

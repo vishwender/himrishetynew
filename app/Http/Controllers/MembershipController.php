@@ -59,48 +59,174 @@ class MembershipController extends Controller
 
         $order = $api->order->create($orderData);
 
-        return view('dashboard.checkout', [
+
+        return view('dashboard.memberships.checkout', [
             'order_id'   => $order['id'],
             'plan'       => $plan,
             'razor_key'  => env('RAZORPAY_KEY')
         ]);
     }
+    // public function verifyPayment(Request $request)
+    // {
+    //     $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+
+    //     try {
+    //         $attributes = [
+    //             'razorpay_order_id'   => $request->razorpay_order_id,
+    //             'razorpay_payment_id' => $request->razorpay_payment_id,
+    //             'razorpay_signature'  => $request->razorpay_signature
+    //         ];
+
+    //         $api->utility->verifyPaymentSignature($attributes);
+
+    //         $payment = $api->payment->fetch($request->razorpay_payment_id);
+    //         if ($payment->status !== 'captured') {
+    //             $payment->capture(['amount' => $payment->amount]);
+    //         }
+
+    //         $user = auth()->guard('member')->user();
+    //         $plan = MembershipPlan::findOrFail($request->plan_id);
+    //         $user->plan_id = $plan->id;
+    //         $user->save();
+
+    //         DB::table('payments')->insert([
+    //             'payment_date' => now(),
+    //             'member_id'    => $user->id,
+    //             'plan_id'      => $plan->id,
+    //             'payment_id'   => $request->razorpay_payment_id,
+    //             'amount'       => $payment->amount / 100,
+    //             'remarks'      => 'Razorpay',
+    //         ]);
+
+    //         return redirect()->route('membership.success')->with('success', 'Payment successful! Membership activated.');
+    //     } catch (\Exception $e) {
+    //         return redirect()->route('membership.failed')
+    //             ->with('error', 'Payment failed: ' . $e->getMessage());
+    //     }
+    // }
+
     public function verifyPayment(Request $request)
     {
+        $request->validate([
+            'razorpay_order_id'   => 'required|string',
+            'razorpay_payment_id' => 'required|string',
+            'razorpay_signature'  => 'required|string',
+            'plan_id'             => 'required|integer',
+        ]);
+
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
 
         try {
+
+            // 1. Verify Razorpay signature
             $attributes = [
                 'razorpay_order_id'   => $request->razorpay_order_id,
                 'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_signature'  => $request->razorpay_signature
+                'razorpay_signature'  => $request->razorpay_signature,
             ];
 
             $api->utility->verifyPaymentSignature($attributes);
 
-            $payment = $api->payment->fetch($request->razorpay_payment_id);
-            if ($payment->status !== 'captured') {
-                $payment->capture(['amount' => $payment->amount]);
+
+            // 2. Fetch payment
+            $payment = $api->payment->fetch(
+                $request->razorpay_payment_id
+            );
+
+
+            // 3. Verify order belongs to payment
+            if ($payment->order_id !== $request->razorpay_order_id) {
+                throw new \Exception('Payment order mismatch.');
             }
 
-            $user = auth()->guard('member')->user();
-            $plan = MembershipPlan::findOrFail($request->plan_id);
-            $user->plan_id = $plan->id;
-            $user->save();
 
-            DB::table('payments')->insert([
-                'payment_date' => now(),
-                'member_id'    => $user->id,
-                'plan_id'      => $plan->id,
-                'payment_id'   => $request->razorpay_payment_id,
-                'amount'       => $payment->amount / 100,
-                'remarks'      => 'Razorpay',
+            // 4. Make sure payment is captured
+            if ($payment->status !== 'captured') {
+
+                $payment->capture([
+                    'amount' => $payment->amount
+                ]);
+
+                $payment = $api->payment->fetch(
+                    $request->razorpay_payment_id
+                );
+            }
+
+
+            if ($payment->status !== 'captured') {
+                throw new \Exception('Payment was not captured.');
+            }
+
+
+            // 5. Get logged-in member
+            $member = auth()->guard('member')->user();
+
+            if (!$member) {
+                throw new \Exception('Member not authenticated.');
+            }
+
+
+            // 6. Get selected membership plan
+            $plan = MembershipPlan::findOrFail($request->plan_id);
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | 7. Update member + save payment together
+        |--------------------------------------------------------------------------
+        */
+
+            DB::transaction(function () use (
+                $member,
+                $plan,
+                $payment,
+                $request
+            ) {
+
+                // Update members table
+                $member->plan_id = $plan->id;
+                $member->plan_activation_date = now();
+                // $member->active = "Yes";
+                $member->save();
+
+
+                // Save payment transaction
+                DB::table('payments')->insert([
+                    'payment_date' => now(),
+
+                    'member_id' => $member->id,
+
+                    'plan_id' => $plan->id,
+
+                    'payment_id' => $request->razorpay_payment_id,
+
+                    'amount' => $payment->amount / 100,
+
+                    'remarks' => 'Razorpay',
+                ]);
+            });
+
+
+            // 8. Redirect to success
+            return redirect()
+                ->route('membership.success')
+                ->with('success', 'Payment successful! Membership activated.')
+                ->with('plan_id', $plan->id);
+        } catch (\Exception $e) {
+
+            \Log::error('Razorpay Payment Verification Failed', [
+                'order_id'   => $request->razorpay_order_id,
+                'payment_id' => $request->razorpay_payment_id,
+                'member_id'  => auth()->guard('member')->id(),
+                'error'      => $e->getMessage(),
             ]);
 
-            return redirect()->route('membership.success')->with('success', 'Payment successful! Membership activated.');
-        } catch (\Exception $e) {
-            return redirect()->route('membership.failed')
-                ->with('error', 'Payment failed: ' . $e->getMessage());
+            return redirect()
+                ->route('membership.failed')
+                ->with(
+                    'error',
+                    'We could not complete your payment. Please try again.'
+                );
         }
     }
 }
