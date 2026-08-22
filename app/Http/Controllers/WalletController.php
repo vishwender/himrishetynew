@@ -31,6 +31,7 @@ class WalletController extends Controller
 
     public function createOrder(Request $request)
     {
+
         $request->validate([
             'amount' => 'required|numeric|min:10',
         ]);
@@ -48,6 +49,7 @@ class WalletController extends Controller
         ]);
 
         return response()->json([
+            'success' => true,
             'order_id'   => $order['id'],
             'razor_key'  => env('RAZORPAY_KEY'),
             'amount'     => $request->amount * 100,
@@ -64,10 +66,10 @@ class WalletController extends Controller
         $user = auth()->guard('member')->user();
 
         /*
-    |--------------------------------------------------------------------------
-    | Find Offer
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Find Offer
+        |--------------------------------------------------------------------------
+        */
 
         $offer = WalletOffer::findOrFail(
             $request->offer_id
@@ -75,19 +77,19 @@ class WalletController extends Controller
 
 
         /*
-    |--------------------------------------------------------------------------
-    | Get Price From Database
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Get Price From Database
+        |--------------------------------------------------------------------------
+        */
 
         $amount = (float) $offer->amount;
 
 
         /*
-    |--------------------------------------------------------------------------
-    | Create Razorpay Order
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Create Razorpay Order
+        |--------------------------------------------------------------------------
+        */
 
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
 
@@ -126,26 +128,16 @@ class WalletController extends Controller
 
 
         /*
-    |--------------------------------------------------------------------------
-    | Save Pending Payment
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Save Pending Payment
+        |--------------------------------------------------------------------------
+        */
 
-        DB::table('wallet_offers')->insert([
+        DB::table('member_wallet_payments')->insert([
 
             'member_id' => $user->id,
-
-            'offer_id' => $offer->id,
-
-            'razorpay_order_id' => $order['id'],
-
             'amount' => $amount,
-
-            'status' => 'pending',
-
-            'created_at' => now(),
-
-            'updated_at' => now(),
+            'payment_id' => $order['id'],
 
         ]);
 
@@ -160,9 +152,7 @@ class WalletController extends Controller
 
             'currency' => $order['currency'],
 
-            'key' => config(
-                'services.razorpay.key'
-            ),
+            'key' => env('RAZORPAY_KEY'),
 
             'description' =>
             $offer->title,
@@ -173,6 +163,7 @@ class WalletController extends Controller
 
     public function paymentCallback(Request $request)
     {
+        //dd($request);
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
         $userId = Auth::guard('member')->id();
 

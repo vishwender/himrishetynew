@@ -84,7 +84,8 @@
     list.innerHTML = '';
 
     // Reverse so newest first (mirrors Flutter logic)
-    const reversed = [...txns].reverse();
+    //const reversed = [...txns].reverse();
+    const reversed = txns;
 
     if (reversed.length === 0) {
       if (emptyEl) emptyEl.removeAttribute('hidden');
@@ -203,6 +204,7 @@
 
     // Proceed to pay
     proceedBtn?.addEventListener('click', () => {
+        console.log('i am here');
       const amount = parseInt(input?.value, 10);
       if (!amount || amount < 1 || amount > 10000) {
         if (errorEl) errorEl.removeAttribute('hidden');
@@ -250,27 +252,28 @@
   // =============================================
 async function handleAddMoney(plan) {
 
+    console.log('PLAN:', plan);
+
     try {
 
         showToast(`Preparing payment of ₹${plan.amount}...`);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Create Razorpay Order
-        |--------------------------------------------------------------------------
-        */
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
 
-        const response = await fetch(`wallet/create-order`, {
+        if (!csrfToken) {
+            throw new Error('CSRF token not found.');
+        }
+
+        const response = await fetch('/wallet/create-order', {
 
             method: 'POST',
 
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-
-                'X-CSRF-TOKEN': document
-                    .querySelector('meta[name="csrf-token"]')
-                    .getAttribute('content')
+                'X-CSRF-TOKEN': csrfToken
             },
 
             body: JSON.stringify({
@@ -278,27 +281,27 @@ async function handleAddMoney(plan) {
             })
         });
 
-
         const data = await response.json();
 
+        console.log('Create order response:', data);
 
         if (!response.ok || !data.success) {
 
             throw new Error(
-                data.message || 'Unable to create payment order.'
+                data.message ||
+                'Unable to create payment order.'
             );
         }
 
-
         /*
         |--------------------------------------------------------------------------
-        | Razorpay Checkout
+        | Razorpay Options
         |--------------------------------------------------------------------------
         */
 
-        const options = {
+        const razorpayOptions = {
 
-            key: data.key,
+            key: data.razor_key,
 
             amount: data.amount,
 
@@ -310,13 +313,17 @@ async function handleAddMoney(plan) {
 
             order_id: data.order_id,
 
-            handler: async function (response) {
+            handler: async function (razorpayResponse) {
 
-                await verifyWalletPayment(
-                    response,
-                    plan.amount
+                console.log(
+                    'Razorpay payment response:',
+                    razorpayResponse
                 );
 
+                await verifyWalletPayment(
+                    razorpayResponse,
+                    plan.amount
+                );
             },
 
             prefill: {
@@ -326,26 +333,37 @@ async function handleAddMoney(plan) {
             },
 
             theme: {
-                color: '#d92768'
+                color: '#6d4aff'
             },
 
             modal: {
+
                 ondismiss: function () {
 
                     showToast(
                         'Payment cancelled.'
                     );
-
                 }
+
             }
 
         };
 
+        /*
+        |--------------------------------------------------------------------------
+        | Open Razorpay
+        |--------------------------------------------------------------------------
+        */
 
-        const razorpay = new Razorpay(options);
+        if (typeof Razorpay === 'undefined') {
+            throw new Error(
+                'Razorpay Checkout script is not loaded.'
+            );
+        }
+
+        const razorpay = new Razorpay(razorpayOptions);
 
         razorpay.open();
-
 
     } catch (error) {
 
@@ -355,15 +373,15 @@ async function handleAddMoney(plan) {
         );
 
         showToast(
-            error.message || 'Unable to start payment.'
+            error.message ||
+            'Unable to start payment.'
         );
     }
 }
 
-async function verifyWalletPayment(
-    razorpayResponse,
-    amount
-) {
+async function verifyWalletPayment(razorpayResponse,amount) 
+{
+
 
     try {
 
@@ -373,7 +391,7 @@ async function verifyWalletPayment(
 
 
         const response = await fetch(
-            `wallet/callback`,
+            `/wallet/callback`,
             {
 
                 method: 'POST',
