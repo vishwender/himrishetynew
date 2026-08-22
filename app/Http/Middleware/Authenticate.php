@@ -22,9 +22,10 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            if ($request->is('member/*')) { // or use route name
-                return route('login'); // redirect to member login page
-            }
+            return route('login-form');
+            // if ($request->is('member/*')) { // or use route name
+            //     return route('login-form'); // redirect to member login page
+            // }
         }
     }
 }
