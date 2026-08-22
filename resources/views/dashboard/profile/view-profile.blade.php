@@ -766,7 +766,7 @@
         <div class="pd-modal">
             <div class="pd-modal-header">
                 <h3 id="unlockModalTitle">Unlock Profile</h3>
-                <button class="pd-modal-close" onclick="closeUnlockModal()" aria-label="Close">
+                <button class="pd-modal-close" onclick="closeUnlockModal('contact')" aria-label="Close">
                     <i data-lucide="x" width="20" height="20"></i>
                 </button>
             </div>
@@ -775,23 +775,25 @@
                     <div class="pd-modal-avatar">
                         <i data-lucide="user" width="28" height="28"></i>
                     </div>
-                    <strong>Rahul Thakur</strong>
+                    <strong>{{ $usr->full_name }}</strong>
                 </div>
                 <div class="pd-modal-row">
                     <span>Profile view price</span>
-                    <span>₹ 20</span>
+                    <span>₹ {{ $usr->profile_view_price }}</span>
                 </div>
                 <div class="pd-modal-wallet">
                     <div>
                         <span>Wallet Balance</span>
                         <small class="pd-wallet-low" id="walletLowNote" style="display:none;">Low balance</small>
                     </div>
-                    <span>₹ 150</span>
+
+                    <span>₹ {{$wallet->wallet_balance}}</span>
                 </div>
             </div>
             <div class="pd-modal-footer">
                 <button class="pd-modal-cancel" onclick="closeUnlockModal()">Cancel</button>
-                <button class="pd-modal-confirm" id="unlockConfirmBtn" onclick="confirmUnlock()">
+                <button class="pd-modal-confirm" data-profile-id="{{ $usr->id }}"
+                    data-unlock-price="{{ $usr->profile_view_price }}" id="unlockConfirmBtn" onclick="confirmUnlock()">
                     Unlock
                 </button>
             </div>

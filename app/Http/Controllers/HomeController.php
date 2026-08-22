@@ -2495,6 +2495,7 @@ class HomeController extends Controller
 
     public function unlock_contact(Request $request, $profileId)
     {
+        dd($profileId);
         $userId = auth()->guard('member')->user()->id;
 
         $usr = DB::table('members')

@@ -419,59 +419,487 @@ function initBottomBar() {
 }
 
 /* ── UNLOCK MODAL ── */
+/* ── UNLOCK MODAL ── */
+
 let currentUnlockType = null;
+let unlockModalTrigger = null;
 
+
+/**
+ * Open unlock modal
+ */
 function openUnlockModal(type) {
-  currentUnlockType = type;
-  const overlay = document.getElementById("unlockModalOverlay");
-  const title = document.getElementById("unlockModalTitle");
-  if (title) title.textContent = type === "contact" ? "Unlock Contact Details" : "Unlock Kundli Details";
-  overlay?.classList.add("open");
-  overlay?.setAttribute("aria-hidden", "false");
+
+    currentUnlockType = type;
+
+    const overlay =
+        document.getElementById("unlockModalOverlay");
+
+    const title =
+        document.getElementById("unlockModalTitle");
+
+    const confirmButton =
+        document.getElementById("unlockConfirmBtn");
+
+    if (!overlay) {
+        console.error("unlockModalOverlay not found");
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Remember which button opened the modal
+    |--------------------------------------------------------------------------
+    */
+
+    unlockModalTrigger = document.activeElement;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Set modal title
+    |--------------------------------------------------------------------------
+    */
+
+    if (title) {
+
+        title.textContent =
+            type === "contact"
+                ? "Unlock Contact Details"
+                : "Unlock Kundli Details";
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show modal
+    |--------------------------------------------------------------------------
+    */
+
+    overlay.classList.add("open");
+
+    overlay.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.style.overflow = "hidden";
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Focus Unlock button
+    |--------------------------------------------------------------------------
+    */
+
+    setTimeout(() => {
+
+        if (confirmButton) {
+            confirmButton.focus();
+        }
+
+    }, 50);
 }
 
+
+/**
+ * Close unlock modal
+ */
 function closeUnlockModal() {
-  const overlay = document.getElementById("unlockModalOverlay");
-  overlay?.classList.remove("open");
-  overlay?.setAttribute("aria-hidden", "true");
+
+    const overlay =
+        document.getElementById("unlockModalOverlay");
+
+    if (!overlay) return;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | IMPORTANT
+    | Remove focus from anything inside modal BEFORE aria-hidden=true
+    |--------------------------------------------------------------------------
+    */
+
+    const activeElement =
+        document.activeElement;
+
+    if (
+        activeElement &&
+        overlay.contains(activeElement)
+    ) {
+
+        activeElement.blur();
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hide modal
+    |--------------------------------------------------------------------------
+    */
+
+    overlay.classList.remove("open");
+
+    overlay.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    document.body.style.overflow = "";
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Restore focus to original button
+    |--------------------------------------------------------------------------
+    */
+
+    const trigger =
+        unlockModalTrigger;
+
+    unlockModalTrigger = null;
+
+    if (
+        trigger &&
+        trigger !== document.body &&
+        document.contains(trigger)
+    ) {
+
+        setTimeout(() => {
+
+            trigger.focus();
+
+        }, 0);
+    }
 }
 
-function confirmUnlock() {
-  closeUnlockModal();
-  if (currentUnlockType === "contact") {
-    // Reveal contact info (replace locked values with dummy for demo)
-    const mVal = document.getElementById("mobileValue");
-    const waVal = document.getElementById("waValue");
-    const emailVal = document.getElementById("emailValue");
-    if (mVal) {
-      mVal.classList.remove("pd-locked");
-      mVal.innerHTML = "+91 98765 04567";
+
+/**
+ * Confirm unlock
+ */
+async function confirmUnlock() {
+
+    const button =
+        document.getElementById("unlockConfirmBtn");
+
+    if (!button) {
+
+        console.error(
+            "unlockConfirmBtn not found"
+        );
+
+        return;
     }
-    if (waVal) {
-      waVal.classList.remove("pd-locked");
-      waVal.innerHTML = "+91 98765 04567";
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get profile ID and price
+    |--------------------------------------------------------------------------
+    */
+
+    const profileId = button.dataset.profileId;
+
+    const unlockPrice = button.dataset.unlockPrice;
+
+
+    console.log(
+        "Unlock profile:",
+        profileId
+    );
+
+    console.log(
+        "Unlock price:",
+        unlockPrice
+    );
+
+
+    if (!profileId) {
+
+        showToast(
+            "Profile ID is missing."
+        );
+
+        return;
     }
-    if (emailVal) {
-      emailVal.classList.remove("pd-locked");
-      emailVal.innerHTML = "rahul.thakur@gmail.com";
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save unlock type BEFORE closing modal
+    |--------------------------------------------------------------------------
+    */
+
+    const unlockType =
+        currentUnlockType;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Disable button
+    |--------------------------------------------------------------------------
+    */
+
+    button.disabled = true;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Close modal
+    |--------------------------------------------------------------------------
+    */
+
+    closeUnlockModal();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONTACT UNLOCK
+    |--------------------------------------------------------------------------
+    */
+
+    if (unlockType === "contact") {
+
+        try {
+
+            showToast(
+                "Unlocking contact details..."
+            );
+
+
+            const csrfToken =
+                document
+                    .querySelector(
+                        'meta[name="csrf-token"]'
+                    )
+                    ?.getAttribute("content");
+
+
+            if (!csrfToken) {
+
+                throw new Error(
+                    "CSRF token not found."
+                );
+            }
+
+
+            const response =
+                await fetch(
+                    `/unlock-contact/${profileId}`,
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Accept":
+                                "application/json",
+
+                            "X-CSRF-TOKEN":
+                                csrfToken
+                        },
+
+                        body: JSON.stringify({
+
+                            unlock_price:
+                                unlockPrice
+
+                        })
+                    }
+                );
+
+
+            const data = await response.json();
+
+            console.log(
+                "Unlock response:",
+                data
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | API ERROR
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                !response.ok ||
+                data.status !== "success"
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to unlock contact details."
+                );
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | MOBILE
+            |--------------------------------------------------------------------------
+            */
+
+            const mobile =
+                document.getElementById(
+                    "mobileValue"
+                );
+
+            if (mobile) {
+
+                mobile.classList.remove(
+                    "pd-locked"
+                );
+
+                mobile.textContent =
+                    data.mobile_number || "-";
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | WHATSAPP
+            |--------------------------------------------------------------------------
+            */
+
+            const whatsapp =
+                document.getElementById(
+                    "waValue"
+                );
+
+            if (whatsapp) {
+
+                whatsapp.classList.remove(
+                    "pd-locked"
+                );
+
+                whatsapp.textContent =
+                    data.whatsapp_number || "-";
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | EMAIL
+            |--------------------------------------------------------------------------
+            */
+
+            const email =
+                document.getElementById(
+                    "emailValue"
+                );
+
+            if (email) {
+
+                email.classList.remove(
+                    "pd-locked"
+                );
+
+                email.textContent =
+                    data.email || "-";
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Remove unlock UI
+            |--------------------------------------------------------------------------
+            */
+
+            document
+                .getElementById(
+                    "contactUnlock"
+                )
+                ?.remove();
+
+
+            document
+                .querySelectorAll(
+                    ".pd-row-lock"
+                )
+                .forEach(
+                    el => el.remove()
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Update wallet balance
+            |--------------------------------------------------------------------------
+            */
+
+            const walletBalance =
+                document.getElementById(
+                    "walletBalance"
+                );
+
+            if (
+                walletBalance &&
+                data.wallet_balance !== undefined
+            ) {
+
+                walletBalance.textContent =
+                    "₹ " +
+                    data.wallet_balance;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Success
+            |--------------------------------------------------------------------------
+            */
+
+            showToast(
+                "🔓 Contact details unlocked!"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Contact unlock error:",
+                error
+            );
+
+            showToast(
+                error.message ||
+                "Unable to unlock contact details."
+            );
+
+
+        } finally {
+
+            button.disabled = false;
+        }
+
+        return;
     }
-    document.getElementById("contactUnlock")?.remove();
-    document.querySelectorAll(".pd-row-lock").forEach(el => el.remove());
-    showToast("🔓 Contact details unlocked!");
-  } else if (currentUnlockType === "kundli") {
-    const tob = document.getElementById("tobValue");
-    const pob = document.getElementById("pobValue");
-    if (tob) {
-      tob.classList.remove("pd-locked");
-      tob.innerHTML = "10:32 AM";
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KUNDLI UNLOCK
+    |--------------------------------------------------------------------------
+    */
+
+    if (unlockType === "kundli") {
+
+        /*
+        | We will connect this to the Laravel
+        | Kundli unlock endpoint separately.
+        */
+
+        console.log(
+            "Kundli unlock requested:",
+            profileId
+        );
+
+        button.disabled = false;
     }
-    if (pob) {
-      pob.classList.remove("pd-locked");
-      pob.innerHTML = "Mandi, Himachal Pradesh";
-    }
-    document.getElementById("kundliUnlock")?.remove();
-    showToast("🔓 Kundli details unlocked!");
-  }
 }
 
 /* ── REPORT SHEET ── */
